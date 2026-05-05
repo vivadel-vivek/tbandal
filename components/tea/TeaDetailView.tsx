@@ -1,0 +1,672 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import type { Tea, ContributorKey, FlavorAxis, BasicAxis } from "@/lib/types";
+import { CONTRIBUTORS, TEAS, vendorByName } from "@/lib/data";
+import { BASIC_AXES, FLAVOR_AXES, rollUpProfile, topFlavors } from "@/lib/flavor";
+import { useMember } from "@/contexts/MemberContext";
+import { useTweaks } from "@/contexts/TweaksContext";
+import { Container } from "@/components/ui/Container";
+import { Eyebrow } from "@/components/ui/Eyebrow";
+import { Button } from "@/components/ui/Button";
+import { RatingScore } from "@/components/ui/RatingScore";
+import { AvatarChip } from "@/components/ui/AvatarChip";
+import { FlavorBadge } from "@/components/ui/FlavorBadge";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { TeaCard } from "@/components/tea/TeaCard";
+import { TeaHero } from "@/components/tea/TeaHero";
+import { RadarChart } from "@/components/tea/RadarChart";
+import { MouthfeelGrid } from "@/components/tea/MouthfeelGrid";
+
+type ReviewTab = ContributorKey | "members" | "you";
+
+type Props = {
+  tea: Tea;
+  similar: { tea: Tea; score: number }[];
+};
+
+// Composite profile = average of contributors that actually reviewed (drops nulls)
+function compositeProfile(tea: Tea): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const ax of FLAVOR_AXES) {
+    const vals: number[] = [];
+    if (tea.reviews.vivek) vals.push(tea.flavor.vivek[ax.key]);
+    if (tea.reviews.james) vals.push(tea.flavor.james[ax.key]);
+    vals.push(tea.flavor.members[ax.key]);
+    out[ax.key] = vals.reduce((a, b) => a + b, 0) / vals.length;
+  }
+  return out;
+}
+
+export function TeaDetailView({ tea, similar }: Props) {
+  const { member, isBlindFor, unblind } = useMember();
+  const { tweaks } = useTweaks();
+
+  const memberRating = member.ratings.find((r) => r.slug === tea.slug);
+  const hasMember = !!memberRating;
+
+  const [activeTab, setActiveTab] = useState<ReviewTab>("vivek");
+  const [showRateModal, setShowRateModal] = useState(false);
+
+  // Effective flavor mode: "blind" is whole-site; tea-detail toggles only basic/advanced
+  const memberMode = member.settings.flavorMode;
+  const initialDisplayMode: "basic" | "advanced" =
+    memberMode === "blind" ? "advanced" : memberMode;
+  const [displayMode, setDisplayMode] = useState<"basic" | "advanced">(initialDisplayMode);
+  const isBasic = displayMode === "basic";
+  const radarAxes: readonly (FlavorAxis | BasicAxis)[] = isBasic
+    ? BASIC_AXES
+    : FLAVOR_AXES;
+  const toRadarValues = (vals: Record<string, number>) =>
+    isBasic ? rollUpProfile(vals as Parameters<typeof rollUpProfile>[0]) : vals;
+
+  // Member-level blind state for THIS tea (vs the Discover-launched blind flow)
+  const isBlinded = isBlindFor(tea.slug) || tweaks.hideReviews;
+  const memberBlind = isBlinded && memberMode === "blind";
+
+  const reviewMap: Record<ReviewTab, { rating: number; body: string; date: string; session?: string; scale?: "basic" | "advanced" } | null> = {
+    vivek: tea.reviews.vivek,
+    james: tea.reviews.james,
+    members: tea.reviews.members,
+    you: hasMember
+      ? {
+          rating: memberRating!.rating,
+          body: memberRating!.body,
+          date: memberRating!.date,
+          session: memberRating!.session,
+          scale: memberRating!.scale,
+        }
+      : null,
+  };
+
+  const profileMap: Record<ReviewTab, Record<string, number> | null> = {
+    vivek: tea.flavor.vivek,
+    james: tea.flavor.james,
+    members: tea.flavor.members,
+    you: hasMember ? memberRating!.profile : null,
+  };
+
+  const tabOrder: ReviewTab[] = ["vivek", "james", "members"];
+  if (hasMember) tabOrder.push("you");
+  const safeTab: ReviewTab = tabOrder.includes(activeTab) ? activeTab : "members";
+  const review = reviewMap[safeTab];
+  const profile = profileMap[safeTab];
+
+  const compProfile = useMemo(() => compositeProfile(tea), [tea]);
+
+  // Build the radar profiles for the current view
+  type RP = { values: Record<string, number>; color: string; label?: string };
+  const profilesForRadar: RP[] = useMemo(() => {
+    const raw: RP[] = tweaks.showComposite
+      ? [
+          ...(tea.reviews.vivek
+            ? [{ values: tea.flavor.vivek, color: CONTRIBUTORS.vivek.color, label: "Vivek" }]
+            : []),
+          ...(tea.reviews.james
+            ? [{ values: tea.flavor.james, color: CONTRIBUTORS.james.color, label: "James" }]
+            : []),
+          { values: tea.flavor.members, color: "var(--gold-dark, #A68B3D)", label: "Members" },
+          ...(hasMember
+            ? [{ values: memberRating!.profile, color: "var(--forest, #2D3A2E)", label: "You" }]
+            : []),
+        ]
+      : profile
+        ? [
+            {
+              values: profile,
+              color:
+                safeTab === "you"
+                  ? "var(--forest, #2D3A2E)"
+                  : safeTab === "members"
+                    ? "var(--gold-dark, #A68B3D)"
+                    : CONTRIBUTORS[safeTab].color,
+            },
+          ]
+        : [];
+    return raw.map((p) => ({ ...p, values: toRadarValues(p.values) }));
+  }, [tweaks.showComposite, tea, profile, safeTab, hasMember, memberRating, isBasic]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleVisitVendor = () => {
+    const v = vendorByName(tea.vendor);
+    if (v) window.location.href = `/discover/vendors/${v.slug}`;
+  };
+  const handleLogSession = () => setShowRateModal(true);
+
+  return (
+    <main>
+      <Container>
+        <Link
+          href="/discover/teas"
+          className="inline-flex items-center gap-1.5 text-warm-600 text-[13px] font-sans no-underline mt-6 mb-2"
+        >
+          ← Back to teas
+        </Link>
+
+        <TeaHero
+          tea={tea}
+          variant={tweaks.heroVariant}
+          hideReviews={isBlinded}
+          onVisitVendor={handleVisitVendor}
+          onLogSession={handleLogSession}
+        />
+
+        {/* MEMBER BLIND BANNER */}
+        {memberBlind && (
+          <div className="mt-8 mb-2 px-7 py-6 bg-[var(--bg-elevated)] border border-dashed border-warm-300 rounded-xl flex justify-between items-center gap-6 flex-wrap">
+            <div className="flex-1 min-w-[280px]">
+              <div className="text-[11px] tracking-widest uppercase font-bold text-warm-500 mb-1.5">
+                Blind mode · your setting
+              </div>
+              <div className="font-display italic text-burgundy leading-snug text-[24px]">
+                Reviews and ratings are hidden until you&apos;ve tasted this one.
+              </div>
+              <p className="text-[13px] text-warm-700 leading-relaxed mt-2 max-w-[540px] m-0">
+                Origin, brewing, and the radar (when you turn it on) stay
+                visible. If you&apos;ve already had this tea, reveal the
+                reviews — we&apos;ll remember and skip the hide for you next
+                time.
+              </p>
+            </div>
+            <div className="flex gap-2.5 shrink-0">
+              <Button variant="secondary" onClick={() => setShowRateModal(true)}>
+                Rate it first
+              </Button>
+              <Button variant="primary" onClick={() => unblind(tea.slug)}>
+                I&apos;ve tasted this →
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* REVIEWS SECTION */}
+        {!memberBlind && (
+          <section className="mt-14">
+            <SectionHeader
+              eyebrow="Reviews"
+              title={hasMember ? "Four palates, one tea" : "Three palates, one tea"}
+            />
+
+            {/* Tabs */}
+            <div className="flex gap-1 mb-7 p-1 bg-cream rounded-pill w-fit border border-warm-200 flex-wrap">
+              {[
+                { key: "vivek" as const, label: "Vivek's Review" },
+                { key: "james" as const, label: "James's Review" },
+                { key: "members" as const, label: "Member Reviews" },
+                ...(hasMember ? [{ key: "you" as const, label: "Your Review" }] : []),
+              ].map((t) => {
+                const has = !!reviewMap[t.key];
+                const active = safeTab === t.key;
+                const c = t.key === "vivek" || t.key === "james" ? CONTRIBUTORS[t.key] : null;
+                const activeBg =
+                  t.key === "you"
+                    ? "var(--forest, #2D3A2E)"
+                    : c?.color ?? "var(--burgundy, #722F37)";
+                return (
+                  <button
+                    key={t.key}
+                    onClick={() => setActiveTab(t.key)}
+                    className={[
+                      "px-5 py-2.5 rounded-pill border-0 cursor-pointer font-sans text-[13px] font-bold inline-flex items-center gap-2",
+                      "transition-colors duration-DEFAULT ease-smooth",
+                      active ? "text-cream" : has ? "text-forest" : "text-warm-500 italic",
+                    ].join(" ")}
+                    style={{
+                      background: active ? activeBg : "transparent",
+                      opacity: has ? 1 : 0.7,
+                    }}
+                  >
+                    {t.key === "members" ? (
+                      <span className="text-[14px]" aria-hidden>
+                        👥
+                      </span>
+                    ) : t.key === "you" ? (
+                      <span className="text-[12px] font-display italic" aria-hidden>
+                        You
+                      </span>
+                    ) : (
+                      <AvatarChip who={t.key} size={20} />
+                    )}
+                    {t.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="grid grid-cols-[1.1fr_1fr] gap-8 items-start">
+              {/* Radar + mouthfeel */}
+              <div className="bg-[var(--bg-elevated)] rounded-xl p-7 shadow-card border border-warm-200">
+                <div className="flex justify-between items-center mb-2 flex-wrap gap-3">
+                  <Eyebrow>
+                    Flavor profile · {isBasic ? "6 axes (basic)" : "12 axes (advanced)"}
+                  </Eyebrow>
+                  <FlavorModeToggle mode={displayMode} onChange={setDisplayMode} />
+                </div>
+                {tweaks.showComposite && (
+                  <div className="flex gap-3 text-[11px] text-warm-600 flex-wrap mb-1">
+                    {tea.reviews.vivek && <LegendDot color={CONTRIBUTORS.vivek.color} label="Vivek" />}
+                    {tea.reviews.james && <LegendDot color={CONTRIBUTORS.james.color} label="James" />}
+                    <LegendDot color="var(--gold-dark, #A68B3D)" label="Members" />
+                    {hasMember && <LegendDot color="var(--forest, #2D3A2E)" label="You" />}
+                  </div>
+                )}
+                <RadarChart
+                  profiles={profilesForRadar}
+                  axes={radarAxes}
+                  style={tweaks.radarStyle}
+                  size={400}
+                />
+                {isBasic && (
+                  <div className="mt-1.5 text-[11px] text-warm-600 leading-normal italic text-center">
+                    Six lay-term axes — each combines two of the twelve advanced flavors.
+                  </div>
+                )}
+
+                <div className="mt-6 pt-6 border-t border-warm-200">
+                  <Eyebrow>Mouthfeel</Eyebrow>
+                  <div className="grid grid-cols-[1.2fr_1fr] gap-4 mt-3 items-center">
+                    <MouthfeelGrid point={tea.mouthfeel} size={220} />
+                    <div>
+                      <div className="text-[11px] text-warm-500 tracking-widest uppercase font-bold mb-1.5">
+                        Finish
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        {tea.finish.map((f) => (
+                          <span
+                            key={f}
+                            className="font-display italic text-forest text-[17px]"
+                          >
+                            · {f}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Review notes */}
+              <div>
+                {!review ? (
+                  <div className="bg-[var(--bg-elevated)] rounded-xl p-8 shadow-card border border-dashed border-warm-300 text-center">
+                    <div
+                      className="w-14 h-14 rounded-full mx-auto mb-3.5 flex items-center justify-center text-cream font-display italic text-2xl"
+                      style={{
+                        background:
+                          safeTab === "vivek" || safeTab === "james"
+                            ? CONTRIBUTORS[safeTab].color
+                            : "var(--warm-300, #B5B0AA)",
+                        opacity: 0.6,
+                      }}
+                    >
+                      ?
+                    </div>
+                    <Eyebrow>Not yet reviewed</Eyebrow>
+                    <h4 className="font-display text-burgundy font-medium m-0 mt-2 mb-2 italic leading-snug text-[28px]">
+                      {(safeTab === "vivek" || safeTab === "james")
+                        ? CONTRIBUTORS[safeTab].name
+                        : "We"}
+                      {" "}hasn&apos;t tried this one yet.
+                    </h4>
+                    <p className="text-sm text-warm-700 leading-snug max-w-[360px] mx-auto mb-5">
+                      Want a second opinion? Send a request — if you have the
+                      tea, we&apos;ll cover return shipping; otherwise drop a
+                      purchase link.
+                    </p>
+                    <Link href="/request-review">
+                      <Button variant="primary">Request a review →</Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="bg-[var(--bg-elevated)] rounded-xl p-7 shadow-card border border-warm-200">
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        {safeTab === "members" ? (
+                          <div
+                            className="w-12 h-12 rounded-full bg-gold text-forest flex items-center justify-center text-[22px] shrink-0"
+                            aria-hidden
+                          >
+                            👥
+                          </div>
+                        ) : safeTab === "you" ? (
+                          <div
+                            className="w-12 h-12 rounded-full bg-forest text-cream flex items-center justify-center font-display italic text-[22px] shrink-0"
+                            aria-hidden
+                          >
+                            You
+                          </div>
+                        ) : (
+                          <AvatarChip who={safeTab} size={48} />
+                        )}
+                        <div className="min-w-0">
+                          <div
+                            className={[
+                              "font-display font-medium italic leading-snug text-[20px]",
+                              safeTab === "you" ? "text-forest" : "text-burgundy",
+                            ].join(" ")}
+                          >
+                            {safeTab === "members"
+                              ? "Member consensus"
+                              : safeTab === "you"
+                                ? "Your notes"
+                                : `${CONTRIBUTORS[safeTab].name}'s notes`}
+                          </div>
+                          <Eyebrow color="var(--warm-500, #857F79)">
+                            {review.date}
+                          </Eyebrow>
+                        </div>
+                      </div>
+                      <div className="shrink-0">
+                        {(() => {
+                          const userBasic =
+                            safeTab === "you" && memberRating?.scale === "basic";
+                          return (
+                            <RatingScore
+                              value={userBasic ? review.rating / 2 : review.rating}
+                              max={userBasic ? 5 : 10}
+                              big
+                            />
+                          );
+                        })()}
+                      </div>
+                    </div>
+
+                    <p
+                      className="font-serif italic text-forest leading-relaxed mb-5 pl-4 text-[18px]"
+                      style={{
+                        borderLeft: `2px solid ${
+                          safeTab === "you"
+                            ? "var(--forest, #2D3A2E)"
+                            : "var(--gold, #C4A35A)"
+                        }`,
+                      }}
+                    >
+                      &ldquo;{review.body}&rdquo;
+                    </p>
+
+                    {review.session && (
+                      <div className="bg-cream px-4 py-3 rounded-md mb-4 text-xs text-warm-700 font-mono">
+                        <div className="text-[10px] tracking-widest uppercase text-warm-500 mb-1 font-sans font-bold">
+                          Brewed
+                        </div>
+                        {review.session}
+                      </div>
+                    )}
+
+                    {profile &&
+                      (() => {
+                        const displayProfile = toRadarValues(profile);
+                        const tops = topFlavors(
+                          displayProfile as Parameters<typeof topFlavors>[0],
+                          radarAxes,
+                        );
+                        return tops.length > 0 ? (
+                          <div className="mb-4">
+                            <Eyebrow color="var(--warm-500, #857F79)">
+                              Top notes (this palate)
+                            </Eyebrow>
+                            <div className="flex flex-wrap gap-2 mt-2.5">
+                              {tops.map((ax) => (
+                                <FlavorBadge
+                                  key={ax.key}
+                                  axis={ax}
+                                  intensity={(displayProfile as Record<string, number>)[ax.key]}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        ) : null;
+                      })()}
+
+                    {safeTab === "members" && tea.reviews.members.count > 0 && (
+                      <div className="pt-4 border-t border-warm-200 flex justify-between text-[13px] text-warm-700">
+                        <span>Based on {tea.reviews.members.count} member ratings</span>
+                        <a className="text-burgundy font-bold cursor-pointer">See all →</a>
+                      </div>
+                    )}
+
+                    {safeTab === "you" && (
+                      <div className="pt-4 border-t border-warm-200 flex justify-between items-center text-[13px] text-warm-700">
+                        <span>Saved to your profile · refines recommendations</span>
+                        <button
+                          onClick={() => setShowRateModal(true)}
+                          className="bg-transparent border-0 text-burgundy font-bold cursor-pointer text-[13px]"
+                        >
+                          Edit →
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {!hasMember && !memberBlind && (
+                  <div className="bg-cream rounded-xl p-6 mt-5 border border-dashed border-warm-300">
+                    <Eyebrow>Add your rating</Eyebrow>
+                    <p className="text-[13px] text-warm-700 mt-2 mb-3.5">
+                      Rate this tea to refine your flavor profile and improve
+                      recommendations.
+                    </p>
+                    <Button variant="primary" onClick={() => setShowRateModal(true)}>
+                      Rate this tea →
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ORIGIN & BREWING */}
+        <section className="mt-14 grid grid-cols-2 gap-6">
+          <div className="bg-[var(--bg-elevated)] rounded-xl p-7 shadow-card border border-warm-200">
+            <Eyebrow>Origin & terroir</Eyebrow>
+            <h3 className="font-display text-burgundy font-medium m-0 mt-2 mb-4 text-[28px]">
+              The journey
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <Detail k="Country" v={tea.country} />
+              <Detail k="Region" v={tea.region.split(",")[0]} />
+              <Detail k="Elevation" v={`${tea.elev}m`} />
+              <Detail k="Harvest" v={tea.harvest} />
+              <Detail k="Year" v={tea.year} />
+              <Detail k="Age" v={tea.age} />
+              <Detail k="Type" v={tea.type} />
+              <Detail
+                k="Rarity"
+                v={"●".repeat(tea.rarity) + "○".repeat(5 - tea.rarity)}
+              />
+            </div>
+          </div>
+
+          <div className="bg-[var(--bg-elevated)] rounded-xl p-7 shadow-card border border-warm-200">
+            <Eyebrow>Recommended brewing</Eyebrow>
+            <h3 className="font-display text-burgundy font-medium m-0 mt-2 mb-4 text-[28px]">
+              How we made it
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <BrewingStat k="Style" v={tea.brewing.style} icon="🫖" />
+              <BrewingStat k="Ratio" v={tea.brewing.ratio} icon="⚖️" />
+              <BrewingStat k="Temp" v={tea.brewing.temp} icon="🌡️" />
+              <BrewingStat k="First steep" v={tea.brewing.first} icon="⏱️" />
+            </div>
+            <div className="mt-5 pt-4 border-t border-warm-200 text-[13px] text-warm-700 leading-snug">
+              <strong className="text-forest">{tea.sessions} sessions logged.</strong>{" "}
+              Peak steeps: {tea.peakSteeps.map((n) => `#${n}`).join(", ")}. Add 5s
+              per steep after the first; raise temp by 1°C every two rounds.
+            </div>
+          </div>
+        </section>
+
+        {/* VENDOR CTA BANNER */}
+        <section className="mt-8 p-8 bg-burgundy text-cream rounded-xl flex justify-between items-center gap-6 flex-wrap">
+          <div>
+            <Eyebrow color="rgba(250,247,242,0.7)">Sold by</Eyebrow>
+            <h3 className="font-display italic text-cream font-medium m-0 my-1.5 text-[32px]">
+              {tea.vendor}
+            </h3>
+            <p
+              className="text-sm m-0"
+              style={{ color: "rgba(250,247,242,0.85)" }}
+            >
+              ${tea.price.toFixed(2)}/g · ${(tea.price * 5).toFixed(2)} per 5g
+              session
+            </p>
+          </div>
+          <div className="flex gap-2.5">
+            <Button variant="gold" size="lg" onClick={handleVisitVendor}>
+              Visit {tea.vendor} ↗
+            </Button>
+            <Button
+              variant="secondary"
+              size="lg"
+              style={{
+                background: "transparent",
+                border: "1.5px solid var(--cream, #FAF7F2)",
+                color: "var(--cream, #FAF7F2)",
+              }}
+            >
+              Log a session
+            </Button>
+          </div>
+        </section>
+
+        {/* SIMILAR TEAS */}
+        {similar.length > 0 && (
+          <section className="mt-14">
+            <SectionHeader
+              eyebrow="More like this"
+              title="Teas with overlapping profiles"
+            />
+            <div className="grid grid-cols-3 gap-5">
+              {similar.map(({ tea: t, score }) => (
+                <div key={t.slug} className="relative">
+                  <TeaCard tea={t} hideReviews={isBlinded} />
+                  <span
+                    className="absolute -top-2 right-3 px-2.5 py-0.5 rounded-pill text-[10px] font-bold tracking-wide uppercase shadow-card"
+                    style={{
+                      background: "var(--gold, #C4A35A)",
+                      color: "var(--forest, #2D3A2E)",
+                    }}
+                  >
+                    {Math.round(score * 100)}% match
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </Container>
+      <div className="h-16" />
+
+      {/* Stub modal — full implementation lands in 4.5.12 */}
+      {showRateModal && (
+        <div
+          onClick={() => setShowRateModal(false)}
+          className="fixed inset-0 z-[1000] flex items-start justify-center p-[5vh_20px] overflow-y-auto"
+          style={{ background: "rgba(31,26,24,0.55)" }}
+          role="dialog"
+          aria-modal
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[var(--bg-elevated)] rounded-2xl shadow-elevated max-w-[640px] w-full border border-warm-200 p-8"
+          >
+            <Eyebrow>Add your review</Eyebrow>
+            <h2 className="font-display italic text-burgundy font-medium tracking-tight m-0 mt-1.5 mb-1 text-[28px]">
+              {tea.name}
+            </h2>
+            <p className="text-warm-600 text-sm mb-4">
+              The full Basic / Advanced rating modal lands in Phase 4.5.12.
+            </p>
+            <div className="flex justify-end gap-2.5 mt-4">
+              <Button
+                variant="secondary"
+                onClick={() => setShowRateModal(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}
+
+// ---------- helpers ----------
+
+function FlavorModeToggle({
+  mode,
+  onChange,
+}: {
+  mode: "basic" | "advanced";
+  onChange: (m: "basic" | "advanced") => void;
+}) {
+  const opts = [
+    { key: "basic" as const, label: "Basic", sub: "6 axes" },
+    { key: "advanced" as const, label: "Advanced", sub: "12 axes" },
+  ];
+  return (
+    <div className="inline-flex p-[3px] bg-cream rounded-pill border border-warm-200 gap-[2px]">
+      {opts.map((o) => {
+        const active = mode === o.key;
+        return (
+          <button
+            key={o.key}
+            onClick={() => onChange(o.key)}
+            aria-pressed={active}
+            className={[
+              "px-3 py-1.5 rounded-pill border-0 font-sans font-bold text-[11px] cursor-pointer tracking-wide",
+              "transition-colors duration-DEFAULT ease-smooth inline-flex items-center gap-1.5",
+              active ? "bg-burgundy text-cream" : "bg-transparent text-forest",
+            ].join(" ")}
+          >
+            {o.label}
+            <span
+              className="text-[9px] font-medium"
+              style={{ opacity: active ? 0.85 : 0.55 }}
+            >
+              {o.sub}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function LegendDot({ color, label }: { color: string; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[11px] text-warm-700 font-bold">
+      <span className="w-2.5 h-2.5 rounded-full" style={{ background: color }} />
+      {label}
+    </span>
+  );
+}
+
+function Detail({ k, v }: { k: string; v: string | number }) {
+  return (
+    <div>
+      <div className="text-[10px] tracking-widest uppercase text-warm-500 font-bold">
+        {k}
+      </div>
+      <div className="text-[15px] text-forest mt-1 font-display">{v}</div>
+    </div>
+  );
+}
+
+function BrewingStat({ k, v, icon }: { k: string; v: string; icon: string }) {
+  return (
+    <div className="flex gap-3 items-center">
+      <span className="text-[26px] leading-none" aria-hidden>
+        {icon}
+      </span>
+      <div>
+        <div className="text-[10px] tracking-widest uppercase text-warm-500 font-bold">
+          {k}
+        </div>
+        <div className="text-[15px] text-forest font-display">{v}</div>
+      </div>
+    </div>
+  );
+}
