@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===========================================
+   TWO BUDS AND A LEAF — non-Tailwind tokens
+   ===========================================
+   Most colors / spacing / type scale lives in tailwind.config.ts.
+   This layer carries the bits that don't map cleanly:
+   - CSS variables Tailwind references (font families set by next/font)
+   - theme switches via [data-theme]
+   - base typography defaults that mirror the prototype's tokens.css
+*/
+
+:root {
+  /* Type families — populated by next/font/google in layout.tsx */
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-serif:   "Cormorant Garamond", Georgia, serif;
+  --font-sans:    "Nunito Sans", system-ui, sans-serif;
+
+  /* Theme channels — switched by [data-theme] on <body>. Default = parchment. */
+  --bg: #F5EFE6;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #FAF7F2;
+  --fg-1: #2D3A2E;
+  --fg-2: #6B6560;
+  --fg-3: #857F79;
+}
+
+[data-theme="cream"] {
+  --bg: #FAF7F2;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #F5EFE6;
+}
+
+[data-theme="parchment"] {
+  --bg: #F5EFE6;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #FAF7F2;
+}
+
+[data-theme="dark"] {
+  --bg: #1F1A18;
+  --bg-elevated: #2A2421;
+  --bg-subtle: #25201D;
+  --fg-1: #EFE7DA;
+  --fg-2: #B5A99A;
+  --fg-3: #8E8276;
+}
+
+/* ===========================================
+   BASE TYPOGRAPHY
+   =========================================== */
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--fg-1);
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-wrap: pretty;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-display text-burgundy font-medium tracking-tight;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: #E8C9CD;
+}
+
+a { color: #722F37; text-decoration: none; }
+
+/* Focus ring */
+*:focus-visible { outline: 2px solid #722F37; outline-offset: 2px; }
+
+/* ===========================================
+   COMPONENT LAYER — small reusable pieces
+   =========================================== */
+
+@layer components {
+  .eyebrow {
+    @apply font-sans text-xs font-bold uppercase tracking-widest text-warm-500;
+  }
+
+  .display-italic {
+    @apply font-display italic;
+  }
+}
