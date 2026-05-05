@@ -1,0 +1,10 @@
+{
+  "name": "two-buds-and-a-leaf-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reference prototype (CDN React + Babel standalone) — kept for design comparison while the Next.js migration lands.",
+  "scripts": {
+    "start": "npx --yes serve . -l 3001",
+    "dev": "npx --yes serve . -l 3001"
+  }
+}
