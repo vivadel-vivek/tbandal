@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Two Buds and a Leaf</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="tokens.css">
+  <style>
+    body { margin: 0; min-height: 100vh; }
+    [data-screen-label] { min-height: calc(100vh - 80px); }
+    button { font-family: var(--font-sans); }
+    *:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
+    /* theme variants */
+    body[data-theme="cream"] { --bg: var(--cream); --bg-elevated: #fff; }
+    body[data-theme="parchment"] { --bg: var(--parchment); --bg-elevated: #fff; }
+    body[data-theme="dark"] {
+      --bg: #1F1A18; --bg-elevated: #2A2421;
+      --fg-1: #EFE7DA; --fg-2: #B5A99A; --fg-3: #8E8276;
+      --warm-200: #3D3530; --warm-300: #524A44;
+      --cream: #2A2421; --parchment: #1F1A18;
+      --forest: #EFE7DA; --burgundy: #C77C84; --burgundy-light: #D89299;
+      --burgundy-muted: rgba(199,124,132,0.18);
+      --gold: #D4B86A; --gold-dark: #C4A35A;
+    }
+    body[data-theme="dark"] h1, body[data-theme="dark"] h2, body[data-theme="dark"] h3,
+    body[data-theme="dark"] h4, body[data-theme="dark"] h5, body[data-theme="dark"] h6 { color: #E8C9CD; }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="data.jsx"></script>
+  <script type="text/babel" src="ui.jsx"></script>
+  <script type="text/babel" src="pages.jsx"></script>
+  <script type="text/babel" src="review-modal.jsx"></script>
+  <script type="text/babel" src="request-review.jsx"></script>
+  <script type="text/babel" src="tea-detail.jsx"></script>
+  <script type="text/babel" src="discover.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const { Header, Footer } = window.UI;
+    const { Home, Library, Vendors, VendorDetail, BlogIndex, BlogPost, About, MemberProfile,
+            MemberSettings, DiscoverHub, DiscoverVendors, Glossary } = window.Pages;
+    const TeaDetail = window.TeaDetail;
+    const Recommendations = window.Discover; // legacy export name
+    const { TweaksPanel, useTweaks, TweakSection, TweakRadio, TweakSelect, TweakToggle, TweakButton } = window;
+
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "theme": "parchment",
+      "radarStyle": "fill",
+      "density": "cozy",
+      "heroVariant": "stain",
+      "showComposite": false,
+      "hideReviews": false
+    }/*EDITMODE-END*/;
+
+    function App() {
+      const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+      const [page, setPage] = useState("home");
+      const [tea, setTea] = useState(null);
+      const [vendor, setVendor] = useState(null);
+      const [post, setPost] = useState(null);
+      const [blindMode, setBlindMode] = useState(false);
+      const [requestPrefill, setRequestPrefill] = useState(null);
+      const [member, setMember] = useState({
+        name: "You",
+        aligned: "vivek",
+        ratings: [],
+        settings: {
+          email: "",
+          displayName: "",
+          contributorHandle: "",
+          flavorMode: "advanced", // "blind" | "basic" | "advanced"
+          composite: false,       // show all 3 radars overlaid by default
+          theme: "auto",          // "auto" defers to site/Tweaks
+          notifications: {
+            weeklyDigest: true,
+            newTeas: true,
+            sampleRequests: false,
+            replies: true,
+          },
+          tastedTeas: [],         // slugs unblinded by user
+        },
+      });
+
+      useEffect(() => {
+        document.body.dataset.theme = tweaks.theme;
+      }, [tweaks.theme]);
+
+      const onNav = (p) => {
+        setPage(p); setTea(null); setVendor(null); setPost(null); setBlindMode(false);
+        window.scrollTo({ top: 0 });
+      };
+      const onSelect = (t) => {
+        setTea(t); setPage("tea-detail"); setBlindMode(false);
+        window.scrollTo({ top: 0 });
+      };
+      const onBlindStart = (t) => {
+        setTea(t); setPage("tea-detail"); setBlindMode(true);
+        window.scrollTo({ top: 0 });
+      };
+      const onSelectVendor = (v) => {
+        setVendor(v); setPage("vendor-detail");
+        window.scrollTo({ top: 0 });
+      };
+      const onRequestReview = (t, who) => {
+        setRequestPrefill({ tea: t || null, who: who || null });
+        setPage("request-review");
+        window.scrollTo({ top: 0 });
+      };
+      const onSelectPost = (p) => {
+        setPost(p); setPage("blog-post");
+        window.scrollTo({ top: 0 });
+      };
+
+      // ---- Effective display settings (member > tweaks) ----
+      const flavorMode = member?.settings?.flavorMode || "advanced"; // "blind" | "basic" | "advanced"
+      const tastedTeas = member?.settings?.tastedTeas || [];
+      // a tea is hidden if Tweaks' force-hide is on, OR member is blind and hasn't tasted this tea
+      const isBlindFor = (slug) => tweaks.hideReviews
+        || (flavorMode === "blind" && !tastedTeas.includes(slug));
+      const unblind = (slug) => setMember(m => ({
+        ...m,
+        settings: {
+          ...m.settings,
+          tastedTeas: Array.from(new Set([...(m.settings?.tastedTeas || []), slug])),
+        },
+      }));
+      const reblind = (slug) => setMember(m => ({
+        ...m,
+        settings: {
+          ...m.settings,
+          tastedTeas: (m.settings?.tastedTeas || []).filter(s => s !== slug),
+        },
+      }));
+      const setFlavorMode = (mode) => setMember(m => ({
+        ...m,
+        settings: { ...m.settings, flavorMode: mode },
+      }));
+
+      // map page to active nav (highlights the dropdown / journal / about)
+      const activeNav = (
+        page === "tea-detail" || page === "discover-teas" || page === "library" ? "discover-teas"
+        : page === "vendor-detail" || page === "discover-vendors" || page === "vendors" ? "discover-vendors"
+        : page === "discover-glossary" ? "discover-glossary"
+        : page === "discover-hub" || page === "recommendations" ? "discover-hub"
+        : page === "blog-post" ? "blog"
+        : page === "member" || page === "member-settings" || page === "request-review" ? null
+        : page
+      );
+
+      const screenLabel = (() => {
+        if (page === "tea-detail" && tea) return `Tea — ${tea.name}`;
+        if (page === "vendor-detail" && vendor) return `Vendor — ${vendor.name}`;
+        if (page === "blog-post" && post) return `Post — ${post.title}`;
+        return page;
+      })();
+
+      return (
+        <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+          <Header active={activeNav} onNav={onNav} member={member} onMemberClick={() => onNav("member")} />
+          <div style={{ flex: 1 }} data-screen-label={screenLabel}>
+            {page === "home" && <Home onNav={onNav} onSelect={onSelect} density={tweaks.density} isBlindFor={isBlindFor} />}
+
+            {/* Discover hub + section pages */}
+            {page === "discover-hub" && <DiscoverHub onNav={onNav} onSelect={onSelect} />}
+            {(page === "discover-teas" || page === "library") && <Library onSelect={onSelect} density={tweaks.density} isBlindFor={isBlindFor} onBack={() => onNav("discover-hub")} />}
+            {page === "discover-vendors" && <DiscoverVendors onSelect={onSelect} onSelectVendor={onSelectVendor} onBack={() => onNav("discover-hub")} />}
+            {page === "discover-glossary" && <Glossary onBack={() => onNav("discover-hub")} />}
+
+            {/* Recommendations engine — reached via CTAs (not in main nav) */}
+            {(page === "recommendations" || page === "discover") && <Recommendations member={member} onSelect={onSelect} onMember={() => onNav("member")} radarStyle={tweaks.radarStyle} density={tweaks.density} isBlindFor={isBlindFor} onBlindStart={onBlindStart} />}
+
+            {/* Legacy flat Vendors list — kept for deep links; redirects through onBack */}
+            {page === "vendors" && <Vendors onSelect={onSelect} onSelectVendor={onSelectVendor} />}
+            {page === "vendor-detail" && vendor && <VendorDetail vendor={vendor} onSelect={onSelect} onBack={() => onNav("discover-vendors")} isBlindFor={isBlindFor} />}
+
+            {page === "blog" && <BlogIndex onPost={onSelectPost} />}
+            {page === "blog-post" && <BlogPost post={post} onBack={() => onNav("blog")} onSelect={onSelect} />}
+            {page === "about" && <About onNav={onNav} />}
+            {page === "member" && <MemberProfile member={member} setMember={setMember} radarStyle={tweaks.radarStyle} onNav={onNav} onSelect={onSelect} reblind={reblind} />}
+            {page === "member-settings" && MemberSettings && <MemberSettings member={member} setMember={setMember} onNav={onNav} onSelect={onSelect} reblind={reblind} />}
+            {page === "request-review" && window.RequestReview && (
+              <window.RequestReview prefill={requestPrefill} onBack={() => onNav(requestPrefill?.tea ? "tea-detail" : "discover-teas")} onSubmitted={() => {}} />
+            )}
+            {page === "tea-detail" && tea && (
+              <TeaDetail
+                tea={tea}
+                onBack={() => onNav("discover-teas")}
+                onSelect={onSelect}
+                onVendor={() => {
+                  const v = window.AppData.VENDORS.find(v => v.name === tea.vendor);
+                  if (v) onSelectVendor(v);
+                }}
+                onMember={() => onNav("member")}
+                onRequestReview={onRequestReview}
+                member={member}
+                setMember={setMember}
+                radarStyle={tweaks.radarStyle}
+                heroVariant={tweaks.heroVariant}
+                showComposite={tweaks.showComposite}
+                blindMode={blindMode}
+                hideReviews={isBlindFor(tea.slug)}
+                isBlinded={isBlindFor(tea.slug)}
+                memberFlavorMode={flavorMode}
+                onUnblind={() => unblind(tea.slug)}
+              />
+            )}
+          </div>
+          <Footer />
+
+          <TweaksPanel title="Tweaks">
+            <TweakSection title="Look & feel">
+              <TweakRadio label="Background" value={tweaks.theme} onChange={v => setTweak("theme", v)}
+                options={[
+                  { value: "parchment", label: "Parchment" },
+                  { value: "cream", label: "Cream" },
+                  { value: "dark", label: "Dark" },
+                ]} />
+              <TweakRadio label="Card density" value={tweaks.density} onChange={v => setTweak("density", v)}
+                options={[
+                  { value: "cozy", label: "Cozy" },
+                  { value: "compact", label: "Compact" },
+                ]} />
+            </TweakSection>
+            <TweakSection title="Tea detail page">
+              <TweakSelect label="Hero treatment" value={tweaks.heroVariant} onChange={v => setTweak("heroVariant", v)}
+                options={[
+                  { value: "split", label: "Split — image + meta" },
+                  { value: "stain", label: "Stain — centered editorial" },
+                  { value: "editorial", label: "Editorial — magazine-style masthead" },
+                ]} />
+              <TweakToggle label="Show all 3 radars at once" value={tweaks.showComposite} onChange={v => setTweak("showComposite", v)} />
+            </TweakSection>
+            <TweakSection title="Radar chart">
+              <TweakRadio label="Member flavor mode (writes to settings)" value={flavorMode} onChange={setFlavorMode}
+                options={[
+                  { value: "blind",    label: "Blind — hide ratings" },
+                  { value: "basic",    label: "Basic — 6 axes / 5 pt" },
+                  { value: "advanced", label: "Advanced — 12 axes / 10 pt" },
+                ]} />
+              <TweakRadio label="Style" value={tweaks.radarStyle} onChange={v => setTweak("radarStyle", v)}
+                options={[
+                  { value: "fill", label: "Filled" },
+                  { value: "outline", label: "Outlined" },
+                  { value: "dotted", label: "Dotted" },
+                ]} />
+            </TweakSection>
+            <TweakSection title="Browse mode">
+              <TweakToggle label="Hide all reviews & ratings (site-wide blind browse)" value={tweaks.hideReviews} onChange={v => setTweak("hideReviews", v)} />
+            </TweakSection>
+            <TweakSection title="Jump to a page">
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                <TweakButton label="Home" onClick={() => onNav("home")} />
+                <TweakButton label="Discover hub" onClick={() => onNav("discover-hub")} />
+                <TweakButton label="Discover › Teas" onClick={() => onNav("discover-teas")} />
+                <TweakButton label="Discover › Vendors" onClick={() => onNav("discover-vendors")} />
+                <TweakButton label="Discover › Glossary" onClick={() => onNav("discover-glossary")} />
+                <TweakButton label="Recommendations" onClick={() => onNav("recommendations")} />
+                <TweakButton label="Journal" onClick={() => onNav("blog")} />
+                <TweakButton label="About" onClick={() => onNav("about")} />
+                <TweakButton label="Member profile" onClick={() => onNav("member")} />
+                <TweakButton label="Member settings" onClick={() => onNav("member-settings")} />
+                <TweakButton label="Sample tea" onClick={() => onSelect(window.AppData.TEAS[0])} />
+                <TweakButton label="Request a review" onClick={() => onRequestReview(null, null)} />
+                <TweakButton label="Tea w/ missing review" onClick={() => onSelect(window.AppData.TEAS.find(t => !t.reviews.vivek || !t.reviews.james))} />
+              </div>
+            </TweakSection>
+          </TweaksPanel>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

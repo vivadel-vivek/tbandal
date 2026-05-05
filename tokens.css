@@ -1,0 +1,240 @@
+/* ===========================================
+   TWO BUDS AND A LEAF — Colors + Type Tokens
+   =========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Nunito+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+:root {
+  /* ---------- BRAND COLORS ---------- */
+
+  /* Backgrounds — warm neutrals like aged paper / linen tea cloth */
+  --cream: #FAF7F2;
+  --parchment: #F5EFE6;
+  --white: #FFFFFF;
+
+  /* Primary — Burgundy (rich pu'er liquor) */
+  --burgundy: #722F37;
+  --burgundy-light: #8B4049;
+  --burgundy-dark: #5A252C;
+  --burgundy-muted: rgba(114, 47, 55, 0.12);
+
+  /* Accent — Gold (oolong amber) */
+  --gold: #C4A35A;
+  --gold-light: #D4B06A;
+  --gold-dark: #A68B3D;
+  --gold-muted: #D4C4A0;
+
+  /* Secondary — Sage (calming green) */
+  --sage: #8B9A7D;
+  --sage-light: #A8B49C;
+  --sage-dark: #6B7A5D;
+  --sage-muted: rgba(139, 154, 125, 0.12);
+
+  /* Text — Forest + Ink */
+  --forest: #2D3A2E;
+  --ink: #2A2522;
+
+  /* Warm Neutrals (gray, warmed) */
+  --warm-50: #F5F3F1;
+  --warm-100: #E8E5E2;
+  --warm-200: #D4D0CC;
+  --warm-300: #B5B0AA;
+  --warm-400: #9A948D;
+  --warm-500: #857F79;
+  --warm-600: #6B6560;
+  --warm-700: #524D49;
+  --warm-800: #3D3835;
+  --warm-900: #2A2522;
+
+  /* Semantic */
+  --success: #6B8E5E;
+  --warning: #C4935A;
+  --error: #A54242;
+  --info: #5A8BA5;
+
+  /* Flavor palette (used for radar / flavor badges) */
+  --flavor-honey: #D4A94C;
+  --flavor-floral: #D4A5A5;
+  --flavor-earthy: #8B7355;
+  --flavor-mineral: #8A9BA8;
+  --flavor-vegetal: #7A9A6D;
+  --flavor-woody: #6B4E3D;
+  --flavor-fruity: #C47A7A;
+  --flavor-sweet: #D4A07A;
+  --flavor-roasted: #5C4033;
+  --flavor-spicy: #A65D57;
+  --flavor-marine: #5A8A9A;
+  --flavor-nutty: #A68B5B;
+
+  /* Tea-type tints */
+  --tea-green: #7A9A6D;
+  --tea-white: #B5B0AA;
+  --tea-yellow: #D4C47A;
+  --tea-oolong: #D4A07A;
+  --tea-black: #5C4033;
+  --tea-puer: #8B7355;
+  --tea-herbal: #9A7A9A;
+
+  /* ---------- SEMANTIC TOKENS ---------- */
+  --bg: var(--parchment);
+  --bg-elevated: var(--white);
+  --bg-subtle: var(--cream);
+  --fg-1: var(--forest);    /* primary text */
+  --fg-2: var(--warm-600);  /* secondary text */
+  --fg-3: var(--warm-500);  /* muted / labels */
+  --fg-4: var(--warm-400);  /* placeholder */
+  --border: var(--warm-200);
+  --border-strong: var(--warm-300);
+  --accent: var(--burgundy);
+  --accent-fg: var(--cream);
+
+  /* ---------- TYPE FAMILIES ---------- */
+  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sans: "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* ---------- TYPE SCALE ---------- */
+  --fs-xs: 0.75rem;     /* 12 */
+  --fs-sm: 0.875rem;    /* 14 */
+  --fs-base: 1rem;      /* 16 */
+  --fs-lg: 1.125rem;    /* 18 */
+  --fs-xl: 1.25rem;     /* 20 */
+  --fs-2xl: 1.5rem;     /* 24 */
+  --fs-3xl: 1.875rem;   /* 30 */
+  --fs-4xl: 2.25rem;    /* 36 */
+  --fs-5xl: 3rem;       /* 48 */
+  --fs-6xl: 3.75rem;    /* 60 */
+
+  /* line heights */
+  --lh-tight: 1.1;
+  --lh-snug: 1.25;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.65;
+
+  /* tracking */
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;
+
+  /* ---------- SPACING ---------- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-10: 2.5rem;
+  --sp-12: 3rem;
+  --sp-16: 4rem;
+  --sp-20: 5rem;
+  --sp-24: 6rem;
+
+  /* ---------- RADII ---------- */
+  --r-sm: 4px;
+  --r: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-2xl: 32px;
+  --r-pill: 9999px;
+
+  /* ---------- SHADOWS (warm-tinted) ---------- */
+  --shadow-soft: 0 4px 20px rgba(114, 47, 55, 0.08);
+  --shadow-card: 0 2px 12px rgba(45, 58, 46, 0.06);
+  --shadow-elevated: 0 8px 30px rgba(42, 37, 34, 0.12);
+  --shadow-inner: inset 0 2px 4px rgba(42, 37, 34, 0.06);
+
+  /* ---------- MOTION ---------- */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur: 200ms;
+  --dur-slow: 300ms;
+  --dur-slower: 500ms;
+}
+
+/* ===========================================
+   BASE / SEMANTIC ELEMENTS
+   =========================================== */
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--fg-1);
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+  font-feature-settings: "kern" 1, "liga" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--burgundy);
+  font-weight: 500;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--fs-5xl); line-height: var(--lh-tight); }
+h2 { font-size: var(--fs-4xl); line-height: var(--lh-tight); }
+h3 { font-size: var(--fs-3xl); line-height: var(--lh-snug); }
+h4 { font-size: var(--fs-2xl); line-height: var(--lh-snug); }
+h5 { font-size: var(--fs-xl);  line-height: var(--lh-snug); }
+h6 { font-size: var(--fs-lg);  line-height: var(--lh-snug); }
+
+p { margin: 0; line-height: var(--lh-relaxed); text-wrap: pretty; }
+
+a {
+  color: var(--burgundy);
+  text-decoration: none;
+  transition: color var(--dur) var(--ease-smooth);
+}
+a:hover { color: var(--burgundy-light); }
+
+small { font-size: var(--fs-sm); color: var(--fg-2); }
+
+code, pre {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.95em;
+  background: var(--warm-100);
+  border-radius: var(--r-sm);
+}
+code { padding: 0.1em 0.35em; }
+pre  { padding: var(--sp-4); overflow: auto; }
+
+/* ===========================================
+   UTILITY CLASSES
+   =========================================== */
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--fg-3);
+}
+
+.section-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--warm-500);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  color: var(--forest);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--warm-200);
+}
+
+.display-italic { font-style: italic; font-family: var(--font-display); }
