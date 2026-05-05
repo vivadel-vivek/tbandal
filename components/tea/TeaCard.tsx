@@ -1,4 +1,6 @@
-"use client";
+// Server component — used by every list/grid page. No hooks, no
+// handlers. If someone later needs an onClick variant they can wrap a
+// `<button>` around <TeaCardInner>.
 
 import Link from "next/link";
 import type { CardDensity, Tea } from "@/lib/types";
@@ -10,28 +12,18 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 type Props = {
   tea: Tea;
   density?: CardDensity;
-  /** When true, the rating chip and stars are hidden (blind / forced-hide) */
+  /** Hide rating chip + stars (member blind / forced-hide). */
   hideReviews?: boolean;
-  /** Override the default Link wrap — useful inside grids that handle their own routing */
-  onClick?: () => void;
 };
 
-export function TeaCard({
-  tea,
-  density = "cozy",
-  hideReviews = false,
-  onClick,
-}: Props) {
+export function TeaCard({ tea, density = "cozy", hideReviews = false }: Props) {
   const compact = density === "compact";
   const avg = teaAvg(tea);
 
-  const inner = (
-    <article
-      className={[
-        "group bg-[var(--bg-elevated)] rounded-xl border border-warm-200 shadow-card overflow-hidden cursor-pointer block",
-        "transition-all duration-200 ease-smooth",
-        "hover:shadow-elevated hover:-translate-y-0.5",
-      ].join(" ")}
+  return (
+    <Link
+      href={`/tea/${tea.slug}`}
+      className="block no-underline group card-surface card-surface-hover overflow-hidden"
     >
       <div
         className="relative"
@@ -45,12 +37,7 @@ export function TeaCard({
         </div>
         {!hideReviews && (
           <div
-            className="absolute top-3 right-3 px-2.5 py-1 rounded-pill font-display font-semibold text-burgundy"
-            style={{
-              background: "rgba(250,247,242,0.92)",
-              backdropFilter: "blur(2px)",
-              fontSize: 14,
-            }}
+            className="absolute top-3 right-3 px-2.5 py-1 rounded-pill font-display font-semibold text-burgundy bg-cream-glass backdrop-blur-[2px] text-sm"
           >
             {avg.toFixed(1)}
           </div>
@@ -80,30 +67,13 @@ export function TeaCard({
           {!hideReviews ? (
             <StarRow value={Math.round(avg / 2)} />
           ) : (
-            <span /> /* placeholder to keep $/g right-aligned */
+            <span /> /* placeholder so $/g stays right-aligned */
           )}
           <span className="text-xs text-warm-500 font-mono">
             ${tea.price.toFixed(2)}/g
           </span>
         </div>
       </div>
-    </article>
-  );
-
-  if (onClick) {
-    return (
-      <button
-        type="button"
-        onClick={onClick}
-        className="block w-full text-left p-0 bg-transparent border-0 cursor-pointer"
-      >
-        {inner}
-      </button>
-    );
-  }
-  return (
-    <Link href={`/tea/${tea.slug}`} className="block no-underline">
-      {inner}
     </Link>
   );
 }

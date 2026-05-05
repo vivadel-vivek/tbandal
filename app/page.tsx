@@ -1,9 +1,9 @@
-"use client";
+// Server component — entire home page is static editorial except the
+// "Recently brewed" tea grid, which is a client island consuming
+// member + tweaks contexts.
 
 import Link from "next/link";
 import { CONTRIBUTORS, POSTS, TEAS, VENDORS } from "@/lib/data";
-import { useMember } from "@/contexts/MemberContext";
-import { useTweaks } from "@/contexts/TweaksContext";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -11,24 +11,19 @@ import { Stat } from "@/components/ui/Stat";
 import { TeaStain } from "@/components/ui/TeaStain";
 import { AvatarChip } from "@/components/ui/AvatarChip";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { TeaCard } from "@/components/tea/TeaCard";
+import { RecentlyBrewedGrid } from "@/components/home/RecentlyBrewedGrid";
 import type { Post } from "@/lib/types";
 
 export default function Home() {
-  const { isBlindFor } = useMember();
-  const { tweaks } = useTweaks();
-
   const featured = TEAS[0];
   const recent = TEAS.slice(1, 4);
   const latestPost = POSTS[0];
   const morePosts = POSTS.slice(1, 4);
 
-  const hide = (slug: string) => tweaks.hideReviews || isBlindFor(slug);
-
   return (
     <main>
       {/* ============ HERO ============ */}
-      <section className="relative pt-[72px] pb-14 overflow-hidden">
+      <section className="relative pt-18 pb-14 overflow-hidden">
         <TeaStain
           size={420}
           color="#C4A35A"
@@ -45,7 +40,7 @@ export default function Home() {
           <div className="grid grid-cols-[1.2fr_1fr] gap-14 items-center">
             <div>
               <Eyebrow>A two-person tea journal · est. 2024</Eyebrow>
-              <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter mt-4 mb-5 text-[76px]">
+              <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter mt-4 mb-5 text-hero-2xl text-balance">
                 <span className="italic">Two buds,</span>
                 <br /> a leaf, and a long
                 <br /> afternoon to brew it.
@@ -78,8 +73,8 @@ export default function Home() {
             <div className="relative">
               <Link
                 href={`/tea/${featured.slug}`}
-                className="block no-underline relative rounded-2xl shadow-elevated overflow-hidden"
-                style={{ aspectRatio: "4/5", background: featured.gradient }}
+                className="block no-underline relative rounded-2xl shadow-elevated overflow-hidden aspect-[4/5]"
+                style={{ background: featured.gradient }}
               >
                 <div
                   className="absolute inset-0 pointer-events-none"
@@ -92,17 +87,14 @@ export default function Home() {
                   <Eyebrow color="rgba(250,247,242,0.8)">
                     Today&apos;s pour · {featured.region}
                   </Eyebrow>
-                  <h3 className="font-display italic text-cream font-medium leading-tight tracking-tight my-1.5 text-[36px]">
+                  <h3 className="font-display italic text-cream font-medium leading-tight tracking-tight my-1.5 text-hero-md">
                     {featured.name}
                   </h3>
                   <p className="text-[13px] m-0" style={{ color: "rgba(250,247,242,0.85)" }}>
                     {featured.year} · {featured.elev}m
                   </p>
                 </div>
-                <span
-                  className="absolute top-5 right-5 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-pill font-sans text-xs font-bold text-burgundy"
-                  style={{ background: "rgba(250,247,242,0.95)" }}
-                >
+                <span className="absolute top-5 right-5 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-pill font-sans text-xs font-bold text-burgundy bg-cream-glass-strong">
                   Read review →
                 </span>
               </Link>
@@ -120,16 +112,7 @@ export default function Home() {
             link="See all →"
             href="/discover/teas"
           />
-          <div className="grid grid-cols-3 gap-6">
-            {recent.map((t) => (
-              <TeaCard
-                key={t.slug}
-                tea={t}
-                density={tweaks.density}
-                hideReviews={hide(t.slug)}
-              />
-            ))}
-          </div>
+          <RecentlyBrewedGrid teas={recent} />
         </Container>
       </section>
 
@@ -150,7 +133,7 @@ export default function Home() {
               >
                 <AvatarChip who={c.key} size={64} />
                 <div>
-                  <h3 className="font-display italic text-burgundy font-medium m-0 mb-1 text-[28px]">
+                  <h3 className="font-display italic text-burgundy font-medium m-0 mb-1 text-hero-sm">
                     {c.name}
                   </h3>
                   <Eyebrow color="var(--warm-500, #857F79)">{c.palate}</Eyebrow>
@@ -191,23 +174,27 @@ function FeaturedPost({ post }: { post: Post }) {
   return (
     <Link
       href={`/journal/${post.slug}`}
-      className="group block no-underline bg-white rounded-xl overflow-hidden shadow-card border border-warm-200 transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5"
+      className="group block no-underline card-surface card-surface-hover overflow-hidden"
     >
       <div
-        style={{ aspectRatio: "16/8", background: post.grad }}
+        className="aspect-[16/8]"
+        style={{ background: post.grad }}
       />
       <div className="px-7 pt-6 pb-7">
         <Eyebrow color="var(--sage-dark, #6B7A5D)">
           {post.cat} · {post.readTime} min
         </Eyebrow>
-        <h3 className="font-display text-burgundy font-medium leading-tight tracking-tight mt-2 mb-2.5 text-[36px]">
+        <h3 className="font-display text-burgundy font-medium leading-tight tracking-tight mt-2 mb-2.5 text-hero-md">
           {post.title}
         </h3>
         <p className="text-[15px] text-warm-700 leading-relaxed m-0 mb-3.5">
           {post.excerpt}
         </p>
         <div className="flex items-center gap-2.5">
-          <AvatarChip who={post.author.toLowerCase() as "vivek" | "james"} size={24} />
+          <AvatarChip
+            who={post.author.toLowerCase() as "vivek" | "james"}
+            size={24}
+          />
           <span className="text-xs text-warm-600">
             {post.author} · {post.date}
           </span>
@@ -221,7 +208,7 @@ function PostMini({ post }: { post: Post }) {
   return (
     <Link
       href={`/journal/${post.slug}`}
-      className="group block no-underline bg-white rounded-lg shadow-card border border-warm-200 px-5 py-4 flex gap-3.5 items-center transition-colors hover:bg-cream"
+      className="group flex no-underline bg-white rounded-lg shadow-card border border-warm-200 px-5 py-4 gap-3.5 items-center transition-colors hover:bg-cream"
     >
       <div
         className="w-16 h-16 rounded-md shrink-0"

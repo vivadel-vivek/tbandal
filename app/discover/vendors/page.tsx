@@ -1,11 +1,10 @@
-"use client";
+// Server component — pure static atlas, generated from lib/data once.
 
 import Link from "next/link";
-import { useMemo } from "react";
+import type { Metadata } from "next";
 import {
   CONTINENT_ORDER,
   TEAS,
-  VENDORS,
   groupVendorsByGeography,
 } from "@/lib/data";
 import { Container } from "@/components/ui/Container";
@@ -13,14 +12,20 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { StarRow } from "@/components/ui/StarRow";
 import type { Vendor } from "@/lib/types";
 
-export default function VendorsAtlas() {
-  const grouped = useMemo(() => groupVendorsByGeography(), []);
+export const metadata: Metadata = {
+  title: "Vendors",
+  description:
+    "An atlas of tea vendors we trust — grouped by continent and country, with their specialties and the teas of theirs we've reviewed.",
+};
 
-  const continents = Object.keys(grouped).sort(
-    (a, b) =>
-      (CONTINENT_ORDER as readonly string[]).indexOf(a) -
-      (CONTINENT_ORDER as readonly string[]).indexOf(b),
-  );
+const grouped = groupVendorsByGeography();
+const continentRank = (c: string) =>
+  (CONTINENT_ORDER as readonly string[]).indexOf(c);
+const continents = Object.keys(grouped).sort(
+  (a, b) => continentRank(a) - continentRank(b),
+);
+
+export default function VendorsAtlas() {
 
   return (
     <main>
