@@ -37,3 +37,8 @@ next-env.d.ts
 
 # audit reports (Lighthouse output)
 /.audit
+
+# persona-agent curl debris (created when sub-agents fetch pages with
+# `curl -o` and accidentally use a Windows-style path as the filename).
+Usersvshim*.html
+/strip.py
