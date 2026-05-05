@@ -56,10 +56,9 @@ export default function DiscoverHub() {
       title: "Glossary",
       desc:
         "Tea types, brewing methods, vessels, flavor terms, and mouthfeel — each entry with a plain-language explanation and the deeper detail behind it.",
-      stat: "Coming next",
+      stat: "50 entries",
       grad: "linear-gradient(135deg,#8A9BA8 0%,#5A6B7A 100%)",
       mark: "辞",
-      disabled: true,
     },
   ];
 

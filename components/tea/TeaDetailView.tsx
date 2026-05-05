@@ -215,7 +215,17 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
           <section className="mt-14">
             <SectionHeader
               eyebrow="Reviews"
-              title={hasMember ? "Four palates, one tea" : "Three palates, one tea"}
+              title={
+                (() => {
+                  const n =
+                    (tea.reviews.vivek ? 1 : 0) +
+                    (tea.reviews.james ? 1 : 0) +
+                    1 + // members aggregate is always present
+                    (hasMember ? 1 : 0);
+                  const word = ["Zero", "One", "Two", "Three", "Four"][n] ?? `${n}`;
+                  return `${word} palate${n === 1 ? "" : "s"}, one tea`;
+                })()
+              }
             />
 
             {/* Tabs */}
@@ -442,7 +452,11 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                         return tops.length > 0 ? (
                           <div className="mb-4">
                             <Eyebrow color="var(--warm-500, #857F79)">
-                              Top notes (this palate)
+                              {safeTab === "members"
+                                ? "Top notes — member consensus"
+                                : safeTab === "you"
+                                  ? "Top notes — your palate"
+                                  : `Top notes — ${CONTRIBUTORS[safeTab].name}'s palate`}
                             </Eyebrow>
                             <div className="flex flex-wrap gap-2 mt-2.5">
                               {tops.map((ax) => (
@@ -530,8 +544,8 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
             </div>
             <div className="mt-5 pt-4 border-t border-warm-200 text-[13px] text-warm-700 leading-snug">
               <strong className="text-forest">{tea.sessions} sessions logged.</strong>{" "}
-              Peak steeps: {tea.peakSteeps.map((n) => `#${n}`).join(", ")}. Add 5s
-              per steep after the first; raise temp by 1°C every two rounds.
+              Peak steeps: {tea.peakSteeps.map((n) => `#${n}`).join(", ")}.{" "}
+              <Glossarized>{brewingTipFor(tea.brewing.style)}</Glossarized>
             </div>
           </div>
         </section>
@@ -548,13 +562,19 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
               style={{ color: "rgba(250,247,242,0.85)" }}
             >
               ${tea.price.toFixed(2)}/g · ${(tea.price * 5).toFixed(2)} per 5g
-              session ·{" "}
-              <span style={{ opacity: 0.7 }}>
-                affiliate link · we earn on referrals,{" "}
-                <Link href="/about#methodology" className="underline text-cream">
-                  how we rate
-                </Link>
-              </span>
+              session
+            </p>
+            <p className="text-[12px] m-0 mt-1.5 text-cream">
+              <span aria-hidden>★ </span>
+              <strong>Affiliate link.</strong> We earn a small commission on
+              referrals — it never influences our ratings.{" "}
+              <Link
+                href="/about#affiliate-disclosure"
+                className="underline text-cream"
+              >
+                How we rate
+              </Link>
+              .
             </p>
           </div>
           <div className="flex gap-2.5">
@@ -709,4 +729,25 @@ function BrewingStat({ k, v, icon }: { k: string; v: string; icon: string }) {
       </div>
     </div>
   );
+}
+
+/**
+ * Type-aware "what to do across the rest of the session" tip. The
+ * gongfu cadence ("+5s, +1°C") is wrong for Western, Grandpa, and the
+ * delicate Japanese cool-water styles — those want shorter, cooler, or
+ * effectively-no-resteep guidance instead.
+ */
+function brewingTipFor(style: string): string {
+  const s = style.toLowerCase();
+  if (s.includes("kyusu")) {
+    return "For the next steep, drop the temp 5°C and shorten by 30 seconds — Japanese greens tire quickly. The third steep can come back up to 70°C for a longer brew.";
+  }
+  if (s.includes("grandpa") || s.includes("glass")) {
+    return "Top up with hot water as you go; the leaves stay in the cup. When the cup tastes thin, dump and start again with fresh leaf.";
+  }
+  if (s.includes("western")) {
+    return "One long steep is the brew. A second pull at +1 minute and a touch hotter will give you a thinner second cup if you want it.";
+  }
+  // Gongfu and unspecified — assume short repeated steeps.
+  return "Add 5s per steep after the first; raise temp by 1°C every two rounds. Most teas open up around steep three.";
 }

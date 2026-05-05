@@ -97,7 +97,7 @@ export function Footer() {
       <div className="max-w-site mx-auto mt-8 pt-6 border-t border-warm-200 flex justify-between text-[11px] text-warm-500 tracking-wide">
         <span>© 2026 Two Buds and a Leaf · Brewed with care.</span>
         <span>
-          <Link href="/about#methodology" className="text-warm-500 hover:text-burgundy no-underline">
+          <Link href="/about#affiliate-disclosure" className="text-warm-500 hover:text-burgundy no-underline">
             Affiliate disclosure
           </Link>
           {" · "}

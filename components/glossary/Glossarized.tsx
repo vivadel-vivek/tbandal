@@ -11,15 +11,19 @@ for (const section of GLOSSARY) {
   for (const e of section.entries) {
     const variants = [e.term, ...(e.aliases ?? [])];
     for (const v of variants) {
-      TERM_INDEX.push({ lc: v.toLowerCase(), entry: { slug: e.slug, lay: e.lay } });
+      // Normalise internal whitespace to a single space — the regex
+      // matches either ` ` or `-` between words, so we can store one
+      // canonical key and look up both "stone fruit" and "stone-fruit".
+      const lc = v.toLowerCase().replace(/\s+/g, " ");
+      TERM_INDEX.push({ lc, entry: { slug: e.slug, lay: e.lay } });
     }
   }
 }
 TERM_INDEX.sort((a, b) => b.lc.length - a.lc.length);
 
-// Terms we explicitly DO NOT auto-link inside prose, even though they
-// have a glossary entry — usually because they read more naturally as
-// flat text in context (e.g. "Black tea" inside a category mention).
+// Terms we explicitly DO NOT auto-link inside prose. Either too common
+// as English words ("cup", "stone") or read more naturally as plain
+// text ("Black tea" as a category mention).
 const SKIP_TERMS = new Set<string>([
   "green tea", "black tea", "white tea", "yellow tea",
 ]);
@@ -30,14 +34,23 @@ const escapeRegex = (s: string) =>
 const ELIGIBLE = TERM_INDEX.filter((t) => !SKIP_TERMS.has(t.lc));
 
 // One mega-pattern combining every eligible term. Word boundaries on
-// each side keep us from matching mid-word fragments. Apostrophes are
-// fine because \b sits between word/non-word characters.
+// each side keep us from matching mid-word fragments. Spaces inside an
+// alias match either ` ` or `-` so "stone fruit" hits "stone-fruit"
+// too. Apostrophes work fine because \b sits between word/non-word.
 const PATTERN = ELIGIBLE.length > 0
-  ? new RegExp(`\\b(${ELIGIBLE.map((t) => escapeRegex(t.lc)).join("|")})\\b`, "gi")
+  ? new RegExp(
+      `\\b(${ELIGIBLE.map((t) =>
+        escapeRegex(t.lc).replace(/\\ /g, "[\\s-]+"),
+      ).join("|")})\\b`,
+      "gi",
+    )
   : null;
 
-function findEntry(lcMatch: string): TermHit | undefined {
-  return ELIGIBLE.find((t) => t.lc === lcMatch)?.entry;
+function findEntry(matched: string): TermHit | undefined {
+  // Normalise the matched substring back to the canonical "spaces only"
+  // form before looking up the index.
+  const lc = matched.toLowerCase().replace(/[\s-]+/g, " ");
+  return ELIGIBLE.find((t) => t.lc === lc)?.entry;
 }
 
 /**
@@ -62,7 +75,7 @@ export function Glossarized({ children }: { children: string }) {
   for (const match of matches) {
     const idx = match.index ?? 0;
     const matched = match[0];
-    const entry = findEntry(matched.toLowerCase());
+    const entry = findEntry(matched);
 
     if (idx > lastIndex) parts.push(children.slice(lastIndex, idx));
 

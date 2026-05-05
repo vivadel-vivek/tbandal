@@ -96,7 +96,10 @@ export default function AboutPage() {
           </Link>
         </section>
 
-        <section className="mt-12 mb-16 py-8 border-t border-warm-200">
+        <section
+          id="methodology"
+          className="mt-12 py-8 border-t border-warm-200 scroll-mt-24"
+        >
           <Eyebrow>Methodology</Eyebrow>
           <h2 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-5 text-hero-md">
             What goes into a review.
@@ -119,6 +122,56 @@ export default function AboutPage() {
             ))}
           </ul>
         </section>
+
+        <section
+          id="affiliate-disclosure"
+          className="mt-2 py-8 border-t border-warm-200 scroll-mt-24"
+        >
+          <Eyebrow>Affiliate disclosure</Eyebrow>
+          <h2 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-5 text-hero-sm">
+            How we get paid (and how we don&apos;t).
+          </h2>
+          <div className="text-[15px] text-warm-700 leading-relaxed grid grid-cols-1 gap-3 max-w-[640px]">
+            <p className="m-0">
+              When you click &ldquo;Visit shop&rdquo; on a vendor or tea page,
+              you go through <code className="font-mono text-sm">/go/[vendor]</code>{" "}
+              with a{" "}
+              <code className="font-mono text-sm">utm_source=twobudsandaleaf</code>{" "}
+              tag attached. If you buy on the other side, the vendor may pay
+              us a small referral commission. That commission funds nothing
+              but more tea to review — it does not influence our ratings, our
+              decision to cover a tea, or the editorial verdict.
+            </p>
+            <p className="m-0">
+              <strong className="text-forest">No paid placements.</strong> We
+              never accept payment for reviews. Vendors can pitch teas at{" "}
+              <Link href="/for-vendors" className="text-burgundy underline">
+                /for-vendors
+              </Link>
+              ; we accept or decline on editorial grounds.
+            </p>
+            <p className="m-0">
+              <strong className="text-forest">Conflicts of interest.</strong>{" "}
+              Tea is a small world. If either of us has a personal
+              relationship with a vendor (a friend runs the shop, we&apos;ve
+              been hosted by them, etc.) we&apos;ll say so explicitly in the
+              review. If we ever review a tea we received as a gift outside
+              the formal sample-pitch path, that gets flagged on the page.
+            </p>
+            <p className="m-0">
+              <strong className="text-forest">Errors and corrections.</strong>{" "}
+              Spotted a factual error or unclear disclosure? Email{" "}
+              <a
+                href="mailto:hello@twobudsandaleaf.com?subject=Correction"
+                className="text-burgundy underline"
+              >
+                hello@twobudsandaleaf.com
+              </a>{" "}
+              and we&apos;ll correct it in the next pass.
+            </p>
+          </div>
+        </section>
+        <div className="h-16" />
       </Container>
     </main>
   );

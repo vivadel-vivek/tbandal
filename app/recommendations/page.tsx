@@ -36,6 +36,33 @@ export default function RecommendationsPage() {
   const [mode, setMode] = useState<Mode>("recommend");
 
   const targetProfile = useMemo<Profile>(() => {
+    // Once the member has rated anything, drop the seed entirely and
+    // build the target as a rating-weighted mean of every tea they've
+    // rated. The previous "anchor + 15% drift per rating" formula left
+    // newcomers seeing the seed tea (Menghai) at top forever and only
+    // moved sluggishly toward an actual taste signal. This switches to
+    // a real signal as soon as one rating exists.
+    if (member.ratings.length > 0) {
+      const out = {} as Profile;
+      let totalW = 0;
+      const profiles: { prof: Profile; w: number }[] = [];
+      for (const r of member.ratings) {
+        const t = TEAS.find((x) => x.slug === r.slug);
+        if (!t) continue;
+        const w = Math.max(0.1, r.rating / 10); // floor so a 0/10 still tugs
+        profiles.push({ prof: compositeProfile(t), w });
+        totalW += w;
+      }
+      for (const ax of FLAVOR_AXES) {
+        let s = 0;
+        for (const p of profiles) s += (p.prof[ax.key] ?? 0) * p.w;
+        out[ax.key] = totalW > 0 ? s / totalW : 0;
+      }
+      return out;
+    }
+    // No ratings yet — anchor on the aligned contributor's signature
+    // (using the catalogue's first tea as a starter shape). Cheap
+    // proxy until Phase 6 stores a per-contributor "default profile".
     const seed = featuredTea().flavor[member.aligned];
     const out: Profile = { ...seed };
     member.ratings.forEach((r) => {

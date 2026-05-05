@@ -20,12 +20,14 @@ const REQUIREMENTS = [
 ];
 
 const FAQ = [
-  ["How do you handle samples?",            "Mail us 5–8 grams. If we publish a review you keep the sample; if we pass, we'll ship it back at our cost on request."],
+  ["How do you handle samples?",            "Mail us 5–8 grams. We'll send the address with our reply email — please don't ship blind. If we publish a review you keep the sample; if we pass, we'll ship it back at our cost on request."],
   ["Turnaround?",                           "Two to six weeks from receipt. Pu'er and aged teas can run longer — we like multiple sessions before publishing."],
   ["Can I pay to be in the atlas?",         "No. Vendors in the atlas are ones we've bought from, brewed from, and would tell a friend about."],
   ["Do you take affiliate?",                "Yes — disclosed on every page that links out. We use a /go/[vendor] tracker so attribution is honest. We do not adjust ratings based on affiliate revenue."],
   ["What about exclusives or first-look?",  "Happy to honor an embargo on a public-launch date if it lines up with our publish schedule. We won't run reviews that hide negative findings."],
   ["Where do my outbound links go?",        "Through /go/[your-slug] with a UTM tag (utm_source=twobudsandaleaf). You can attribute traffic in your analytics under that source."],
+  ["Atlas listing without a tea review?",   "Yes — we'll add small, transparent vendors to the atlas without a specific tea review if we've bought from you and can vouch. Email and we'll talk."],
+  ["Conflicts of interest?",                "If we have a personal relationship with you (friend, host, mutual project) we'll say so on the review. We won't pretend it's not there."],
 ];
 
 export default function ForVendorsPage() {

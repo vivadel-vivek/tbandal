@@ -95,7 +95,7 @@ const TEA_TYPES: GlossarySection = {
       lay: "Fully oxidized tea — what most of the West calls 'black' and what China calls 'red' (红茶). Malty, sweet, dark.",
       technical:
         "The naming gap matters: in Chinese, 红茶 (hóngchá, 'red tea') refers to fully oxidized whole-leaf teas like Dianhong, Keemun, and Lapsang Souchong, while 黑茶 (hēichá, 'black tea') is a different category — post-fermented dark teas. Western-style black tea, often CTC-processed (crush-tear-curl) for tea bags, comes mostly from Assam, Sri Lanka, and Kenya, and is bred for body and color extraction in milk-and-sugar service. The distinction matters when reading sourcing notes: a Chinese 'black' tea is structurally a red, and the leaf style and brewing approach reflect that.",
-      related: ["hei-cha", "oxidation", "first-flush"],
+      related: ["hei-cha", "oxidation"],
     },
     {
       slug: "pu-er",
@@ -111,7 +111,7 @@ const TEA_TYPES: GlossarySection = {
       slug: "sheng-puer",
       term: "Sheng pu'er",
       original: "生普 / shēng pǔ'ěr",
-      aliases: ["sheng", "raw pu'er", "生茶", "生普洱"],
+      aliases: ["sheng", "shen", "raw pu'er", "生茶", "生普洱"],
       lay: "Raw pu'er — pressed but not cooked, left to age slowly. Young sheng can be sharp and floral; aged sheng turns deep, woody, and sweet.",
       technical:
         "Sheng is the older and more traditional of the two pu'er types. After picking, the leaves are kill-greened (lighter than for green tea), rolled, sun-dried into maocha, and steam-pressed into cakes. Aging happens slowly — initial bitterness and astringency mellow over five to fifteen years as polyphenols polymerize and microbes work on the cake. Storage humidity matters enormously: dry-stored Kunming sheng ages cleanly and slowly, while traditional Hong Kong/Guangdong wet storage accelerates the process at the cost of cleaner flavor. Quality young sheng shows huigan and qi even before aging begins.",
@@ -327,7 +327,7 @@ const BREWING_VESSELS: GlossarySection = {
     {
       slug: "mug",
       term: "Mug",
-      aliases: ["mug", "cup"],
+      aliases: ["mug"],
       lay: "Just a regular mug. The vessel for grandpa-style and the simplest western brewing — what most of the world's tea is drunk from.",
       technical:
         "The mug doesn't get much technical treatment, but choices still matter: ceramic and porcelain hold heat and don't react; stoneware retains warmth longest; glass cools quickest; metal-lined travel mugs can leach flavor. Volume is the key parameter — 200–300 ml is the comfortable range for grandpa style or western brewing. A wide opening lets aromatics escape; a tall narrow shape concentrates them. Most days, a mug is the right answer; we try not to be precious about it. Gongfu brewing demands different geometry, but the rest of the time, drink from what you have.",
@@ -421,7 +421,7 @@ const FLAVOR_TERMS: GlossarySection = {
     {
       slug: "mineral",
       term: "Mineral",
-      aliases: ["minerality", "stone", "rock"],
+      aliases: ["minerality", "rock"],
       lay: "Like wet stone or rain on rocks — savory but not salty. A 'cool' quality that lingers in the throat.",
       technical:
         "Mineral notes are the calling card of Wuyi rock teas (yancha — literally 'rock tea,' referencing the cliff-face terroir) and high-mountain pu'er. The character is hard to pin to specific compounds; it correlates with high-iron, high-silica growing soils and is enhanced by water mineral content (TDS) at brewing time. Mineral notes are often described as being felt as much as tasted — a coolness or weight at the back of the throat. They tend to deepen in the middle steeps of a gongfu session and are one of the markers experienced drinkers point to when distinguishing 'serious' from merely pleasant tea.",
@@ -433,7 +433,7 @@ const FLAVOR_TERMS: GlossarySection = {
       aliases: ["seaweed", "ocean", "umami", "oceanic"],
       lay: "Like the ocean — seaweed, kelp, sea-salt air. Savory and umami-rich.",
       technical:
-        "Marine notes peak in shaded Japanese greens — gyokuro especially, where 21+ days of pre-harvest shading concentrates glutamate and theanine and produces a profile that overlaps with kelp-broth dashi. Lapsang Souchong and other smoked teas occupy the same axis from a different angle. The umami component is distinct from sweetness or saltiness; it's a savory depth that registers more as mouthfeel than flavor. Brewing temperature is critical — at 80 °C and above, the marine character collapses into vegetal harshness; at 50–60 °C it resolves cleanly. The note is closely related to mineral and often appears together with it.",
+        "Marine notes peak in shaded Japanese greens — gyokuro especially, where 20+ days of pre-harvest shading concentrates glutamate and theanine and produces a profile that overlaps with kelp-broth dashi. (Lapsang Souchong and other smoked teas live on a different axis entirely — phenolic smoke, not umami.) The umami component is distinct from sweetness or saltiness; it's a savory depth that registers more as mouthfeel than flavor. Brewing temperature is critical — at 80 °C and above the marine character collapses into vegetal harshness; at 50–60 °C it resolves cleanly. Often appears alongside mineral, but the two are separable: mineral is wet stone, marine is broth.",
       related: ["mineral", "vegetal", "kyusu-brewing", "green"],
     },
     {

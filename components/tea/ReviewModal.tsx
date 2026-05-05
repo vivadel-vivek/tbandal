@@ -161,9 +161,9 @@ export function ReviewModal({
                   className="w-full accent-burgundy mb-2"
                 />
                 <div className="flex justify-between text-[10px] text-warm-500 tracking-wide uppercase font-bold mb-6">
-                  <span>Hint</span>
-                  <span>Balanced</span>
-                  <span>Dominant</span>
+                  <span>Pass</span>
+                  <span>Solid</span>
+                  <span>Excellent</span>
                 </div>
               </>
             ) : (
