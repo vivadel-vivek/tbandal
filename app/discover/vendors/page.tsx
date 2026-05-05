@@ -63,9 +63,10 @@ export default function VendorsAtlas() {
         </div>
 
         {continents.map((cont) => {
-          const countries = Object.keys(grouped[cont]).sort();
+          const byCountry = grouped[cont] ?? {};
+          const countries = Object.keys(byCountry).sort();
           const total = countries.reduce(
-            (n, c) => n + grouped[cont][c].length,
+            (n, c) => n + (byCountry[c]?.length ?? 0),
             0,
           );
           return (
@@ -87,7 +88,7 @@ export default function VendorsAtlas() {
                 <div key={country} className="mb-9">
                   <Eyebrow>{country}</Eyebrow>
                   <div className="grid grid-cols-2 gap-5 mt-3.5">
-                    {grouped[cont][country].map((v) => (
+                    {(byCountry[country] ?? []).map((v) => (
                       <VendorCard key={v.slug} vendor={v} />
                     ))}
                   </div>

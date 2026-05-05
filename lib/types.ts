@@ -151,12 +151,15 @@ export type Vendor = {
   specialties: string[];
 };
 
+export type PostCategory =
+  | "Brewing" | "Culture" | "Origin" | "Vendor Spotlight";
+
 export type Post = {
   slug: string;
-  cat: string;            // "Brewing" | "Culture" | "Origin" | "Vendor Spotlight"
+  cat: PostCategory;
   title: string;
   excerpt: string;
-  author: string;         // "Vivek" | "James"
+  author: "Vivek" | "James";
   date: string;
   readTime: number;       // minutes
   /** Hero gradient placeholder until real imagery */

@@ -132,19 +132,16 @@ export function RadarChart({
       })}
 
       {/* Vertex dots for the primary profile */}
-      {profiles[0] &&
-        axes.map((ax, i) => {
-          const [x, y] = point(i, profiles[0].values[ax.key] ?? 0);
+      {(() => {
+        const primary = profiles[0];
+        if (!primary) return null;
+        return axes.map((ax, i) => {
+          const [x, y] = point(i, primary.values[ax.key] ?? 0);
           return (
-            <circle
-              key={i}
-              cx={x}
-              cy={y}
-              r={2.5}
-              fill={profiles[0].color}
-            />
+            <circle key={i} cx={x} cy={y} r={2.5} fill={primary.color} />
           );
-        })}
+        });
+      })()}
 
       {/* Axis labels */}
       {showLabels &&

@@ -299,6 +299,25 @@ export function teaBySlug(slug: string): Tea | undefined {
   return TEAS.find((t) => t.slug === slug);
 }
 
+/**
+ * Helpers that surface "first item" with a non-undefined return.
+ * They throw if the underlying array is empty — caller decides whether
+ * that's a build-time error (mock data is malformed) or a runtime
+ * concern (Airtable returned nothing). With Airtable in Phase 6 these
+ * will become async fetchers that fall back to a placeholder.
+ */
+export function featuredTea(): Tea {
+  const t = TEAS[0];
+  if (!t) throw new Error("featuredTea: TEAS is empty");
+  return t;
+}
+
+export function latestPost(): Post {
+  const p = POSTS[0];
+  if (!p) throw new Error("latestPost: POSTS is empty");
+  return p;
+}
+
 export function vendorBySlug(slug: string): Vendor | undefined {
   return VENDORS.find((v) => v.slug === slug);
 }

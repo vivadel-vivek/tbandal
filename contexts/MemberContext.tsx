@@ -7,9 +7,17 @@ import {
   useEffect,
   useMemo,
   useState,
+  type Dispatch,
   type ReactNode,
+  type SetStateAction,
 } from "react";
-import type { FlavorMode, Member, MemberRating } from "@/lib/types";
+import type {
+  ContributorKey,
+  FlavorMode,
+  Member,
+  MemberRating,
+  MemberSettings,
+} from "@/lib/types";
 
 const STORAGE_KEY = "tbandal:member:v1";
 
@@ -34,9 +42,64 @@ const DEFAULT_MEMBER: Member = {
   },
 };
 
+// ---- Validators -------------------------------------------------------
+// localStorage is a hostile data source — a stale schema or hand-edited
+// blob can poison `flavorMode` / `theme` / etc. with values that fall
+// outside their union types. Validate every union field before we let
+// it into state.
+
+const FLAVOR_MODES: readonly FlavorMode[] = ["blind", "basic", "advanced"];
+const THEMES: readonly MemberSettings["theme"][] = ["auto", "parchment", "cream", "dark"];
+const ALIGNS: readonly ContributorKey[] = ["vivek", "james"];
+const isOneOf = <T extends string>(opts: readonly T[], v: unknown): v is T =>
+  typeof v === "string" && (opts as readonly string[]).includes(v);
+const asBool = (v: unknown, fallback: boolean): boolean =>
+  typeof v === "boolean" ? v : fallback;
+const asString = (v: unknown, fallback = ""): string =>
+  typeof v === "string" ? v : fallback;
+const asStringArray = (v: unknown): string[] =>
+  Array.isArray(v) ? v.filter((s): s is string => typeof s === "string") : [];
+
+function safeParseMember(raw: string): Partial<Member> | null {
+  try {
+    const obj = JSON.parse(raw) as unknown;
+    if (!obj || typeof obj !== "object") return null;
+    const o = obj as Record<string, unknown>;
+    const settings = (o.settings as Record<string, unknown> | undefined) ?? {};
+    const notif = (settings.notifications as Record<string, unknown> | undefined) ?? {};
+
+    return {
+      name: asString(o.name, DEFAULT_MEMBER.name),
+      aligned: isOneOf(ALIGNS, o.aligned) ? o.aligned : DEFAULT_MEMBER.aligned,
+      ratings: Array.isArray(o.ratings) ? (o.ratings as MemberRating[]) : [],
+      settings: {
+        email: asString(settings.email),
+        displayName: asString(settings.displayName),
+        contributorHandle: asString(settings.contributorHandle),
+        flavorMode: isOneOf(FLAVOR_MODES, settings.flavorMode)
+          ? settings.flavorMode
+          : DEFAULT_MEMBER.settings.flavorMode,
+        composite: asBool(settings.composite, DEFAULT_MEMBER.settings.composite),
+        theme: isOneOf(THEMES, settings.theme)
+          ? settings.theme
+          : DEFAULT_MEMBER.settings.theme,
+        notifications: {
+          weeklyDigest: asBool(notif.weeklyDigest, true),
+          newTeas: asBool(notif.newTeas, true),
+          sampleRequests: asBool(notif.sampleRequests, false),
+          replies: asBool(notif.replies, true),
+        },
+        tastedTeas: asStringArray(settings.tastedTeas),
+      },
+    };
+  } catch {
+    return null;
+  }
+}
+
 type MemberContextValue = {
   member: Member;
-  setMember: React.Dispatch<React.SetStateAction<Member>>;
+  setMember: Dispatch<SetStateAction<Member>>;
   /** Whether the given tea slug should hide its reviews/ratings */
   isBlindFor: (slug: string) => boolean;
   /** Mark a tea as tasted (un-blind it) */
@@ -55,27 +118,16 @@ export function MemberProvider({ children }: { children: ReactNode }) {
   const [member, setMember] = useState<Member>(DEFAULT_MEMBER);
   const [hydrated, setHydrated] = useState(false);
 
-  // Hydrate from localStorage on mount (avoids SSR mismatch)
+  // Hydrate from localStorage on mount (avoids SSR mismatch). All values
+  // are validated against their union types before being merged in.
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<Member>;
-        setMember((prev) => ({
-          ...prev,
-          ...parsed,
-          settings: {
-            ...prev.settings,
-            ...(parsed.settings ?? {}),
-            notifications: {
-              ...prev.settings.notifications,
-              ...(parsed.settings?.notifications ?? {}),
-            },
-          },
-        }));
-      }
-    } catch {
-      /* ignore — corrupt localStorage just resets to default */
+    const raw = (() => {
+      try { return localStorage.getItem(STORAGE_KEY); }
+      catch { return null; }
+    })();
+    if (raw) {
+      const parsed = safeParseMember(raw);
+      if (parsed) setMember((prev) => ({ ...prev, ...parsed }));
     }
     setHydrated(true);
   }, []);

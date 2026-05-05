@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Tweaks } from "@/lib/types";
+import type { CardDensity, HeroVariant, RadarStyle, Tweaks } from "@/lib/types";
 
 const STORAGE_KEY = "tbandal:tweaks:v1";
 
@@ -21,6 +21,34 @@ const DEFAULT_TWEAKS: Tweaks = {
   showComposite: false,
   hideReviews: false,
 };
+
+// ---- Validators -------------------------------------------------------
+
+const THEMES: readonly Tweaks["theme"][] = ["parchment", "cream", "dark"];
+const RADAR_STYLES: readonly RadarStyle[] = ["fill", "outline", "dotted"];
+const DENSITIES: readonly CardDensity[] = ["cozy", "compact"];
+const HERO_VARIANTS: readonly HeroVariant[] = ["split", "stain", "editorial"];
+
+const isOneOf = <T extends string>(opts: readonly T[], v: unknown): v is T =>
+  typeof v === "string" && (opts as readonly string[]).includes(v);
+
+function safeParseTweaks(raw: string): Partial<Tweaks> | null {
+  try {
+    const obj = JSON.parse(raw) as unknown;
+    if (!obj || typeof obj !== "object") return null;
+    const o = obj as Record<string, unknown>;
+    return {
+      ...(isOneOf(THEMES, o.theme) ? { theme: o.theme } : null),
+      ...(isOneOf(RADAR_STYLES, o.radarStyle) ? { radarStyle: o.radarStyle } : null),
+      ...(isOneOf(DENSITIES, o.density) ? { density: o.density } : null),
+      ...(isOneOf(HERO_VARIANTS, o.heroVariant) ? { heroVariant: o.heroVariant } : null),
+      ...(typeof o.showComposite === "boolean" ? { showComposite: o.showComposite } : null),
+      ...(typeof o.hideReviews === "boolean" ? { hideReviews: o.hideReviews } : null),
+    };
+  } catch {
+    return null;
+  }
+}
 
 type TweaksContextValue = {
   tweaks: Tweaks;
@@ -34,14 +62,13 @@ export function TweaksProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<Tweaks>;
-        setTweaks((prev) => ({ ...prev, ...parsed }));
-      }
-    } catch {
-      /* ignore */
+    const raw = (() => {
+      try { return localStorage.getItem(STORAGE_KEY); }
+      catch { return null; }
+    })();
+    if (raw) {
+      const parsed = safeParseTweaks(raw);
+      if (parsed) setTweaks((prev) => ({ ...prev, ...parsed }));
     }
     setHydrated(true);
   }, []);

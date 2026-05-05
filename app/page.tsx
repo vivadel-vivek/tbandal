@@ -3,7 +3,14 @@
 // member + tweaks contexts.
 
 import Link from "next/link";
-import { CONTRIBUTORS, POSTS, TEAS, VENDORS } from "@/lib/data";
+import {
+  CONTRIBUTORS,
+  POSTS,
+  TEAS,
+  VENDORS,
+  featuredTea,
+  latestPost,
+} from "@/lib/data";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -15,9 +22,9 @@ import { RecentlyBrewedGrid } from "@/components/home/RecentlyBrewedGrid";
 import type { Post } from "@/lib/types";
 
 export default function Home() {
-  const featured = TEAS[0];
+  const featured = featuredTea();
   const recent = TEAS.slice(1, 4);
-  const latestPost = POSTS[0];
+  const featuredPost = latestPost();
   const morePosts = POSTS.slice(1, 4);
 
   return (
@@ -157,7 +164,7 @@ export default function Home() {
             href="/journal"
           />
           <div className="grid grid-cols-[1.4fr_1fr] gap-6">
-            <FeaturedPost post={latestPost} />
+            <FeaturedPost post={featuredPost} />
             <div className="flex flex-col gap-4">
               {morePosts.map((p) => (
                 <PostMini key={p.slug} post={p} />

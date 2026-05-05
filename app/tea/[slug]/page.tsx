@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { TEAS, teaBySlug } from "@/lib/data";
-import { FLAVOR_AXES } from "@/lib/flavor";
+import { compositeProfile, profileOverlap } from "@/lib/flavor";
 import type { Tea } from "@/lib/types";
 import { TeaDetailView } from "@/components/tea/TeaDetailView";
 
@@ -27,32 +27,13 @@ export async function generateMetadata({
   };
 }
 
-// Composite-overlap similarity, ported from the prototype's tea-detail.
-function compositeProfile(t: Tea): Record<string, number> {
-  const out: Record<string, number> = {};
-  for (const ax of FLAVOR_AXES) {
-    const vals: number[] = [];
-    if (t.reviews.vivek) vals.push(t.flavor.vivek[ax.key]);
-    if (t.reviews.james) vals.push(t.flavor.james[ax.key]);
-    vals.push(t.flavor.members[ax.key]);
-    out[ax.key] = vals.reduce((a, b) => a + b, 0) / vals.length;
-  }
-  return out;
-}
-
 function findSimilar(target: Tea, limit = 3) {
   const targetProfile = compositeProfile(target);
   return TEAS.filter((t) => t.slug !== target.slug)
-    .map((t) => {
-      const tProf = compositeProfile(t);
-      let overlap = 0;
-      let denom = 0;
-      for (const ax of FLAVOR_AXES) {
-        overlap += Math.min(targetProfile[ax.key], tProf[ax.key]);
-        denom += Math.max(targetProfile[ax.key], tProf[ax.key]);
-      }
-      return { tea: t, score: denom ? overlap / denom : 0 };
-    })
+    .map((t) => ({
+      tea: t,
+      score: profileOverlap(targetProfile, compositeProfile(t)),
+    }))
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);
 }

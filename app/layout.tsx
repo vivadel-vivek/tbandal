@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Cormorant_Garamond, Nunito_Sans } from "next/font/google";
 import { Shell } from "@/components/chrome/Shell";
 import "./globals.css";
@@ -39,7 +40,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" className={`${display.variable} ${sans.variable}`}>
       <body data-theme="parchment" className="font-sans min-h-screen">

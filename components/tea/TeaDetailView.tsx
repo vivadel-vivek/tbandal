@@ -2,8 +2,16 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import type { Tea, ContributorKey, FlavorAxis, BasicAxis } from "@/lib/types";
-import { CONTRIBUTORS, TEAS, vendorByName } from "@/lib/data";
+import type {
+  Tea,
+  ContributorKey,
+  FlavorAxis,
+  BasicAxis,
+  ReviewBody,
+  FlavorProfile,
+  MemberRating,
+} from "@/lib/types";
+import { CONTRIBUTORS, vendorByName } from "@/lib/data";
 import { BASIC_AXES, FLAVOR_AXES, rollUpProfile, topFlavors } from "@/lib/flavor";
 import { useMember } from "@/contexts/MemberContext";
 import { useTweaks } from "@/contexts/TweaksContext";
@@ -28,25 +36,25 @@ type Props = {
   blindMode?: boolean;
 };
 
-// Composite profile = average of contributors that actually reviewed (drops nulls)
-function compositeProfile(tea: Tea): Record<string, number> {
-  const out: Record<string, number> = {};
-  for (const ax of FLAVOR_AXES) {
-    const vals: number[] = [];
-    if (tea.reviews.vivek) vals.push(tea.flavor.vivek[ax.key]);
-    if (tea.reviews.james) vals.push(tea.flavor.james[ax.key]);
-    vals.push(tea.flavor.members[ax.key]);
-    out[ax.key] = vals.reduce((a, b) => a + b, 0) / vals.length;
-  }
-  return out;
+/** Adapter: lift a saved MemberRating into the same ReviewBody shape
+ *  the contributor reviews use, so the tab-display code can be uniform. */
+function memberRatingToReview(r: MemberRating): ReviewBody {
+  return {
+    rating: r.rating,
+    body: r.body,
+    date: r.date,
+    session: r.session,
+    scale: r.scale,
+  };
 }
 
 export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
   const { member, isBlindFor, unblind } = useMember();
   const { tweaks } = useTweaks();
 
-  const memberRating = member.ratings.find((r) => r.slug === tea.slug);
-  const hasMember = !!memberRating;
+  // Bind once and let TS narrow naturally — no `memberRating!` needed.
+  const mr = member.ratings.find((r) => r.slug === tea.slug);
+  const hasMember = mr !== undefined;
 
   const [activeTab, setActiveTab] = useState<ReviewTab>("vivek");
   const [showRateModal, setShowRateModal] = useState(false);
@@ -60,46 +68,37 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
   const radarAxes: readonly (FlavorAxis | BasicAxis)[] = isBasic
     ? BASIC_AXES
     : FLAVOR_AXES;
-  const toRadarValues = (vals: Record<string, number>) =>
-    isBasic ? rollUpProfile(vals as Parameters<typeof rollUpProfile>[0]) : vals;
 
   // Member-level blind state for THIS tea (vs the Discover-launched blind flow)
   const isBlinded = isBlindFor(tea.slug) || tweaks.hideReviews || blindMode;
   const memberBlind = isBlinded && memberMode === "blind" && !blindMode;
 
-  const reviewMap: Record<ReviewTab, { rating: number; body: string; date: string; session?: string; scale?: "basic" | "advanced" } | null> = {
+  const reviewMap: Record<ReviewTab, ReviewBody | null> = {
     vivek: tea.reviews.vivek,
     james: tea.reviews.james,
     members: tea.reviews.members,
-    you: hasMember
-      ? {
-          rating: memberRating!.rating,
-          body: memberRating!.body,
-          date: memberRating!.date,
-          session: memberRating!.session,
-          scale: memberRating!.scale,
-        }
-      : null,
+    you: mr ? memberRatingToReview(mr) : null,
   };
 
-  const profileMap: Record<ReviewTab, Record<string, number> | null> = {
+  const profileMap: Record<ReviewTab, FlavorProfile | null> = {
     vivek: tea.flavor.vivek,
     james: tea.flavor.james,
     members: tea.flavor.members,
-    you: hasMember ? memberRating!.profile : null,
+    you: mr ? mr.profile : null,
   };
 
-  const tabOrder: ReviewTab[] = ["vivek", "james", "members"];
-  if (hasMember) tabOrder.push("you");
+  const tabOrder: ReviewTab[] = hasMember
+    ? ["vivek", "james", "members", "you"]
+    : ["vivek", "james", "members"];
   const safeTab: ReviewTab = tabOrder.includes(activeTab) ? activeTab : "members";
   const review = reviewMap[safeTab];
   const profile = profileMap[safeTab];
 
-  const compProfile = useMemo(() => compositeProfile(tea), [tea]);
-
-  // Build the radar profiles for the current view
+  // Build the radar profiles for the current view (rolled up if Basic)
   type RP = { values: Record<string, number>; color: string; label?: string };
   const profilesForRadar: RP[] = useMemo(() => {
+    const toRadar = (v: Record<string, number>) =>
+      isBasic ? rollUpProfile(v as FlavorProfile) : v;
     const raw: RP[] = tweaks.showComposite
       ? [
           ...(tea.reviews.vivek
@@ -109,8 +108,8 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
             ? [{ values: tea.flavor.james, color: CONTRIBUTORS.james.color, label: "James" }]
             : []),
           { values: tea.flavor.members, color: "var(--gold-dark, #A68B3D)", label: "Members" },
-          ...(hasMember
-            ? [{ values: memberRating!.profile, color: "var(--forest, #2D3A2E)", label: "You" }]
+          ...(mr
+            ? [{ values: mr.profile, color: "var(--forest, #2D3A2E)", label: "You" }]
             : []),
         ]
       : profile
@@ -126,8 +125,12 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
             },
           ]
         : [];
-    return raw.map((p) => ({ ...p, values: toRadarValues(p.values) }));
-  }, [tweaks.showComposite, tea, profile, safeTab, hasMember, memberRating, isBasic]); // eslint-disable-line react-hooks/exhaustive-deps
+    return raw.map((p) => ({ ...p, values: toRadar(p.values) }));
+  }, [tweaks.showComposite, tea, profile, safeTab, mr, isBasic]);
+
+  // Helper used outside the memo for non-radar consumers (top notes badges)
+  const toRadarValues = (vals: Record<string, number>) =>
+    isBasic ? rollUpProfile(vals as FlavorProfile) : vals;
 
   const handleVisitVendor = () => {
     const v = vendorByName(tea.vendor);
@@ -378,7 +381,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                       <div className="shrink-0">
                         {(() => {
                           const userBasic =
-                            safeTab === "you" && memberRating?.scale === "basic";
+                            safeTab === "you" && mr?.scale === "basic";
                           return (
                             <RatingScore
                               value={userBasic ? review.rating / 2 : review.rating}
@@ -414,11 +417,8 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
 
                     {profile &&
                       (() => {
-                        const displayProfile = toRadarValues(profile);
-                        const tops = topFlavors(
-                          displayProfile as Parameters<typeof topFlavors>[0],
-                          radarAxes,
-                        );
+                        const displayProfile: Record<string, number> = toRadarValues(profile);
+                        const tops = topFlavors(displayProfile, radarAxes);
                         return tops.length > 0 ? (
                           <div className="mb-4">
                             <Eyebrow color="var(--warm-500, #857F79)">
@@ -429,7 +429,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                                 <FlavorBadge
                                   key={ax.key}
                                   axis={ax}
-                                  intensity={(displayProfile as Record<string, number>)[ax.key]}
+                                  intensity={displayProfile[ax.key] ?? 0}
                                 />
                               ))}
                             </div>
@@ -484,7 +484,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <Detail k="Country" v={tea.country} />
-              <Detail k="Region" v={tea.region.split(",")[0]} />
+              <Detail k="Region" v={tea.region.split(",")[0] ?? tea.region} />
               <Detail k="Elevation" v={`${tea.elev}m`} />
               <Detail k="Harvest" v={tea.harvest} />
               <Detail k="Year" v={tea.year} />

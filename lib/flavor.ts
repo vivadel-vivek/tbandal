@@ -12,6 +12,7 @@ import type {
   BasicProfile,
   FlavorAxisKey,
   BasicAxisKey,
+  Tea,
 } from "./types";
 
 // 12 advanced axes — clockwise from top, grouped so similar flavors are adjacent
@@ -98,21 +99,56 @@ export function profileFromArray(values: number[]): FlavorProfile {
   return out;
 }
 
-/** Top-N dominant flavors above a threshold, for "top notes" badges */
-export function topFlavors(
-  profile: FlavorProfile | BasicProfile,
-  axes: readonly { key: string; label: string; color: string }[] = FLAVOR_AXES,
+/**
+ * Top-N dominant flavors above a threshold, for the "top notes" badges.
+ * Generic so callers passing BASIC_AXES or FLAVOR_AXES get back the
+ * same axis type they passed in (preserving label, color, lay, etc.).
+ */
+export function topFlavors<A extends { key: string; label: string; color: string }>(
+  profile: Record<string, number>,
+  axes: readonly A[],
   limit = 4,
   threshold = 4,
-): typeof axes {
+): A[] {
   return [...axes]
-    .sort(
-      (a, b) =>
-        (profile as Record<string, number>)[b.key] -
-        (profile as Record<string, number>)[a.key],
-    )
+    .sort((a, b) => (profile[b.key] ?? 0) - (profile[a.key] ?? 0))
     .slice(0, limit)
-    .filter(
-      (a) => (profile as Record<string, number>)[a.key] >= threshold,
-    );
+    .filter((a) => (profile[a.key] ?? 0) >= threshold);
+}
+
+/**
+ * Average of contributors that actually reviewed (drops null reviews),
+ * always including the members aggregate. Single source of truth —
+ * used by tea detail, similarity ranking, and the recommendation engine.
+ */
+export function compositeProfile(tea: Tea): FlavorProfile {
+  const out = {} as FlavorProfile;
+  for (const ax of FLAVOR_AXES) {
+    const vals: number[] = [];
+    if (tea.reviews.vivek) vals.push(tea.flavor.vivek[ax.key] ?? 0);
+    if (tea.reviews.james) vals.push(tea.flavor.james[ax.key] ?? 0);
+    vals.push(tea.flavor.members[ax.key] ?? 0);
+    out[ax.key] = vals.reduce((a, b) => a + b, 0) / vals.length;
+  }
+  return out;
+}
+
+/**
+ * Jaccard-style overlap between two profiles on the 0–10 scale.
+ * Used by recommendations + similar-teas. Returns 0..1.
+ */
+export function profileOverlap(
+  a: Record<string, number>,
+  b: Record<string, number>,
+  axes: readonly { key: string }[] = FLAVOR_AXES,
+): number {
+  let intersect = 0;
+  let union = 0;
+  for (const ax of axes) {
+    const va = a[ax.key] ?? 0;
+    const vb = b[ax.key] ?? 0;
+    intersect += Math.min(va, vb);
+    union += Math.max(va, vb);
+  }
+  return union ? intersect / union : 0;
 }

@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { Tea } from "@/lib/types";
-import { CONTRIBUTORS, TEAS } from "@/lib/data";
-import { FLAVOR_AXES } from "@/lib/flavor";
+import type { Tea, FlavorProfile } from "@/lib/types";
+import { CONTRIBUTORS, TEAS, featuredTea, teaAvg } from "@/lib/data";
+import { FLAVOR_AXES, compositeProfile, profileOverlap } from "@/lib/flavor";
 import { useMember } from "@/contexts/MemberContext";
 import { useTweaks } from "@/contexts/TweaksContext";
 import { Container } from "@/components/ui/Container";
@@ -16,31 +16,10 @@ import { TeaTypeTag } from "@/components/ui/TeaTypeTag";
 import { RatingScore } from "@/components/ui/RatingScore";
 import { TeaCard } from "@/components/tea/TeaCard";
 import { RadarChart } from "@/components/tea/RadarChart";
-import { teaAvg } from "@/lib/data";
 
 type Mode = "recommend" | "different" | "blind";
 
-type Profile = Record<string, number>;
-
-function compositeProfile(t: Tea): Profile {
-  const out: Profile = {};
-  for (const ax of FLAVOR_AXES) {
-    out[ax.key] =
-      (t.flavor.vivek[ax.key] + t.flavor.james[ax.key] + t.flavor.members[ax.key]) /
-      3;
-  }
-  return out;
-}
-
-function overlap(a: Profile, b: Profile): number {
-  let i = 0;
-  let u = 0;
-  for (const ax of FLAVOR_AXES) {
-    i += Math.min(a[ax.key] ?? 0, b[ax.key] ?? 0);
-    u += Math.max(a[ax.key] ?? 0, b[ax.key] ?? 0);
-  }
-  return u ? i / u : 0;
-}
+type Profile = FlavorProfile;
 
 const MODES: { key: Mode; label: string; desc: string }[] = [
   { key: "recommend", label: "Likely matches",          desc: "High overlap with what you like" },
@@ -54,7 +33,7 @@ export default function RecommendationsPage() {
   const [mode, setMode] = useState<Mode>("recommend");
 
   const targetProfile = useMemo<Profile>(() => {
-    const seed = TEAS[0].flavor[member.aligned];
+    const seed = featuredTea().flavor[member.aligned];
     const out: Profile = { ...seed };
     member.ratings.forEach((r) => {
       const t = TEAS.find((x) => x.slug === r.slug);
@@ -71,7 +50,7 @@ export default function RecommendationsPage() {
 
   const ranked = useMemo(
     () =>
-      TEAS.map((t) => ({ t, score: overlap(compositeProfile(t), targetProfile) })).sort(
+      TEAS.map((t) => ({ t, score: profileOverlap(compositeProfile(t), targetProfile) })).sort(
         (a, b) => b.score - a.score,
       ),
     [targetProfile],
