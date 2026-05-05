@@ -1,80 +1,243 @@
-// Placeholder home page — confirms the design tokens are wired up.
-// Replaced in 4.5.7 with the real Home page.
+"use client";
+
+import Link from "next/link";
+import { CONTRIBUTORS, POSTS, TEAS, VENDORS } from "@/lib/data";
+import { useMember } from "@/contexts/MemberContext";
+import { useTweaks } from "@/contexts/TweaksContext";
+import { Container } from "@/components/ui/Container";
+import { Eyebrow } from "@/components/ui/Eyebrow";
+import { Button } from "@/components/ui/Button";
+import { Stat } from "@/components/ui/Stat";
+import { TeaStain } from "@/components/ui/TeaStain";
+import { AvatarChip } from "@/components/ui/AvatarChip";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { TeaCard } from "@/components/tea/TeaCard";
+import type { Post } from "@/lib/types";
 
 export default function Home() {
+  const { isBlindFor } = useMember();
+  const { tweaks } = useTweaks();
+
+  const featured = TEAS[0];
+  const recent = TEAS.slice(1, 4);
+  const latestPost = POSTS[0];
+  const morePosts = POSTS.slice(1, 4);
+
+  const hide = (slug: string) => tweaks.hideReviews || isBlindFor(slug);
+
   return (
-    <main className="max-w-site mx-auto px-10 py-20">
-      <span className="eyebrow">Migration · scaffold checkpoint</span>
-      <h1 className="font-display text-burgundy text-7xl font-medium tracking-tightest leading-tighter mt-4 mb-6">
-        <span className="display-italic">Two buds,</span>
-        <br /> a leaf, and a long
-        <br /> afternoon to brew it.
-      </h1>
-      <p className="text-warm-700 text-lg max-w-prose leading-relaxed">
-        The Next.js + Tailwind + TypeScript scaffold is wired up. Real chrome,
-        Discover, tea detail, and the rest of the prototype land in the next
-        commits. Until then, this page exists to confirm the colors, type
-        families, and shadows resolve correctly.
-      </p>
+    <main>
+      {/* ============ HERO ============ */}
+      <section className="relative pt-[72px] pb-14 overflow-hidden">
+        <TeaStain
+          size={420}
+          color="#C4A35A"
+          opacity={0.15}
+          className="absolute -top-20 -right-24 pointer-events-none"
+        />
+        <TeaStain
+          size={260}
+          color="#722F37"
+          opacity={0.08}
+          className="absolute -bottom-10 -left-16 pointer-events-none"
+        />
+        <Container>
+          <div className="grid grid-cols-[1.2fr_1fr] gap-14 items-center">
+            <div>
+              <Eyebrow>A two-person tea journal · est. 2024</Eyebrow>
+              <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter mt-4 mb-5 text-[76px]">
+                <span className="italic">Two buds,</span>
+                <br /> a leaf, and a long
+                <br /> afternoon to brew it.
+              </h1>
+              <p className="text-lg text-warm-700 max-w-[540px] leading-relaxed mb-7">
+                Vivek and James review tea — single-origin, vendor-sourced, and
+                everything between. Twelve flavor axes, dual ratings, and
+                brewing parameters that actually got the cup we describe.
+              </p>
+              <div className="flex gap-3">
+                <Link href="/discover/teas">
+                  <Button variant="primary" size="lg">
+                    Browse the library
+                  </Button>
+                </Link>
+                <Link href="/recommendations">
+                  <Button variant="secondary" size="lg">
+                    Discover by flavor
+                  </Button>
+                </Link>
+              </div>
+              <div className="flex gap-8 mt-10 pt-6 border-t border-warm-200">
+                <Stat n={TEAS.length + 38} label="Teas reviewed" />
+                <Stat n={POSTS.length + 24} label="Tasting essays" />
+                <Stat n={VENDORS.length + 9} label="Vendors covered" />
+              </div>
+            </div>
 
-      <div className="mt-16 grid grid-cols-3 gap-6">
-        <div className="rounded-xl bg-white p-6 shadow-card border border-warm-200">
-          <span className="eyebrow">Body type</span>
-          <div className="font-sans text-base text-forest mt-2">
-            Nunito Sans · 16px
+            {/* Featured tea card — "today's pour" */}
+            <div className="relative">
+              <Link
+                href={`/tea/${featured.slug}`}
+                className="block no-underline relative rounded-2xl shadow-elevated overflow-hidden"
+                style={{ aspectRatio: "4/5", background: featured.gradient }}
+              >
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.45) 100%)",
+                  }}
+                />
+                <div className="absolute left-7 right-7 bottom-6 text-cream">
+                  <Eyebrow color="rgba(250,247,242,0.8)">
+                    Today&apos;s pour · {featured.region}
+                  </Eyebrow>
+                  <h3 className="font-display italic text-cream font-medium leading-tight tracking-tight my-1.5 text-[36px]">
+                    {featured.name}
+                  </h3>
+                  <p className="text-[13px] m-0" style={{ color: "rgba(250,247,242,0.85)" }}>
+                    {featured.year} · {featured.elev}m
+                  </p>
+                </div>
+                <span
+                  className="absolute top-5 right-5 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-pill font-sans text-xs font-bold text-burgundy"
+                  style={{ background: "rgba(250,247,242,0.95)" }}
+                >
+                  Read review →
+                </span>
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className="rounded-xl bg-white p-6 shadow-card border border-warm-200">
-          <span className="eyebrow">Display</span>
-          <div className="font-display italic text-2xl text-burgundy mt-2">
-            Cormorant Garamond
+        </Container>
+      </section>
+
+      {/* ============ RECENTLY BREWED ============ */}
+      <section className="py-10">
+        <Container>
+          <SectionHeader
+            eyebrow="Recently brewed"
+            title="What's been in the gaiwan"
+            link="See all →"
+            href="/discover/teas"
+          />
+          <div className="grid grid-cols-3 gap-6">
+            {recent.map((t) => (
+              <TeaCard
+                key={t.slug}
+                tea={t}
+                density={tweaks.density}
+                hideReviews={hide(t.slug)}
+              />
+            ))}
           </div>
-        </div>
-        <div className="rounded-xl bg-cream p-6 shadow-soft border border-warm-200">
-          <span className="eyebrow">Surfaces</span>
-          <div className="text-warm-600 mt-2 text-sm">parchment · cream · white</div>
-        </div>
-      </div>
+        </Container>
+      </section>
 
-      <div className="mt-10 flex gap-3 flex-wrap">
-        {[
-          "burgundy", "burgundy-light", "burgundy-dark",
-          "gold", "gold-dark", "sage", "sage-dark", "forest",
-        ].map((c) => (
-          <span
-            key={c}
-            className="px-3 py-1 rounded-pill border border-warm-200 text-xs font-bold tracking-wide font-sans text-warm-700"
-          >
-            <span
-              aria-hidden
-              className="inline-block w-3 h-3 rounded-full align-middle mr-2"
-              style={{ background: `var(--tw-color)`, backgroundColor: cssVarFor(c) }}
-            />
-            {c}
-          </span>
-        ))}
-      </div>
+      {/* ============ TWO CONTRIBUTORS ============ */}
+      <section className="py-14 bg-cream">
+        <Container>
+          <SectionHeader
+            eyebrow="Two palates"
+            title="Different mouths, one cup"
+            link="About us →"
+            href="/about"
+          />
+          <div className="grid grid-cols-2 gap-6">
+            {[CONTRIBUTORS.vivek, CONTRIBUTORS.james].map((c) => (
+              <article
+                key={c.key}
+                className="bg-white rounded-xl p-7 shadow-card border border-warm-200 flex gap-5"
+              >
+                <AvatarChip who={c.key} size={64} />
+                <div>
+                  <h3 className="font-display italic text-burgundy font-medium m-0 mb-1 text-[28px]">
+                    {c.name}
+                  </h3>
+                  <Eyebrow color="var(--warm-500, #857F79)">{c.palate}</Eyebrow>
+                  <p className="text-sm text-warm-700 leading-relaxed mt-2.5 m-0">
+                    {c.bio}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </Container>
+      </section>
 
-      <p className="mt-16 text-warm-500 text-xs tracking-wider uppercase">
-        Prototype is preserved at <code className="font-mono">/prototype</code>{" "}
-        and runs on <code className="font-mono">npm run prototype</code> (port 3001).
-      </p>
+      {/* ============ FROM THE JOURNAL ============ */}
+      <section className="py-14">
+        <Container>
+          <SectionHeader
+            eyebrow="From the journal"
+            title="Brewing notes & long reads"
+            link="All posts →"
+            href="/journal"
+          />
+          <div className="grid grid-cols-[1.4fr_1fr] gap-6">
+            <FeaturedPost post={latestPost} />
+            <div className="flex flex-col gap-4">
+              {morePosts.map((p) => (
+                <PostMini key={p.slug} post={p} />
+              ))}
+            </div>
+          </div>
+        </Container>
+      </section>
     </main>
   );
 }
 
-// Helper for the swatch demo only — utility classes can't take dynamic
-// arbitrary names without a safelist. Resolved at render time client-side.
-function cssVarFor(name: string): string {
-  const map: Record<string, string> = {
-    burgundy: "#722F37",
-    "burgundy-light": "#8B4049",
-    "burgundy-dark": "#5A252C",
-    gold: "#C4A35A",
-    "gold-dark": "#A68B3D",
-    sage: "#8B9A7D",
-    "sage-dark": "#6B7A5D",
-    forest: "#2D3A2E",
-  };
-  return map[name] ?? "#000";
+function FeaturedPost({ post }: { post: Post }) {
+  return (
+    <Link
+      href={`/journal/${post.slug}`}
+      className="group block no-underline bg-white rounded-xl overflow-hidden shadow-card border border-warm-200 transition-all duration-DEFAULT ease-smooth hover:shadow-elevated hover:-translate-y-0.5"
+    >
+      <div
+        style={{ aspectRatio: "16/8", background: post.grad }}
+      />
+      <div className="px-7 pt-6 pb-7">
+        <Eyebrow color="var(--sage-dark, #6B7A5D)">
+          {post.cat} · {post.readTime} min
+        </Eyebrow>
+        <h3 className="font-display text-burgundy font-medium leading-tight tracking-tight mt-2 mb-2.5 text-[36px]">
+          {post.title}
+        </h3>
+        <p className="text-[15px] text-warm-700 leading-relaxed m-0 mb-3.5">
+          {post.excerpt}
+        </p>
+        <div className="flex items-center gap-2.5">
+          <AvatarChip who={post.author.toLowerCase() as "vivek" | "james"} size={24} />
+          <span className="text-xs text-warm-600">
+            {post.author} · {post.date}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function PostMini({ post }: { post: Post }) {
+  return (
+    <Link
+      href={`/journal/${post.slug}`}
+      className="group block no-underline bg-white rounded-lg shadow-card border border-warm-200 px-5 py-4 flex gap-3.5 items-center transition-colors hover:bg-cream"
+    >
+      <div
+        className="w-16 h-16 rounded-md shrink-0"
+        style={{ background: post.grad }}
+      />
+      <div>
+        <Eyebrow color="var(--sage-dark, #6B7A5D)" className="text-[9px]">
+          {post.cat}
+        </Eyebrow>
+        <h4 className="font-display text-burgundy font-medium leading-snug m-0 mt-1 mb-1 text-[19px]">
+          {post.title}
+        </h4>
+        <span className="text-[11px] text-warm-500">
+          {post.author} · {post.date}
+        </span>
+      </div>
+    </Link>
+  );
 }
