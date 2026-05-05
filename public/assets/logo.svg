@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 80" fill="none">
+  
+  <g transform="translate(8, 8)" stroke="#722F37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M32 60 C 32 48, 32 36, 32 22"></path>
+    <path d="M32 34 C 24 32, 18 26, 18 18 C 24 18, 30 22, 32 30" fill="#722F37" fill-opacity="0.15"></path>
+    <path d="M32 28 C 40 26, 46 20, 46 12 C 40 12, 34 16, 32 24" fill="#722F37" fill-opacity="0.15"></path>
+    <path d="M32 22 C 28 14, 32 8, 32 8 C 32 8, 36 14, 32 22 Z" fill="#722F37" fill-opacity="0.25"></path>
+    <path d="M32 10 L 32 20" stroke-width="1"></path>
+  </g>
+  
+  <text x="80" y="38" font-family="Cormorant Garamond, Georgia, serif" font-style="italic" font-size="26" font-weight="500" fill="#722F37">Two Buds</text>
+  <text x="80" y="62" font-family="Cormorant Garamond, Georgia, serif" font-style="italic" font-size="26" font-weight="500" fill="#722F37">and a Leaf</text>
+  
+  <circle cx="220" cy="50" r="2" fill="#C4A35A"></circle>
+</svg>

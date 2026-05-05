@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Nunito_Sans } from "next/font/google";
+import { Shell } from "@/components/chrome/Shell";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -42,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${display.variable} ${sans.variable}`}>
       <body data-theme="parchment" className="font-sans min-h-screen">
-        {children}
+        <Shell>{children}</Shell>
       </body>
     </html>
   );
