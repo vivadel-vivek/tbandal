@@ -10,6 +10,7 @@
    - CSS variables Tailwind references (font families set by next/font)
    - theme switches via [data-theme]
    - base typography defaults that mirror the prototype's tokens.css
+   - re-usable surface / interactive class layer
 */
 
 /* --font-display / --font-sans / --font-serif are set on <html> by
@@ -25,6 +26,7 @@
   --fg-1: #2D3A2E;
   --fg-2: #6B6560;
   --fg-3: #857F79;
+  --fg-heading: #722F37; /* Themed via [data-theme] below — see h1..h6 rule */
 }
 
 [data-theme="cream"] {
@@ -46,6 +48,7 @@
   --fg-1: #EFE7DA;
   --fg-2: #B5A99A;
   --fg-3: #8E8276;
+  --fg-heading: #E8C9CD;
 }
 
 /* ===========================================
@@ -67,18 +70,10 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  @apply font-display text-burgundy font-medium tracking-tight;
+  @apply font-display font-medium tracking-tight;
+  color: var(--fg-heading);
   line-height: 1.1;
   text-wrap: balance;
-}
-
-[data-theme="dark"] h1,
-[data-theme="dark"] h2,
-[data-theme="dark"] h3,
-[data-theme="dark"] h4,
-[data-theme="dark"] h5,
-[data-theme="dark"] h6 {
-  color: #E8C9CD;
 }
 
 a { color: #722F37; text-decoration: none; }
@@ -88,14 +83,31 @@ a { color: #722F37; text-decoration: none; }
 
 /* ===========================================
    COMPONENT LAYER — small reusable pieces
-   =========================================== */
+   ===========================================
+   Repeating Tailwind class strings extracted to keep call-sites concise
+   and the design system enforceable. Prefer a typed React component for
+   anything stateful or non-trivial.
+*/
 
 @layer components {
-  .eyebrow {
-    @apply font-sans text-xs font-bold uppercase tracking-widest text-warm-500;
+  /* Surface a card sits on. ~14 sites in the codebase used this string. */
+  .card-surface {
+    @apply bg-surface-elevated rounded-xl border border-warm-200 shadow-card;
   }
 
-  .display-italic {
-    @apply font-display italic;
+  /* Hover treatment for clickable cards (lift + deeper shadow). Pair with
+     .card-surface on the same element. */
+  .card-surface-hover {
+    @apply transition duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5;
+  }
+
+  /* Soft "coming next" / disclosure / empty-state card. */
+  .dashed-card {
+    @apply bg-surface-elevated rounded-xl border border-dashed border-warm-300;
+  }
+
+  /* "← back" link that appears at the top of every detail / sub-page. */
+  .back-link {
+    @apply inline-flex items-center gap-1.5 text-warm-600 text-[13px] font-sans no-underline;
   }
 }

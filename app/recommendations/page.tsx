@@ -115,7 +115,7 @@ export default function RecommendationsPage() {
                 key={m.key}
                 onClick={() => setMode(m.key)}
                 className={[
-                  "flex-1 px-5 py-5 rounded-xl text-left cursor-pointer transition-all duration-DEFAULT ease-smooth",
+                  "flex-1 px-5 py-5 rounded-xl text-left cursor-pointer transition-all duration-200 ease-smooth",
                   active
                     ? "border-2 border-burgundy bg-[var(--bg-elevated)] shadow-card"
                     : "border border-warm-300 bg-transparent",
@@ -248,7 +248,7 @@ function RecRow({
   return (
     <Link
       href={`/tea/${tea.slug}`}
-      className="no-underline group bg-[var(--bg-elevated)] rounded-xl p-4.5 shadow-card border border-warm-200 grid items-center gap-4.5 cursor-pointer transition-all duration-DEFAULT ease-smooth hover:shadow-elevated hover:-translate-y-0.5"
+      className="no-underline group bg-[var(--bg-elevated)] rounded-xl p-4.5 shadow-card border border-warm-200 grid items-center gap-4.5 cursor-pointer transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5"
       style={{ gridTemplateColumns: "auto 100px 1fr auto", padding: 18, gap: 18 }}
     >
       <div
@@ -385,7 +385,7 @@ function BlindPanel({ teas }: { teas: { t: Tea; score: number }[] }) {
           <article
             key={t.slug}
             onClick={() => launchBlind(t.slug)}
-            className="bg-[var(--bg-elevated)] rounded-xl shadow-card border border-warm-200 overflow-hidden cursor-pointer transition-all duration-DEFAULT ease-smooth hover:shadow-elevated hover:-translate-y-0.5 grid"
+            className="bg-[var(--bg-elevated)] rounded-xl shadow-card border border-warm-200 overflow-hidden cursor-pointer transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5 grid"
             style={{ gridTemplateColumns: "140px 1fr" }}
           >
             <div

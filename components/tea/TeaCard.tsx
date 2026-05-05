@@ -29,7 +29,7 @@ export function TeaCard({
     <article
       className={[
         "group bg-[var(--bg-elevated)] rounded-xl border border-warm-200 shadow-card overflow-hidden cursor-pointer block",
-        "transition-all duration-DEFAULT ease-smooth",
+        "transition-all duration-200 ease-smooth",
         "hover:shadow-elevated hover:-translate-y-0.5",
       ].join(" ")}
     >

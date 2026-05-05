@@ -87,7 +87,7 @@ export default function DiscoverHub() {
               <article
                 className={[
                   "group bg-[var(--bg-elevated)] rounded-2xl border border-warm-200 shadow-card overflow-hidden flex flex-col",
-                  "transition-all duration-DEFAULT ease-smooth",
+                  "transition-all duration-200 ease-smooth",
                   c.disabled ? "opacity-70 cursor-default" : "cursor-pointer hover:shadow-elevated hover:-translate-y-0.5",
                 ].join(" ")}
               >

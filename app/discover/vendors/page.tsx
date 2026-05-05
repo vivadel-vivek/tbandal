@@ -107,7 +107,7 @@ function VendorCard({ vendor: v }: { vendor: Vendor }) {
   const teas = TEAS.filter((t) => t.vendor === v.name);
   return (
     <article
-      className="group bg-[var(--bg-elevated)] rounded-xl border border-warm-200 shadow-card p-5 transition-all duration-DEFAULT ease-smooth hover:shadow-elevated hover:-translate-y-0.5 flex flex-col gap-4"
+      className="group bg-[var(--bg-elevated)] rounded-xl border border-warm-200 shadow-card p-5 transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5 flex flex-col gap-4"
     >
       <div className="flex gap-3.5 items-center">
         <div

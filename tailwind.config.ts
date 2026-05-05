@@ -1,6 +1,10 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  // [data-theme="dark"] is already used in globals.css for runtime theme
+  // switching; map Tailwind's `dark:` modifier to the same hook so new
+  // markup can opt into dark variants natively.
+  darkMode: ["class", '[data-theme="dark"]'],
   content: [
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -12,6 +16,17 @@ const config: Config = {
         // Backgrounds — warm neutrals
         cream: "#FAF7F2",
         parchment: "#F5EFE6",
+
+        // Theme-channel surface tokens — resolve to CSS vars set in globals.css
+        // [data-theme] blocks. Use these so dark mode "just works" without
+        // touching every call-site.
+        surface: "var(--bg)",
+        "surface-elevated": "var(--bg-elevated)",
+        "surface-subtle": "var(--bg-subtle)",
+        // Translucent surface tokens used for floating chips and modal scrim.
+        "cream-glass": "rgba(250,247,242,0.92)",
+        "cream-glass-strong": "rgba(250,247,242,0.95)",
+        "ink-glass": "rgba(31,26,24,0.55)",
 
         // Brand
         burgundy: {
@@ -104,6 +119,15 @@ const config: Config = {
         "6xl": "3.75rem",
         "7xl": "4.5rem",
         "8xl": "6rem",
+        // Editorial hero scale — names match the design's rhythm so callers
+        // stop falling back to `text-[Npx]` arbitrary values.
+        "hero-sm": "28px",
+        "hero-md": "36px",
+        "hero-lg": "44px",
+        "hero-xl": "64px",
+        "hero-2xl": "76px",
+        "hero-3xl": "88px",
+        "hero-4xl": "96px",
       },
 
       letterSpacing: {
@@ -122,6 +146,17 @@ const config: Config = {
         snug: "1.25",
         normal: "1.5",
         relaxed: "1.65",
+        // Hero-specific line-height used across the page H1s.
+        hero: "1.05",
+      },
+
+      spacing: {
+        // Half-step values used in card paddings + between-element gaps.
+        "4.5": "18px",
+        "7.5": "30px",
+        // 72px shows up as the home-hero pt — name it so we don't ship
+        // arbitrary `pt-[72px]` everywhere.
+        "18": "72px",
       },
 
       borderRadius: {
@@ -132,6 +167,11 @@ const config: Config = {
         xl: "24px",
         "2xl": "32px",
         pill: "9999px",
+      },
+
+      borderWidth: {
+        // Used by primary/secondary buttons and active filter chips.
+        "1.5": "1.5px",
       },
 
       boxShadow: {
@@ -146,6 +186,9 @@ const config: Config = {
       },
 
       transitionDuration: {
+        // NB: Tailwind reads `DEFAULT` as the bare `duration` utility, not
+        // `duration-DEFAULT` — keep this entry but always reference it as
+        // `duration-200` (or bare `duration`) at call-sites.
         DEFAULT: "200ms",
         fast: "150ms",
         slow: "300ms",

@@ -133,7 +133,7 @@ export default function TeasPage() {
                       className={[
                         "px-3 py-1.5 rounded-pill font-sans text-[11px] font-bold cursor-pointer",
                         active
-                          ? "border-[1.5px] border-burgundy bg-burgundy-muted text-burgundy"
+                          ? "border-1.5 border-burgundy bg-burgundy-muted text-burgundy"
                           : "border border-warm-300 bg-transparent text-forest",
                       ].join(" ")}
                     >
@@ -191,7 +191,7 @@ function FilterGroup({
               className={[
                 "px-2.5 py-1 rounded-pill font-sans text-[11px] font-semibold cursor-pointer",
                 active
-                  ? "border-[1.5px] border-burgundy bg-burgundy text-cream"
+                  ? "border-1.5 border-burgundy bg-burgundy text-cream"
                   : "border border-warm-300 bg-transparent text-forest",
               ].join(" ")}
             >

@@ -227,7 +227,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                     onClick={() => setActiveTab(t.key)}
                     className={[
                       "px-5 py-2.5 rounded-pill border-0 cursor-pointer font-sans text-[13px] font-bold inline-flex items-center gap-2",
-                      "transition-colors duration-DEFAULT ease-smooth",
+                      "transition-colors duration-200 ease-smooth",
                       active ? "text-cream" : has ? "text-forest" : "text-warm-500 italic",
                     ].join(" ")}
                     style={{
@@ -636,7 +636,7 @@ function FlavorModeToggle({
             aria-pressed={active}
             className={[
               "px-3 py-1.5 rounded-pill border-0 font-sans font-bold text-[11px] cursor-pointer tracking-wide",
-              "transition-colors duration-DEFAULT ease-smooth inline-flex items-center gap-1.5",
+              "transition-colors duration-200 ease-smooth inline-flex items-center gap-1.5",
               active ? "bg-burgundy text-cream" : "bg-transparent text-forest",
             ].join(" ")}
           >

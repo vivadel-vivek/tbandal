@@ -191,7 +191,7 @@ function FeaturedPost({ post }: { post: Post }) {
   return (
     <Link
       href={`/journal/${post.slug}`}
-      className="group block no-underline bg-white rounded-xl overflow-hidden shadow-card border border-warm-200 transition-all duration-DEFAULT ease-smooth hover:shadow-elevated hover:-translate-y-0.5"
+      className="group block no-underline bg-white rounded-xl overflow-hidden shadow-card border border-warm-200 transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5"
     >
       <div
         style={{ aspectRatio: "16/8", background: post.grad }}
