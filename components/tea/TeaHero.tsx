@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { TeaTypeTag } from "@/components/ui/TeaTypeTag";
 import { RatingScore } from "@/components/ui/RatingScore";
 import { TeaStain } from "@/components/ui/TeaStain";
+import { Glossarized } from "@/components/glossary/Glossarized";
 
 type Props = {
   tea: Tea;
@@ -99,7 +100,7 @@ function HeroSplit({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
           </div>
         )}
         <p className="text-[17px] text-warm-700 leading-relaxed mb-5">
-          {tea.summary}
+          <Glossarized>{tea.summary}</Glossarized>
         </p>
         <div className="flex gap-2.5">
           <Button variant="primary" onClick={onLogSession}>
@@ -166,7 +167,7 @@ function HeroStain({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
           className="font-serif italic text-warm-700 leading-relaxed max-w-[600px] mx-auto mb-7 text-[19px]"
           style={{ textWrap: "balance" }}
         >
-          &ldquo;{tea.summary}&rdquo;
+          &ldquo;<Glossarized>{tea.summary}</Glossarized>&rdquo;
         </p>
         <div className="inline-flex gap-2.5">
           <Button variant="primary" size="lg" onClick={onLogSession}>
@@ -248,7 +249,7 @@ function HeroEditorial({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<P
             >
               {tea.summary[0]}
             </span>
-            {tea.summary.slice(1)}
+            <Glossarized>{tea.summary.slice(1)}</Glossarized>
           </p>
           <div className="flex gap-2.5">
             <Button variant="primary" onClick={onLogSession}>

@@ -26,6 +26,8 @@ import { TeaCard } from "@/components/tea/TeaCard";
 import { TeaHero } from "@/components/tea/TeaHero";
 import { RadarChart } from "@/components/tea/RadarChart";
 import { MouthfeelGrid } from "@/components/tea/MouthfeelGrid";
+import { ReviewModal } from "@/components/tea/ReviewModal";
+import { Glossarized } from "@/components/glossary/Glossarized";
 
 type ReviewTab = ContributorKey | "members" | "you";
 
@@ -49,7 +51,7 @@ function memberRatingToReview(r: MemberRating): ReviewBody {
 }
 
 export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
-  const { member, isBlindFor, unblind } = useMember();
+  const { member, isBlindFor, unblind, upsertRating } = useMember();
   const { tweaks } = useTweaks();
 
   // Bind once and let TS narrow naturally — no `memberRating!` needed.
@@ -305,7 +307,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                             key={f}
                             className="font-display italic text-forest text-[17px]"
                           >
-                            · {f}
+                            · <Glossarized>{f}</Glossarized>
                           </span>
                         ))}
                       </div>
@@ -342,8 +344,19 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                       tea, we&apos;ll cover return shipping; otherwise drop a
                       purchase link.
                     </p>
-                    <Link href="/request-review">
-                      <Button variant="primary">Request a review →</Button>
+                    <Link
+                      href={{
+                        pathname: "/request-review",
+                        query: {
+                          tea: tea.pathSlug,
+                          vendor: vendorByName(tea.vendor)?.slug ?? "",
+                          from: safeTab === "vivek" || safeTab === "james" ? safeTab : "",
+                        },
+                      }}
+                    >
+                      <Button variant="primary">
+                        Request a review from {(safeTab === "vivek" || safeTab === "james") ? CONTRIBUTORS[safeTab].name : "us"} →
+                      </Button>
                     </Link>
                   </div>
                 ) : (
@@ -410,7 +423,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                         }`,
                       }}
                     >
-                      &ldquo;{review.body}&rdquo;
+                      &ldquo;<Glossarized>{review.body}</Glossarized>&rdquo;
                     </p>
 
                     {review.session && (
@@ -603,36 +616,18 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
       </Container>
       <div className="h-16" />
 
-      {/* Stub modal — full implementation lands in 4.5.12 */}
       {showRateModal && (
-        <div
-          onClick={() => setShowRateModal(false)}
-          className="fixed inset-0 z-[1000] flex items-start justify-center p-[5vh_20px] overflow-y-auto"
-          style={{ background: "rgba(31,26,24,0.55)" }}
-          role="dialog"
-          aria-modal
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-[var(--bg-elevated)] rounded-2xl shadow-elevated max-w-[640px] w-full border border-warm-200 p-8"
-          >
-            <Eyebrow>Add your review</Eyebrow>
-            <h2 className="font-display italic text-burgundy font-medium tracking-tight m-0 mt-1.5 mb-1 text-[28px]">
-              {tea.name}
-            </h2>
-            <p className="text-warm-600 text-sm mb-4">
-              The full Basic / Advanced rating modal lands in Phase 4.5.12.
-            </p>
-            <div className="flex justify-end gap-2.5 mt-4">
-              <Button
-                variant="secondary"
-                onClick={() => setShowRateModal(false)}
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
+        <ReviewModal
+          tea={tea}
+          initial={mr}
+          defaultMode={isBasic ? "basic" : "advanced"}
+          onClose={() => setShowRateModal(false)}
+          onSubmit={(rating) => {
+            upsertRating(rating);
+            setShowRateModal(false);
+            setActiveTab("you");
+          }}
+        />
       )}
     </main>
   );

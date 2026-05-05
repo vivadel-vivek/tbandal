@@ -176,6 +176,8 @@ export type Post = {
   grad: string;
   /** Slugs of related teas */
   related: string[];
+  /** Long-form Markdown body. Optional during the type's transition. */
+  body?: string;
 };
 
 // =====================================================================

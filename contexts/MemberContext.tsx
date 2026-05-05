@@ -29,7 +29,11 @@ const DEFAULT_MEMBER: Member = {
     email: "",
     displayName: "",
     contributorHandle: "",
-    flavorMode: "advanced",
+    // Default to Basic so first-paint shows the 6-axis lay-term radar.
+    // Newcomer audit was unambiguous about this — Advanced 12-axis with
+    // "Marine?" on a tea page is the moment newcomers bounce. Existing
+    // localStorage members keep whatever they previously chose.
+    flavorMode: "basic",
     composite: false,
     theme: "auto",
     notifications: {

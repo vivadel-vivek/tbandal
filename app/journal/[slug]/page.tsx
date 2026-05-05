@@ -87,28 +87,7 @@ export default function JournalPost({
           >
             {post.excerpt}
           </p>
-          <p className="mb-5">
-            {/* Placeholder body — Phase 3 brings the real long-form */}
-            The full essay text comes from Airtable in Phase 6 — for now
-            this is a placeholder so internal links don&apos;t 404. The
-            shape and rhythm are correct: drop cap, pulled-quote intro,
-            two-column display headlines for sub-sections, related teas at
-            the bottom.
-          </p>
-          <p className="mb-5">
-            Each post gets a category, a read-time estimate, an author
-            byline, and a list of related teas — those are the links the
-            recommendations engine uses to weave journal content into
-            tea-detail pages and vice versa.
-          </p>
-          <h2 className="font-display text-burgundy font-medium tracking-tight m-0 mt-9 mb-4 text-hero-md">
-            Phase 3 will fill this in
-          </h2>
-          <p className="mb-5">
-            The unified feed (this post + Vivek/James session logs + your
-            session logs) is the next chunk of work. Until then, treat this
-            as a route that exists so /journal cards link somewhere.
-          </p>
+          <PostBody body={post.body} />
         </div>
 
         {related.length > 0 && (
@@ -124,5 +103,46 @@ export default function JournalPost({
       </Container>
       <div className="h-16" />
     </main>
+  );
+}
+
+/**
+ * Lightweight Markdown-ish renderer. The bodies in lib/data.ts use
+ * `\n\n` paragraph breaks and `## ` for H2 subheads — enough for the
+ * editorial shape we need without pulling in a full Markdown lib. Will
+ * be replaced by MDX in Phase 6 once Airtable is the source.
+ */
+function PostBody({ body }: { body: string | undefined }) {
+  if (!body) {
+    return (
+      <p className="mb-5 italic text-warm-600">
+        The full essay text lands when this post is published. Check back
+        soon — the byline and related teas above are real.
+      </p>
+    );
+  }
+
+  const blocks = body.split(/\n\n+/).map((b) => b.trim()).filter(Boolean);
+
+  return (
+    <>
+      {blocks.map((block, i) => {
+        if (block.startsWith("## ")) {
+          return (
+            <h2
+              key={i}
+              className="font-display text-burgundy font-medium tracking-tight m-0 mt-9 mb-4 text-hero-md"
+            >
+              {block.slice(3).trim()}
+            </h2>
+          );
+        }
+        return (
+          <p key={i} className="mb-5">
+            {block}
+          </p>
+        );
+      })}
+    </>
   );
 }
