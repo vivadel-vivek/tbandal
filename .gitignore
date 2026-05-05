@@ -39,6 +39,11 @@ next-env.d.ts
 /.audit
 
 # persona-agent curl debris (created when sub-agents fetch pages with
-# `curl -o` and accidentally use a Windows-style path as the filename).
+# `curl -o` and accidentally use a Windows-style path as the filename,
+# or write tmp files at the project root).
 Usersvshim*.html
 /strip.py
+/_t_*.txt
+/_t_*.html
+/audit_*.html
+/audit_*.txt

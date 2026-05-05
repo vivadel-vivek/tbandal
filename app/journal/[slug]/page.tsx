@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { AvatarChip } from "@/components/ui/AvatarChip";
 import { TeaCard } from "@/components/tea/TeaCard";
+import { Glossarized } from "@/components/glossary/Glossarized";
 
 // ISR: pre-render every post slug, dynamicParams: true so new posts ISR
 // on first hit once Airtable lands.
@@ -139,7 +140,7 @@ function PostBody({ body }: { body: string | undefined }) {
         }
         return (
           <p key={i} className="mb-5">
-            {block}
+            <Glossarized>{block}</Glossarized>
           </p>
         );
       })}
