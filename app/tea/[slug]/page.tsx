@@ -59,12 +59,15 @@ function findSimilar(target: Tea, limit = 3) {
 
 export default function TeaDetailPage({
   params,
+  searchParams,
 }: {
   params: { slug: string };
+  searchParams: { blind?: string };
 }) {
   const tea = teaBySlug(params.slug);
   if (!tea) notFound();
 
   const similar = findSimilar(tea);
-  return <TeaDetailView tea={tea} similar={similar} />;
+  const blindMode = searchParams.blind === "1";
+  return <TeaDetailView tea={tea} similar={similar} blindMode={blindMode} />;
 }

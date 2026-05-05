@@ -24,6 +24,8 @@ type ReviewTab = ContributorKey | "members" | "you";
 type Props = {
   tea: Tea;
   similar: { tea: Tea; score: number }[];
+  /** Discover-launched blind tasting flow (different from member-blind) */
+  blindMode?: boolean;
 };
 
 // Composite profile = average of contributors that actually reviewed (drops nulls)
@@ -39,7 +41,7 @@ function compositeProfile(tea: Tea): Record<string, number> {
   return out;
 }
 
-export function TeaDetailView({ tea, similar }: Props) {
+export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
   const { member, isBlindFor, unblind } = useMember();
   const { tweaks } = useTweaks();
 
@@ -62,8 +64,8 @@ export function TeaDetailView({ tea, similar }: Props) {
     isBasic ? rollUpProfile(vals as Parameters<typeof rollUpProfile>[0]) : vals;
 
   // Member-level blind state for THIS tea (vs the Discover-launched blind flow)
-  const isBlinded = isBlindFor(tea.slug) || tweaks.hideReviews;
-  const memberBlind = isBlinded && memberMode === "blind";
+  const isBlinded = isBlindFor(tea.slug) || tweaks.hideReviews || blindMode;
+  const memberBlind = isBlinded && memberMode === "blind" && !blindMode;
 
   const reviewMap: Record<ReviewTab, { rating: number; body: string; date: string; session?: string; scale?: "basic" | "advanced" } | null> = {
     vivek: tea.reviews.vivek,
@@ -151,6 +153,23 @@ export function TeaDetailView({ tea, similar }: Props) {
           onLogSession={handleLogSession}
         />
 
+        {/* DISCOVER-LAUNCHED BLIND TASTING BANNER */}
+        {blindMode && (
+          <div className="mt-8 mb-2 px-7 py-5 bg-burgundy text-cream rounded-xl flex justify-between items-center gap-4 flex-wrap">
+            <div>
+              <div className="text-[11px] tracking-widest uppercase font-bold mb-1" style={{ opacity: 0.7 }}>
+                Blind tasting in progress
+              </div>
+              <div className="font-display italic text-[22px]">
+                Reviews and ratings are hidden until you log yours.
+              </div>
+            </div>
+            <Button variant="gold" onClick={() => setShowRateModal(true)}>
+              Rate this tea →
+            </Button>
+          </div>
+        )}
+
         {/* MEMBER BLIND BANNER */}
         {memberBlind && (
           <div className="mt-8 mb-2 px-7 py-6 bg-[var(--bg-elevated)] border border-dashed border-warm-300 rounded-xl flex justify-between items-center gap-6 flex-wrap">
@@ -179,8 +198,8 @@ export function TeaDetailView({ tea, similar }: Props) {
           </div>
         )}
 
-        {/* REVIEWS SECTION */}
-        {!memberBlind && (
+        {/* REVIEWS SECTION — hidden during both blind modes */}
+        {!memberBlind && !blindMode && (
           <section className="mt-14">
             <SectionHeader
               eyebrow="Reviews"
