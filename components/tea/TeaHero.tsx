@@ -228,7 +228,7 @@ function HeroEditorial({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<P
         </div>
         {!hideReviews && (
           <div className="text-right">
-            <div className="text-[11px] tracking-widest uppercase text-warm-500 font-bold mb-1.5">
+            <div className="text-[11px] tracking-widest uppercase text-warm-600 font-bold mb-1.5">
               Composite
             </div>
             <RatingScore value={avg} big />

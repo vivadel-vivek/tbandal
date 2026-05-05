@@ -71,7 +71,7 @@ export function TeaBrowser({ teas, vendors }: Props) {
           onChange={setRegion}
         />
         <div className="mt-4">
-          <Eyebrow color="var(--warm-500, #857F79)">Vendor</Eyebrow>
+          <Eyebrow color="var(--warm-600, #6B6560)">Vendor</Eyebrow>
           <div className="flex flex-col gap-1.5 mt-2.5">
             {vendors.map((v) => (
               <label
@@ -89,7 +89,7 @@ export function TeaBrowser({ teas, vendors }: Props) {
           </div>
         </div>
         <div className="mt-4">
-          <Eyebrow color="var(--warm-500, #857F79)">Elevation</Eyebrow>
+          <Eyebrow color="var(--warm-600, #6B6560)">Elevation</Eyebrow>
           <div className="mt-3">
             <input
               type="range"
@@ -98,7 +98,7 @@ export function TeaBrowser({ teas, vendors }: Props) {
               defaultValue={3000}
               className="w-full accent-burgundy"
             />
-            <div className="flex justify-between text-[11px] text-warm-500 mt-1">
+            <div className="flex justify-between text-[11px] text-warm-600 mt-1">
               <span>0m</span>
               <span>3000m+</span>
             </div>
@@ -165,7 +165,7 @@ function FilterGroup({
 }) {
   return (
     <div className="mb-4">
-      <Eyebrow color="var(--warm-500, #857F79)">{label}</Eyebrow>
+      <Eyebrow color="var(--warm-600, #6B6560)">{label}</Eyebrow>
       <div className="flex flex-wrap gap-1.5 mt-2.5">
         {options.map((o) => {
           const active = value === o;

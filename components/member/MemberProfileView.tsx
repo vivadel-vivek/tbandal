@@ -197,7 +197,7 @@ export function MemberProfileView() {
                           <div className="font-display text-burgundy text-base font-medium">
                             {t.name}
                           </div>
-                          <div className="text-[11px] text-warm-500">
+                          <div className="text-[11px] text-warm-600">
                             {t.region}
                           </div>
                         </div>

@@ -9,7 +9,7 @@ export function Stat({ n, label }: Props) {
       <div className="font-display text-[32px] text-burgundy font-medium leading-none tracking-tight">
         {n}
       </div>
-      <div className="text-[11px] text-warm-500 tracking-widest uppercase font-semibold mt-1.5">
+      <div className="text-[11px] text-warm-600 tracking-widest uppercase font-semibold mt-1.5">
         {label}
       </div>
     </div>

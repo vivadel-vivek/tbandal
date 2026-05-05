@@ -149,7 +149,7 @@ export function ReviewModal({
                   <span className="font-display text-burgundy font-medium leading-none text-[64px]">
                     {(score / 2).toFixed(1)}
                   </span>
-                  <span className="text-sm text-warm-500">/ 5</span>
+                  <span className="text-sm text-warm-600">/ 5</span>
                 </div>
                 <input
                   type="range"
@@ -160,7 +160,7 @@ export function ReviewModal({
                   onChange={(e) => setScore(Number(e.target.value) * 2)}
                   className="w-full accent-burgundy mb-2"
                 />
-                <div className="flex justify-between text-[10px] text-warm-500 tracking-wide uppercase font-bold mb-6">
+                <div className="flex justify-between text-[10px] text-warm-600 tracking-wide uppercase font-bold mb-6">
                   <span>Pass</span>
                   <span>Solid</span>
                   <span>Excellent</span>
@@ -172,7 +172,7 @@ export function ReviewModal({
                   <span className="font-display text-burgundy font-medium leading-none text-[64px]">
                     {Number(score).toFixed(1)}
                   </span>
-                  <span className="text-sm text-warm-500">/ 10</span>
+                  <span className="text-sm text-warm-600">/ 10</span>
                 </div>
                 <input
                   type="range"
@@ -218,7 +218,7 @@ export function ReviewModal({
               <Eyebrow>
                 Flavor profile · {isBasic ? "6 simple axes" : "12 axes"}
               </Eyebrow>
-              <span className="text-[11px] text-warm-500">
+              <span className="text-[11px] text-warm-600">
                 {isBasic ? "0–5" : "0–10"}
               </span>
             </div>
@@ -288,7 +288,7 @@ export function ReviewModal({
                       className="flex-1"
                       style={{ accentColor: ax.color }}
                     />
-                    <div className="min-w-[14px] text-[11px] text-warm-500 text-right font-mono">
+                    <div className="min-w-[14px] text-[11px] text-warm-600 text-right font-mono">
                       {profile[ax.key] ?? 0}
                     </div>
                   </div>
@@ -300,7 +300,7 @@ export function ReviewModal({
 
         {/* Footer */}
         <div className="flex justify-between items-center gap-3 px-8 py-5 border-t border-warm-200">
-          <span className="text-xs text-warm-500">
+          <span className="text-xs text-warm-600">
             Your rating refines your flavor map and Discover suggestions.
           </span>
           <div className="flex gap-2.5">

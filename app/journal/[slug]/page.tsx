@@ -68,7 +68,7 @@ export default function JournalPost({
           />
           <div>
             <div className="text-sm font-bold text-forest">{post.author}</div>
-            <div className="text-xs text-warm-500">{post.date}</div>
+            <div className="text-xs text-warm-600">{post.date}</div>
           </div>
         </div>
       </Container>

@@ -22,7 +22,7 @@ export function RatingScore({ value, max = 10, big = false }: Props) {
       </span>
       <span
         className={[
-          "text-warm-500 font-sans font-semibold",
+          "text-warm-600 font-sans font-semibold",
           big ? "text-[18px]" : "text-[11px]",
         ].join(" ")}
       >

@@ -69,7 +69,7 @@ export function TeaCard({ tea, density = "cozy", hideReviews = false }: Props) {
           ) : (
             <span /> /* placeholder so $/g stays right-aligned */
           )}
-          <span className="text-xs text-warm-500 font-mono">
+          <span className="text-xs text-warm-600 font-mono">
             ${tea.price.toFixed(2)}/g
           </span>
         </div>

@@ -60,7 +60,7 @@ export function Footer() {
 
         {COLS.map((col) => (
           <div key={col.title}>
-            <div className="text-[10px] font-bold tracking-widest uppercase text-warm-500 mb-3.5">
+            <div className="text-[10px] font-bold tracking-widest uppercase text-warm-600 mb-3.5">
               {col.title}
             </div>
             <ul className="list-none p-0 m-0 flex flex-col gap-2">
@@ -94,14 +94,14 @@ export function Footer() {
         ))}
       </div>
 
-      <div className="max-w-site mx-auto mt-8 pt-6 border-t border-warm-200 flex justify-between text-[11px] text-warm-500 tracking-wide">
+      <div className="max-w-site mx-auto mt-8 pt-6 border-t border-warm-200 flex justify-between text-[11px] text-warm-600 tracking-wide">
         <span>© 2026 Two Buds and a Leaf · Brewed with care.</span>
         <span>
-          <Link href="/about#affiliate-disclosure" className="text-warm-500 hover:text-burgundy no-underline">
+          <Link href="/about#affiliate-disclosure" className="text-warm-600 hover:text-burgundy no-underline">
             Affiliate disclosure
           </Link>
           {" · "}
-          <Link href="/about" className="text-warm-500 hover:text-burgundy no-underline">
+          <Link href="/about" className="text-warm-600 hover:text-burgundy no-underline">
             Privacy
           </Link>
         </span>

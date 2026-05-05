@@ -98,9 +98,9 @@ export default function Home() {
                   <Eyebrow color="rgba(250,247,242,0.8)">
                     Today&apos;s pour · {featured.region}
                   </Eyebrow>
-                  <h3 className="font-display italic text-cream font-medium leading-tight tracking-tight my-1.5 text-hero-md">
+                  <h2 className="font-display italic text-cream font-medium leading-tight tracking-tight my-1.5 text-hero-md">
                     {featured.name}
-                  </h3>
+                  </h2>
                   <p className="text-[13px] m-0" style={{ color: "rgba(250,247,242,0.85)" }}>
                     {featured.year} · {featured.elev}m
                   </p>
@@ -147,7 +147,7 @@ export default function Home() {
                   <h3 className="font-display italic text-burgundy font-medium m-0 mb-1 text-hero-sm">
                     {c.name}
                   </h3>
-                  <Eyebrow color="var(--warm-500, #857F79)">{c.palate}</Eyebrow>
+                  <Eyebrow color="var(--warm-600, #6B6560)">{c.palate}</Eyebrow>
                   <p className="text-sm text-warm-700 leading-relaxed mt-2.5 m-0">
                     {c.bio}
                   </p>
@@ -232,7 +232,7 @@ function PostMini({ post }: { post: Post }) {
         <h4 className="font-display text-burgundy font-medium leading-snug m-0 mt-1 mb-1 text-[19px]">
           {post.title}
         </h4>
-        <span className="text-[11px] text-warm-500">
+        <span className="text-[11px] text-warm-600">
           {post.author} · {post.date}
         </span>
       </div>

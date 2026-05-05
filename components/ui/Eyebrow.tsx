@@ -2,7 +2,10 @@ import type { CSSProperties, ReactNode } from "react";
 
 type Props = {
   children: ReactNode;
-  /** Color override (defaults to gold-dark, the editorial accent) */
+  /** Color override (defaults to a deep editorial gold that meets
+   *  WCAG AA contrast at 11px against parchment / cream backgrounds.
+   *  Pass an alternate when laying eyebrows over a dark surface — see
+   *  the burgundy vendor banner on tea-detail). */
   color?: string;
   className?: string;
   style?: CSSProperties;
@@ -16,7 +19,7 @@ type Props = {
  */
 export function Eyebrow({
   children,
-  color = "var(--gold-dark, #A68B3D)",
+  color = "var(--eyebrow-fg, #7A6428)",
   className = "",
   style,
   as: Tag = "span",

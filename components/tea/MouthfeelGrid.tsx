@@ -72,7 +72,7 @@ export function MouthfeelGrid({ point, points, size = 260 }: Props) {
         fontFamily="var(--font-sans)"
         fontSize={9}
         fontWeight={700}
-        fill="var(--warm-500, #857F79)"
+        fill="var(--warm-600, #6B6560)"
         letterSpacing="0.14em"
         style={{ textTransform: "uppercase" }}
       >
@@ -85,7 +85,7 @@ export function MouthfeelGrid({ point, points, size = 260 }: Props) {
         fontFamily="var(--font-sans)"
         fontSize={9}
         fontWeight={700}
-        fill="var(--warm-500, #857F79)"
+        fill="var(--warm-600, #6B6560)"
         letterSpacing="0.14em"
         style={{ textTransform: "uppercase" }}
       >
@@ -98,7 +98,7 @@ export function MouthfeelGrid({ point, points, size = 260 }: Props) {
         fontFamily="var(--font-sans)"
         fontSize={9}
         fontWeight={700}
-        fill="var(--warm-500, #857F79)"
+        fill="var(--warm-600, #6B6560)"
         letterSpacing="0.14em"
         style={{ textTransform: "uppercase" }}
       >
@@ -110,7 +110,7 @@ export function MouthfeelGrid({ point, points, size = 260 }: Props) {
         fontFamily="var(--font-sans)"
         fontSize={9}
         fontWeight={700}
-        fill="var(--warm-500, #857F79)"
+        fill="var(--warm-600, #6B6560)"
         letterSpacing="0.14em"
         style={{ textTransform: "uppercase" }}
       >

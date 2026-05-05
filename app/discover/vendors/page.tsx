@@ -82,7 +82,7 @@ export default function VendorsAtlas() {
                 <h2 className="font-display italic text-burgundy font-medium tracking-tight m-0 text-[44px]">
                   {cont}
                 </h2>
-                <span className="text-[11px] text-warm-500 tracking-widest uppercase font-bold">
+                <span className="text-[11px] text-warm-600 tracking-widest uppercase font-bold">
                   {total} vendor{total === 1 ? "" : "s"}
                 </span>
               </div>
@@ -130,7 +130,7 @@ function VendorCard({ vendor: v }: { vendor: Vendor }) {
           <h3 className="font-display text-burgundy font-medium tracking-tight m-0 mb-1 text-2xl">
             {v.name}
           </h3>
-          <Eyebrow color="var(--warm-500, #857F79)">
+          <Eyebrow color="var(--warm-600, #6B6560)">
             {v.city} · est. {v.founded}
           </Eyebrow>
         </div>
@@ -154,7 +154,7 @@ function VendorCard({ vendor: v }: { vendor: Vendor }) {
         </div>
       )}
       <div className="flex justify-between items-center pt-3 border-t border-warm-200">
-        <span className="text-[11px] text-warm-500 tracking-wide font-bold">
+        <span className="text-[11px] text-warm-600 tracking-wide font-bold">
           {teas.length} reviewed · {v.teaCount} catalogued
         </span>
         <Link

@@ -131,7 +131,7 @@ export default function DiscoverHub() {
                     {c.desc}
                   </p>
                   <div className="flex justify-between items-center pt-3.5 border-t border-warm-200">
-                    <span className="text-[11px] text-warm-500 tracking-widest uppercase font-bold">
+                    <span className="text-[11px] text-warm-600 tracking-widest uppercase font-bold">
                       {c.stat}
                     </span>
                     {!c.disabled && (

@@ -196,7 +196,7 @@ export function MemberSettingsView() {
                         <div className="font-display text-burgundy text-base font-medium">
                           {t.name}
                         </div>
-                        <div className="text-[11px] text-warm-500">
+                        <div className="text-[11px] text-warm-600">
                           {t.region}
                         </div>
                       </Link>
@@ -236,7 +236,7 @@ export function MemberSettingsView() {
           </div>
         </SettingsCard>
 
-        <div className="py-8 text-center text-xs text-warm-500">
+        <div className="py-8 text-center text-xs text-warm-600">
           Settings save automatically as you change them.
         </div>
       </Container>

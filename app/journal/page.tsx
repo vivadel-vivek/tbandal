@@ -85,7 +85,7 @@ export default function JournalIndex() {
                     who={p.author.toLowerCase() as "vivek" | "james"}
                     size={22}
                   />
-                  <span className="text-xs text-warm-500">
+                  <span className="text-xs text-warm-600">
                     {p.author} · {p.date}
                   </span>
                 </div>

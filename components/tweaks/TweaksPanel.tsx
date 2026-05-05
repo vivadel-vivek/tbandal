@@ -184,7 +184,7 @@ export function TweaksPanel() {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="mb-3 pb-3 border-b border-warm-200 last:border-b-0 last:pb-0 last:mb-0">
-      <div className="text-[10px] font-bold tracking-widest uppercase text-warm-500 mb-2.5">
+      <div className="text-[10px] font-bold tracking-widest uppercase text-warm-600 mb-2.5">
         {title}
       </div>
       <div className="flex flex-col gap-2.5">{children}</div>

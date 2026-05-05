@@ -57,7 +57,7 @@ export default function AboutPage() {
                   <h3 className="font-display italic text-burgundy font-medium m-0 text-hero-md">
                     {c.name}
                   </h3>
-                  <Eyebrow color="var(--warm-500, #857F79)">{c.palate}</Eyebrow>
+                  <Eyebrow color="var(--warm-600, #6B6560)">{c.palate}</Eyebrow>
                 </div>
               </div>
               <p className="text-sm text-warm-700 leading-relaxed m-0 mb-4">

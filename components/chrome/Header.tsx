@@ -94,7 +94,7 @@ export function Header() {
             <span className="font-display italic text-burgundy font-medium text-[22px]">
               Two Buds and a Leaf
             </span>
-            <span className="font-sans text-[9px] tracking-widest uppercase text-warm-500 mt-1">
+            <span className="font-sans text-[9px] tracking-widest uppercase text-warm-600 mt-1">
               Tea Library &amp; Journal
             </span>
           </div>

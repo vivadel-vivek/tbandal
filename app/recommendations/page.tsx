@@ -273,7 +273,7 @@ function RecRow({
       <div>
         <div className="flex gap-2 items-center mb-1">
           <TeaTypeTag type={tea.type} small />
-          <span className="text-[11px] text-warm-500 tracking-wider uppercase font-bold">
+          <span className="text-[11px] text-warm-600 tracking-wider uppercase font-bold">
             {tea.region}
           </span>
         </div>
@@ -289,7 +289,7 @@ function RecRow({
           {Math.round(score * 100)}% match
         </div>
         {!hideReviews && <RatingScore value={avg} />}
-        <span className="text-[11px] text-warm-500 font-mono">
+        <span className="text-[11px] text-warm-600 font-mono">
           ${tea.price.toFixed(2)}/g
         </span>
       </div>
@@ -336,7 +336,7 @@ function DifferentPanel({
               New territory · {Math.round((1 - score) * 100)}% novel
             </span>
             <div className="mt-3 px-3.5 py-3.5 bg-[var(--bg-elevated)] rounded-lg shadow-card border border-warm-200">
-              <Eyebrow color="var(--warm-500, #857F79)" className="text-[9px]">
+              <Eyebrow color="var(--warm-600, #6B6560)" className="text-[9px]">
                 You vs this tea
               </Eyebrow>
               <RadarChart
@@ -419,7 +419,7 @@ function BlindPanel({ teas }: { teas: { t: Tea; score: number }[] }) {
               <p className="text-xs text-warm-600 m-0 mb-2.5">
                 {t.region} · {t.year} · {t.elev}m
               </p>
-              <div className="text-[11px] text-warm-500 font-mono">
+              <div className="text-[11px] text-warm-600 font-mono">
                 {t.brewing.style} · {t.brewing.ratio} · {t.brewing.temp}
               </div>
               <Button variant="primary" size="sm" className="mt-3">

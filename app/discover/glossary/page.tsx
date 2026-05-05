@@ -59,7 +59,7 @@ export default function GlossaryPage() {
               <h2 className="font-display italic text-burgundy font-medium tracking-tight m-0 text-hero-lg">
                 {section.title}
               </h2>
-              <span className="text-[11px] text-warm-500 tracking-widest uppercase font-bold">
+              <span className="text-[11px] text-warm-600 tracking-widest uppercase font-bold">
                 {section.entries.length} entr
                 {section.entries.length === 1 ? "y" : "ies"}
               </span>
@@ -81,19 +81,19 @@ export default function GlossaryPage() {
                       {entry.term}
                     </h3>
                     {entry.original && (
-                      <span className="font-display italic text-warm-500 text-lg">
+                      <span className="font-display italic text-warm-600 text-lg">
                         {entry.original}
                       </span>
                     )}
                     {entry.aliases && entry.aliases.length > 0 && (
-                      <span className="text-[11px] text-warm-500 tracking-wide">
+                      <span className="text-[11px] text-warm-600 tracking-wide">
                         also: {entry.aliases.join(", ")}
                       </span>
                     )}
                     <a
                       href={`#${entry.slug}`}
                       aria-label={`Anchor to ${entry.term}`}
-                      className="ml-auto text-[11px] text-warm-500 hover:text-burgundy no-underline"
+                      className="ml-auto text-[11px] text-warm-600 hover:text-burgundy no-underline"
                     >
                       #
                     </a>
@@ -110,7 +110,7 @@ export default function GlossaryPage() {
 
                   {entry.related && entry.related.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-warm-200">
-                      <span className="text-[10px] tracking-widest uppercase font-bold text-warm-500 mr-1 self-center">
+                      <span className="text-[10px] tracking-widest uppercase font-bold text-warm-600 mr-1 self-center">
                         See also
                       </span>
                       {entry.related.map((slug) => {

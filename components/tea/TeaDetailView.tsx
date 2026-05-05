@@ -186,7 +186,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
         {memberBlind && (
           <div className="mt-8 mb-2 px-7 py-6 bg-[var(--bg-elevated)] border border-dashed border-warm-300 rounded-xl flex justify-between items-center gap-6 flex-wrap">
             <div className="flex-1 min-w-[280px]">
-              <div className="text-[11px] tracking-widest uppercase font-bold text-warm-500 mb-1.5">
+              <div className="text-[11px] tracking-widest uppercase font-bold text-warm-600 mb-1.5">
                 Blind mode · your setting
               </div>
               <div className="font-display italic text-burgundy leading-snug text-[24px]">
@@ -250,7 +250,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                     className={[
                       "px-5 py-2.5 rounded-pill border-0 cursor-pointer font-sans text-[13px] font-bold inline-flex items-center gap-2",
                       "transition-colors duration-200 ease-smooth",
-                      active ? "text-cream" : has ? "text-forest" : "text-warm-500 italic",
+                      active ? "text-cream" : has ? "text-forest" : "text-warm-600 italic",
                     ].join(" ")}
                     style={{
                       background: active ? activeBg : "transparent",
@@ -308,7 +308,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                   <div className="grid grid-cols-[1.2fr_1fr] gap-4 mt-3 items-center">
                     <MouthfeelGrid point={tea.mouthfeel} size={220} />
                     <div>
-                      <div className="text-[11px] text-warm-500 tracking-widest uppercase font-bold mb-1.5">
+                      <div className="text-[11px] text-warm-600 tracking-widest uppercase font-bold mb-1.5">
                         Finish
                       </div>
                       <div className="flex flex-col gap-1.5">
@@ -403,7 +403,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                                 ? "Your notes"
                                 : `${CONTRIBUTORS[safeTab].name}'s notes`}
                           </div>
-                          <Eyebrow color="var(--warm-500, #857F79)">
+                          <Eyebrow color="var(--warm-600, #6B6560)">
                             {review.date}
                           </Eyebrow>
                         </div>
@@ -438,7 +438,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
 
                     {review.session && (
                       <div className="bg-cream px-4 py-3 rounded-md mb-4 text-xs text-warm-700 font-mono">
-                        <div className="text-[10px] tracking-widest uppercase text-warm-500 mb-1 font-sans font-bold">
+                        <div className="text-[10px] tracking-widest uppercase text-warm-600 mb-1 font-sans font-bold">
                           Brewed
                         </div>
                         {review.session}
@@ -451,7 +451,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                         const tops = topFlavors(displayProfile, radarAxes);
                         return tops.length > 0 ? (
                           <div className="mb-4">
-                            <Eyebrow color="var(--warm-500, #857F79)">
+                            <Eyebrow color="var(--warm-600, #6B6560)">
                               {safeTab === "members"
                                 ? "Top notes — member consensus"
                                 : safeTab === "you"
@@ -683,8 +683,8 @@ function FlavorModeToggle({
           >
             {o.label}
             <span
-              className="text-[9px] font-medium"
-              style={{ opacity: active ? 0.85 : 0.55 }}
+              className="text-[10px] font-semibold"
+              style={{ opacity: active ? 0.95 : 0.85 }}
             >
               {o.sub}
             </span>
@@ -707,7 +707,7 @@ function LegendDot({ color, label }: { color: string; label: string }) {
 function Detail({ k, v }: { k: string; v: string | number }) {
   return (
     <div>
-      <div className="text-[10px] tracking-widest uppercase text-warm-500 font-bold">
+      <div className="text-[10px] tracking-widest uppercase text-warm-600 font-bold">
         {k}
       </div>
       <div className="text-[15px] text-forest mt-1 font-display">{v}</div>
@@ -722,7 +722,7 @@ function BrewingStat({ k, v, icon }: { k: string; v: string; icon: string }) {
         {icon}
       </span>
       <div>
-        <div className="text-[10px] tracking-widest uppercase text-warm-500 font-bold">
+        <div className="text-[10px] tracking-widest uppercase text-warm-600 font-bold">
           {k}
         </div>
         <div className="text-[15px] text-forest font-display">{v}</div>
