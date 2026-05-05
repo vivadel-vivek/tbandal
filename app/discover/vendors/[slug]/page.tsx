@@ -66,7 +66,14 @@ export default function VendorDetailPage({
               {vendor.body}
             </p>
             <div className="flex gap-3">
-              <Button variant="primary">Visit shop ↗</Button>
+              <a
+                href={`/go/${vendor.slug}`}
+                target="_blank"
+                rel="noopener nofollow sponsored"
+                className="no-underline"
+              >
+                <Button variant="primary">Visit shop ↗</Button>
+              </a>
               <Button variant="secondary">All teas ({vendor.teaCount})</Button>
             </div>
             <div className="flex gap-8 mt-8 pt-6 border-t border-warm-200">

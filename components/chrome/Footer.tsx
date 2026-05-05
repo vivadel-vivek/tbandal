@@ -1,6 +1,8 @@
 import Link from "next/link";
 
-const COLS: { title: string; items: { label: string; href?: string }[] }[] = [
+type Item = { label: string; href?: string; external?: boolean };
+
+const COLS: { title: string; items: Item[] }[] = [
   {
     title: "Explore",
     items: [
@@ -17,13 +19,13 @@ const COLS: { title: string; items: { label: string; href?: string }[] }[] = [
       { label: "About",        href: "/about" },
       { label: "Contributors", href: "/about" },
       { label: "Methodology",  href: "/about" },
-      { label: "Newsletter" },
+      { label: "For vendors",  href: "/for-vendors" },
     ],
   },
   {
     title: "Connect",
     items: [
-      { label: "hello@twobudsandaleaf.com" },
+      { label: "hello@twobudsandaleaf.com", href: "mailto:hello@twobudsandaleaf.com", external: true },
       { label: "RSS" },
       { label: "Mastodon" },
     ],
@@ -65,12 +67,21 @@ export function Footer() {
               {col.items.map((item) => (
                 <li key={item.label}>
                   {item.href ? (
-                    <Link
-                      href={item.href}
-                      className="text-[13px] text-warm-700 hover:text-burgundy no-underline"
-                    >
-                      {item.label}
-                    </Link>
+                    item.external ? (
+                      <a
+                        href={item.href}
+                        className="text-[13px] text-warm-700 hover:text-burgundy no-underline"
+                      >
+                        {item.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        className="text-[13px] text-warm-700 hover:text-burgundy no-underline"
+                      >
+                        {item.label}
+                      </Link>
+                    )
                   ) : (
                     <span className="text-[13px] text-warm-700">
                       {item.label}
@@ -85,7 +96,15 @@ export function Footer() {
 
       <div className="max-w-site mx-auto mt-8 pt-6 border-t border-warm-200 flex justify-between text-[11px] text-warm-500 tracking-wide">
         <span>© 2026 Two Buds and a Leaf · Brewed with care.</span>
-        <span>Affiliate disclosure · Privacy</span>
+        <span>
+          <Link href="/about#methodology" className="text-warm-500 hover:text-burgundy no-underline">
+            Affiliate disclosure
+          </Link>
+          {" · "}
+          <Link href="/about" className="text-warm-500 hover:text-burgundy no-underline">
+            Privacy
+          </Link>
+        </span>
       </div>
     </footer>
   );

@@ -24,6 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/discover/vendors`,  lastModified: now, changeFrequency: "weekly",  priority: 0.8 },
     { url: `${BASE}/discover/glossary`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/journal`,           lastModified: now, changeFrequency: "weekly",  priority: 0.8 },
+    { url: `${BASE}/for-vendors`,       lastModified: now, changeFrequency: "monthly", priority: 0.5 },
   ];
 
   const teaRoutes: MetadataRoute.Sitemap = TEAS.map((t) => ({

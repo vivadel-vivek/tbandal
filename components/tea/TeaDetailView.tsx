@@ -132,11 +132,18 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
   const toRadarValues = (vals: Record<string, number>) =>
     isBasic ? rollUpProfile(vals as FlavorProfile) : vals;
 
+  // "Visit shop" / "Buy from {vendor}" buttons in the hero send the
+  // visitor outbound through our /go/[slug] redirect so we can attribute
+  // referrals later. Opens in a new tab so people don't lose the article.
   const handleVisitVendor = () => {
     const v = vendorByName(tea.vendor);
-    if (v) window.location.href = `/discover/vendors/${v.slug}`;
+    if (v) window.open(`/go/${v.slug}`, "_blank", "noopener,noreferrer");
   };
   const handleLogSession = () => setShowRateModal(true);
+  // Used by the bottom burgundy vendor banner — rendered as an anchor
+  // for proper rel="nofollow sponsored" + indexable href semantics.
+  const vendorOutboundHref =
+    vendorByName(tea.vendor) && `/go/${vendorByName(tea.vendor)!.slug}`;
 
   return (
     <main>
@@ -528,13 +535,32 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
               style={{ color: "rgba(250,247,242,0.85)" }}
             >
               ${tea.price.toFixed(2)}/g · ${(tea.price * 5).toFixed(2)} per 5g
-              session
+              session ·{" "}
+              <span style={{ opacity: 0.7 }}>
+                affiliate link · we earn on referrals,{" "}
+                <Link href="/about#methodology" className="underline text-cream">
+                  how we rate
+                </Link>
+              </span>
             </p>
           </div>
           <div className="flex gap-2.5">
-            <Button variant="gold" size="lg" onClick={handleVisitVendor}>
-              Visit {tea.vendor} ↗
-            </Button>
+            {vendorOutboundHref ? (
+              <a
+                href={vendorOutboundHref}
+                target="_blank"
+                rel="noopener nofollow sponsored"
+                className="no-underline"
+              >
+                <Button variant="gold" size="lg">
+                  Visit {tea.vendor} ↗
+                </Button>
+              </a>
+            ) : (
+              <Button variant="gold" size="lg" onClick={handleVisitVendor}>
+                Visit {tea.vendor} ↗
+              </Button>
+            )}
             <Button
               variant="secondary"
               size="lg"

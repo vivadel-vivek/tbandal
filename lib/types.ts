@@ -157,6 +157,8 @@ export type Vendor = {
   founded: number;
   /** Strong-suit areas (chips on the directory card) */
   specialties: string[];
+  /** Vendor's outbound website URL — clicked through /go/[slug] for tracking. */
+  url: string;
 };
 
 export type PostCategory =

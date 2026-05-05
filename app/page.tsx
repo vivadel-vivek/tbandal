@@ -74,9 +74,9 @@ export default function Home() {
                 </Link>
               </div>
               <div className="flex gap-8 mt-10 pt-6 border-t border-warm-200">
-                <Stat n={TEAS.length + 38} label="Teas reviewed" />
-                <Stat n={POSTS.length + 24} label="Tasting essays" />
-                <Stat n={VENDORS.length + 9} label="Vendors covered" />
+                <Stat n={TEAS.length} label="Teas reviewed" />
+                <Stat n={POSTS.length} label="Tasting essays" />
+                <Stat n={VENDORS.length} label="Vendors covered" />
               </div>
             </div>
 
