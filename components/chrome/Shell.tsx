@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { ClientProviders } from "./ClientProviders";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { TweaksPanel } from "@/components/tweaks/TweaksPanel";
 
 export function Shell({ children }: { children: ReactNode }) {
   return (
@@ -15,6 +16,8 @@ export function Shell({ children }: { children: ReactNode }) {
         <div className="flex-1">{children}</div>
         <Footer />
       </div>
+      {/* Floating design-time controls — collapses to a pill when closed. */}
+      <TweaksPanel />
     </ClientProviders>
   );
 }
