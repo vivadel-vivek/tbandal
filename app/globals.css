@@ -12,12 +12,12 @@
    - base typography defaults that mirror the prototype's tokens.css
 */
 
-:root {
-  /* Type families — populated by next/font/google in layout.tsx */
-  --font-display: "Cormorant Garamond", Georgia, serif;
-  --font-serif:   "Cormorant Garamond", Georgia, serif;
-  --font-sans:    "Nunito Sans", system-ui, sans-serif;
+/* --font-display / --font-sans / --font-serif are set on <html> by
+   next/font/google in layout.tsx — DO NOT redefine them here, or the
+   class injected by next/font gets stomped and we fall back to system
+   serif/sans (which looks nothing like Cormorant + Nunito on Windows). */
 
+:root {
   /* Theme channels — switched by [data-theme] on <body>. Default = parchment. */
   --bg: #F5EFE6;
   --bg-elevated: #FFFFFF;
@@ -52,7 +52,10 @@
    BASE TYPOGRAPHY
    =========================================== */
 
-html { scroll-behavior: smooth; }
+/* The prototype uses Cormorant Garamond as both --font-display AND
+   --font-serif (review pull quotes, long-read body). Alias here so we
+   load the font once and use it from either token. */
+html { --font-serif: var(--font-display); scroll-behavior: smooth; }
 
 body {
   background: var(--bg);
