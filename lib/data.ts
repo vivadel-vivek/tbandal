@@ -35,7 +35,9 @@ export const CONTRIBUTORS: Record<"vivek" | "james", Contributor> = {
 
 export const TEAS: Tea[] = [
   {
-    slug: "gaba-shen", name: "Gaba Shen Pu'er", chinese: "茶王 普洱",
+    slug: "gaba-shen",
+    pathSlug: "gaba-shen-pu-er-spring-2023",
+    name: "Gaba Shen Pu'er", chinese: "茶王 普洱",
     type: "Pu'er", region: "Menghai, Yunnan", country: "China",
     year: "Spring 2023", harvest: "Spring",
     elev: 1800, age: "2 years", price: 0.68,
@@ -66,7 +68,9 @@ export const TEAS: Tea[] = [
     },
   },
   {
-    slug: "tieguanyin", name: "Tieguanyin", chinese: "铁观音",
+    slug: "tieguanyin",
+    pathSlug: "tieguanyin-spring-2024",
+    name: "Tieguanyin", chinese: "铁观音",
     type: "Oolong", region: "Anxi, Fujian", country: "China",
     year: "Spring 2024", harvest: "Spring",
     elev: 600, age: "fresh", price: 0.42,
@@ -97,7 +101,9 @@ export const TEAS: Tea[] = [
     },
   },
   {
-    slug: "longjing", name: "Longjing", chinese: "龙井",
+    slug: "longjing",
+    pathSlug: "longjing-pre-qingming-2024",
+    name: "Longjing", chinese: "龙井",
     type: "Green", region: "Hangzhou, Zhejiang", country: "China",
     year: "Spring 2024", harvest: "Pre-Qingming",
     elev: 400, age: "fresh", price: 0.38,
@@ -128,7 +134,9 @@ export const TEAS: Tea[] = [
     },
   },
   {
-    slug: "silver-needle", name: "Silver Needle", chinese: "白毫银针",
+    slug: "silver-needle",
+    pathSlug: "silver-needle-fuding-2024",
+    name: "Silver Needle", chinese: "白毫银针",
     type: "White", region: "Fuding, Fujian", country: "China",
     year: "Spring 2024", harvest: "First Pluck",
     elev: 800, age: "fresh", price: 0.55,
@@ -157,7 +165,9 @@ export const TEAS: Tea[] = [
     } satisfies TeaReviews,
   },
   {
-    slug: "dianhong", name: "Dianhong Gold", chinese: "滇红金芽",
+    slug: "dianhong",
+    pathSlug: "dianhong-gold-autumn-2023",
+    name: "Dianhong Gold", chinese: "滇红金芽",
     type: "Black", region: "Fengqing, Yunnan", country: "China",
     year: "Autumn 2023", harvest: "Autumn",
     elev: 1500, age: "6 months", price: 0.32,
@@ -186,7 +196,9 @@ export const TEAS: Tea[] = [
     } satisfies TeaReviews,
   },
   {
-    slug: "gyokuro", name: "Gyokuro Asahi", chinese: "玉露 朝日",
+    slug: "gyokuro",
+    pathSlug: "gyokuro-asahi-uji-2024",
+    name: "Gyokuro Asahi", chinese: "玉露 朝日",
     type: "Green", region: "Uji, Kyoto", country: "Japan",
     year: "First Flush 2024", harvest: "Shaded · 21 days",
     elev: 200, age: "fresh", price: 1.20,
@@ -297,6 +309,39 @@ export function teaAvg(tea: Tea): number {
 
 export function teaBySlug(slug: string): Tea | undefined {
   return TEAS.find((t) => t.slug === slug);
+}
+
+/**
+ * Vendor URL slug for a tea — derived from the tea's vendor name via
+ * VENDORS lookup. Centralised here so the routing convention has one
+ * source of truth.
+ */
+export function vendorSlugForTea(tea: Tea): string {
+  const v = vendorByName(tea.vendor);
+  if (!v) {
+    throw new Error(
+      `vendorSlugForTea: tea "${tea.slug}" references unknown vendor "${tea.vendor}"`,
+    );
+  }
+  return v.slug;
+}
+
+/** Canonical URL for a tea page: /tea/[vendor]/[pathSlug]. */
+export function teaUrl(tea: Tea): string {
+  return `/tea/${vendorSlugForTea(tea)}/${tea.pathSlug}`;
+}
+
+/**
+ * Look up a tea by its (vendor-slug, path-slug) pair — used by the
+ * /tea/[vendor]/[slug] route handler. Both segments must match.
+ */
+export function teaByVendorAndSlug(
+  vendorSlug: string,
+  pathSlug: string,
+): Tea | undefined {
+  return TEAS.find(
+    (t) => t.pathSlug === pathSlug && vendorSlugForTea(t) === vendorSlug,
+  );
 }
 
 /**

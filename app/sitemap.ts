@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { POSTS, TEAS, VENDORS } from "@/lib/data";
+import { POSTS, TEAS, VENDORS, teaUrl } from "@/lib/data";
 
 const BASE =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   const teaRoutes: MetadataRoute.Sitemap = TEAS.map((t) => ({
-    url: `${BASE}/tea/${t.slug}`,
+    url: `${BASE}${teaUrl(t)}`,
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.8,

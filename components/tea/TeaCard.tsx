@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import type { CardDensity, Tea } from "@/lib/types";
-import { teaAvg } from "@/lib/data";
+import { teaAvg, teaUrl } from "@/lib/data";
 import { TeaTypeTag } from "@/components/ui/TeaTypeTag";
 import { StarRow } from "@/components/ui/StarRow";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -22,7 +22,7 @@ export function TeaCard({ tea, density = "cozy", hideReviews = false }: Props) {
 
   return (
     <Link
-      href={`/tea/${tea.slug}`}
+      href={teaUrl(tea)}
       className="block no-underline group card-surface card-surface-hover overflow-hidden"
     >
       <div

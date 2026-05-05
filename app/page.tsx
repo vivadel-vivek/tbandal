@@ -13,6 +13,7 @@ import {
   VENDORS,
   featuredTea,
   latestPost,
+  teaUrl,
 } from "@/lib/data";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -82,7 +83,7 @@ export default function Home() {
             {/* Featured tea card — "today's pour" */}
             <div className="relative">
               <Link
-                href={`/tea/${featured.slug}`}
+                href={teaUrl(featured)}
                 className="block no-underline relative rounded-2xl shadow-elevated overflow-hidden aspect-[4/5]"
                 style={{ background: featured.gradient }}
               >

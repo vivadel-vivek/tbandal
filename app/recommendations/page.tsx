@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Tea, FlavorProfile } from "@/lib/types";
-import { CONTRIBUTORS, TEAS, featuredTea, teaAvg } from "@/lib/data";
+import { CONTRIBUTORS, TEAS, featuredTea, teaAvg, teaUrl } from "@/lib/data";
 import { FLAVOR_AXES, compositeProfile, profileOverlap } from "@/lib/flavor";
 import { useMember } from "@/contexts/MemberContext";
 import { useTweaks } from "@/contexts/TweaksContext";
@@ -229,7 +229,7 @@ function RecRow({
   const avg = teaAvg(tea);
   return (
     <Link
-      href={`/tea/${tea.slug}`}
+      href={teaUrl(tea)}
       className="no-underline group bg-[var(--bg-elevated)] rounded-xl p-4.5 shadow-card border border-warm-200 grid items-center gap-4.5 cursor-pointer transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5"
       style={{ gridTemplateColumns: "auto 100px 1fr auto", padding: 18, gap: 18 }}
     >
@@ -335,8 +335,8 @@ function DifferentPanel({
 
 function BlindPanel({ teas }: { teas: { t: Tea; score: number }[] }) {
   const router = useRouter();
-  const launchBlind = (slug: string) => {
-    router.push(`/tea/${slug}?blind=1`);
+  const launchBlind = (tea: Tea) => {
+    router.push(`${teaUrl(tea)}?blind=1`);
   };
 
   return (
@@ -366,7 +366,7 @@ function BlindPanel({ teas }: { teas: { t: Tea; score: number }[] }) {
         {teas.map(({ t }) => (
           <article
             key={t.slug}
-            onClick={() => launchBlind(t.slug)}
+            onClick={() => launchBlind(t)}
             className="bg-[var(--bg-elevated)] rounded-xl shadow-card border border-warm-200 overflow-hidden cursor-pointer transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5 grid"
             style={{ gridTemplateColumns: "140px 1fr" }}
           >

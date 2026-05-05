@@ -95,7 +95,15 @@ export type TeaTypeName =
   | "Green" | "White" | "Yellow" | "Oolong" | "Black" | "Pu'er" | "Herbal";
 
 export type Tea = {
+  /** Legacy short slug — kept so old /tea/[slug] links still resolve via 301 */
   slug: string;
+  /**
+   * Second URL segment in the canonical /tea/[vendor]/[pathSlug] route.
+   * Encodes name + harvest/grade + year to keep URLs unique within a
+   * vendor and SEO-readable.
+   * Example: "gaba-shen-pu-er-spring-2023".
+   */
+  pathSlug: string;
   name: string;
   /** Original-script name, e.g. 茶王 普洱 */
   chinese?: string;

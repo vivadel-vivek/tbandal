@@ -6,6 +6,7 @@ import {
   CONTINENT_ORDER,
   TEAS,
   groupVendorsByGeography,
+  teaUrl,
 } from "@/lib/data";
 
 export const revalidate = 3600;
@@ -168,7 +169,7 @@ function VendorCard({ vendor: v }: { vendor: Vendor }) {
           {teas.slice(0, 4).map((t) => (
             <Link
               key={t.slug}
-              href={`/tea/${t.slug}`}
+              href={teaUrl(t)}
               className="px-2.5 py-1 rounded-pill text-[11px] font-semibold text-forest font-sans no-underline"
               style={{
                 border: `1px solid ${t.swatch}66`,

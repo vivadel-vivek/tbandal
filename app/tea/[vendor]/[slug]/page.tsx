@@ -1,27 +1,37 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { TEAS, teaBySlug } from "@/lib/data";
+import {
+  TEAS,
+  teaByVendorAndSlug,
+  vendorSlugForTea,
+} from "@/lib/data";
 import { compositeProfile, profileOverlap } from "@/lib/flavor";
 import type { Tea } from "@/lib/types";
 import { TeaDetailView } from "@/components/tea/TeaDetailView";
 
-// ISR: pre-render every tea at build, revalidate hourly,
+// ISR: pre-render every (vendor, slug) pair at build, revalidate hourly,
 // dynamicParams: true so newly-added teas ISR on first request.
 export const revalidate = 3600;
 export const dynamicParams = true;
 
-export function generateStaticParams() {
-  return TEAS.map((t) => ({ slug: t.slug }));
+type Params = { vendor: string; slug: string };
+
+export function generateStaticParams(): Params[] {
+  return TEAS.map((t) => ({
+    vendor: vendorSlugForTea(t),
+    slug: t.pathSlug,
+  }));
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Params;
 }): Promise<Metadata> {
-  const tea = teaBySlug(params.slug);
+  const tea = teaByVendorAndSlug(params.vendor, params.slug);
   if (!tea) return { title: "Tea not found" };
-  const desc = tea.summary.length > 155 ? tea.summary.slice(0, 152) + "…" : tea.summary;
+  const desc =
+    tea.summary.length > 155 ? tea.summary.slice(0, 152) + "…" : tea.summary;
   return {
     title: tea.name,
     description: desc,
@@ -47,10 +57,10 @@ export default function TeaDetailPage({
   params,
   searchParams,
 }: {
-  params: { slug: string };
+  params: Params;
   searchParams: { blind?: string };
 }) {
-  const tea = teaBySlug(params.slug);
+  const tea = teaByVendorAndSlug(params.vendor, params.slug);
   if (!tea) notFound();
 
   const similar = findSimilar(tea);
