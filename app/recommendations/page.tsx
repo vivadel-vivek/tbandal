@@ -1,5 +1,8 @@
 "use client";
 
+// Recommendations are member-driven; can't pre-render. Force-dynamic so
+// the SSR shell ships fresh per-request once auth attaches the user.
+
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

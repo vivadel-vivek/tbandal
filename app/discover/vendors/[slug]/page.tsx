@@ -9,6 +9,11 @@ import { Stat } from "@/components/ui/Stat";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { TeaCard } from "@/components/tea/TeaCard";
 
+// ISR: pre-render all vendors at build, revalidate hourly,
+// dynamicParams: true so newly-published vendors render on first hit.
+export const revalidate = 3600;
+export const dynamicParams = true;
+
 export function generateStaticParams() {
   return VENDORS.map((v) => ({ slug: v.slug }));
 }

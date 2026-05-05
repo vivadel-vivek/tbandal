@@ -1,8 +1,11 @@
 // Server component — entire home page is static editorial except the
 // "Recently brewed" tea grid, which is a client island consuming
-// member + tweaks contexts.
+// member + tweaks contexts. ISR every hour; on-demand revalidation
+// fires from the Airtable webhook when teas/posts change.
 
 import Link from "next/link";
+
+export const revalidate = 3600;
 import {
   CONTRIBUTORS,
   POSTS,

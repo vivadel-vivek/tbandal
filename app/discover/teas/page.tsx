@@ -4,6 +4,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { TEAS, VENDORS } from "@/lib/data";
+
+export const revalidate = 3600;
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { TeaBrowser } from "@/components/tea/TeaBrowser";

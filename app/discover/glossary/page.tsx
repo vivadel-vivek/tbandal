@@ -3,6 +3,10 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 
+// Glossary content is mostly fixed copy; revalidate weekly when Phase 2
+// content lands so editorial corrections propagate without a deploy.
+export const revalidate = 604800;
+
 export const metadata: Metadata = {
   title: "Glossary",
   description:

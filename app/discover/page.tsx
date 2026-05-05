@@ -1,6 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { TEAS, VENDORS } from "@/lib/data";
+
+// Hub page — pure copy. Revalidate weekly so vendor/tea counts refresh.
+export const revalidate = 604800;
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { TeaStain } from "@/components/ui/TeaStain";

@@ -5,6 +5,11 @@ import { compositeProfile, profileOverlap } from "@/lib/flavor";
 import type { Tea } from "@/lib/types";
 import { TeaDetailView } from "@/components/tea/TeaDetailView";
 
+// ISR: pre-render every tea at build, revalidate hourly,
+// dynamicParams: true so newly-added teas ISR on first request.
+export const revalidate = 3600;
+export const dynamicParams = true;
+
 export function generateStaticParams() {
   return TEAS.map((t) => ({ slug: t.slug }));
 }

@@ -7,6 +7,8 @@ import {
   TEAS,
   groupVendorsByGeography,
 } from "@/lib/data";
+
+export const revalidate = 3600;
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { StarRow } from "@/components/ui/StarRow";

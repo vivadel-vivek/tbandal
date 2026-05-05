@@ -27,7 +27,14 @@ export const metadata: Metadata = {
   },
   description:
     "A two-person tea journal. Single-origin reviews, a 12-axis flavor radar, and brewing parameters that actually got the cup we describe.",
-  metadataBase: new URL("http://localhost:3000"),
+  // Resolve from explicit site URL → Vercel preview URL → localhost fallback.
+  // Affects all OG / og:image / canonical paths derived from metadata.
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ??
+      (process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000"),
+  ),
   openGraph: {
     title: "Two Buds and a Leaf",
     description:
