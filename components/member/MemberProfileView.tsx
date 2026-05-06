@@ -6,7 +6,6 @@ import { CONTRIBUTORS, TEAS, teaUrl } from "@/lib/data";
 import { FLAVOR_AXES } from "@/lib/flavor";
 import type { ContributorKey, FlavorProfile } from "@/lib/types";
 import { useMember } from "@/contexts/MemberContext";
-import { useTweaks } from "@/contexts/TweaksContext";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -21,7 +20,6 @@ import { RadarChart } from "@/components/tea/RadarChart";
  */
 export function MemberProfileView() {
   const { member, setMember } = useMember();
-  const { tweaks } = useTweaks();
 
   const aligned = CONTRIBUTORS[member.aligned];
 
@@ -68,9 +66,14 @@ export function MemberProfileView() {
               preferences and we recommend better matches.
             </p>
           </div>
-          <Link href="/member/settings">
-            <Button variant="secondary">Settings →</Button>
-          </Link>
+          <div className="flex gap-2 flex-wrap">
+            <Link href="/member/library">
+              <Button variant="secondary">Library →</Button>
+            </Link>
+            <Link href="/member/settings">
+              <Button variant="secondary">Settings →</Button>
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-6 sm:gap-10 items-start">
@@ -107,7 +110,7 @@ export function MemberProfileView() {
                       ? [{ values: alignedProfile, color: aligned.color }]
                       : []),
                   ]}
-                  style={tweaks.radarStyle}
+                  style="fill"
                   size={420}
                 />
                 <div className="flex gap-4 justify-center mt-4 pt-4 border-t border-warm-200">

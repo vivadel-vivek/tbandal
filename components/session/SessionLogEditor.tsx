@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   FlavorProfile,
   MemberRating,
@@ -45,11 +45,18 @@ const ZERO_MOUTHFEEL = (): Mouthfeel => ({ astringent: 5, bodyFull: 5 });
 
 export function SessionLogEditor({ tea, initial: initialProp }: Props) {
   const router = useRouter();
-  const { upsertRating, member } = useMember();
+  const { upsertRating, member, findUserTeaBySlug, setTeaStatus } = useMember();
   // Fall back to the member's existing rating for this tea — turns this
   // page into "edit your session" automatically when one already exists.
   const initial: MemberRating | undefined =
     initialProp ?? member.ratings.find((r) => r.slug === tea.slug);
+
+  // Add-to-library prompt: shown after a successful save when the tea
+  // isn't already in the user's library. The pending payload waits in
+  // state while the user picks a status (or skips). On selection we
+  // commit the rating + status and route home.
+  const [showLibraryPrompt, setShowLibraryPrompt] = useState(false);
+  const [pendingRating, setPendingRating] = useState<MemberRating | null>(null);
 
   // ---- session-level state ------------------------------------------
   const [scale, setScale] = useState<Scale>(
@@ -178,7 +185,29 @@ export function SessionLogEditor({ tea, initial: initialProp }: Props) {
       leafG: leafG.trim() ? Number(leafG) : undefined,
       waterMl: waterMl.trim() ? Number(waterMl) : undefined,
     };
+    // If the tea isn't already in the user's library, surface the add-
+    // to-library prompt before committing. The rating waits in state
+    // until the user picks a status (or skips).
+    const inLibrary = findUserTeaBySlug(tea.slug) !== undefined;
+    if (!inLibrary && !initial) {
+      setPendingRating(rating);
+      setShowLibraryPrompt(true);
+      return;
+    }
     upsertRating(rating);
+    router.push(`/tea/${vendorSlug(tea)}/${tea.pathSlug}`);
+  };
+
+  // Called when the user resolves the add-to-library prompt — commits
+  // the pending rating, optionally adds the tea to the library at the
+  // chosen status, and redirects to the tea page.
+  const resolveLibraryPrompt = (
+    decision: "wishlist" | "owned" | "tried" | "retired" | "skip",
+  ) => {
+    if (pendingRating) upsertRating(pendingRating);
+    if (decision !== "skip") setTeaStatus(tea.slug, decision);
+    setShowLibraryPrompt(false);
+    setPendingRating(null);
     router.push(`/tea/${vendorSlug(tea)}/${tea.pathSlug}`);
   };
 
@@ -356,7 +385,125 @@ export function SessionLogEditor({ tea, initial: initialProp }: Props) {
       </div>
 
       <div className="h-16" />
+
+      {showLibraryPrompt && (
+        <AddToLibraryPrompt
+          teaName={tea.name}
+          onPick={resolveLibraryPrompt}
+        />
+      )}
     </Container>
+  );
+}
+
+// =====================================================================
+// AddToLibraryPrompt — modal shown once, after the first session for a
+// tea that isn't yet in the user's library. Per the audit conversation
+// (Option B), we ask the user where this tea fits before committing —
+// "Tried" is the most common path so it's the visual primary, but the
+// other statuses are first-class options. "Just this once" skips
+// adding entirely while still saving the session.
+// =====================================================================
+function AddToLibraryPrompt({
+  teaName,
+  onPick,
+}: {
+  teaName: string;
+  onPick: (
+    d: "wishlist" | "owned" | "tried" | "retired" | "skip",
+  ) => void;
+}) {
+  // Esc dismisses to "skip" — don't strand the user on a modal they
+  // can't close without making a choice.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onPick("skip");
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onPick]);
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Add this tea to your library?"
+      className="fixed inset-0 z-50 bg-burgundy/30 backdrop-blur-[2px] flex items-center justify-center px-4"
+    >
+      <div className="bg-[var(--bg-elevated)] rounded-xl shadow-elevated max-w-[440px] w-full p-6 sm:p-7">
+        <Eyebrow>Session saved</Eyebrow>
+        <h2 className="font-display italic text-burgundy font-medium tracking-tight m-0 mt-2 mb-3 text-[24px] sm:text-[28px]">
+          Add {teaName} to your library?
+        </h2>
+        <p className="text-[13px] text-warm-700 leading-relaxed mb-5">
+          We&apos;ll use it for restock pings, recommendations, and the
+          finished-tea reorder loop later. Pick the status that fits — you
+          can change it any time.
+        </p>
+        <div className="grid grid-cols-2 gap-2.5 mb-3">
+          <PromptOption
+            label="Tried"
+            hint="I've brewed it"
+            onClick={() => onPick("tried")}
+            primary
+          />
+          <PromptOption
+            label="Owned"
+            hint="It's on my shelf"
+            onClick={() => onPick("owned")}
+          />
+          <PromptOption
+            label="Wishlist"
+            hint="I want more"
+            onClick={() => onPick("wishlist")}
+          />
+          <PromptOption
+            label="Finished"
+            hint="All gone — flag for restock pings"
+            onClick={() => onPick("retired")}
+          />
+        </div>
+        <button
+          type="button"
+          onClick={() => onPick("skip")}
+          className="w-full text-center py-2 text-[12px] text-warm-600 hover:text-burgundy bg-transparent border-0 cursor-pointer"
+        >
+          Just this once — don&apos;t add to library
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PromptOption({
+  label,
+  hint,
+  onClick,
+  primary,
+}: {
+  label: string;
+  hint: string;
+  onClick: () => void;
+  primary?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "text-left rounded-lg px-3.5 py-3 border cursor-pointer transition-colors",
+        primary
+          ? "bg-burgundy text-cream border-burgundy hover:bg-burgundy-dark"
+          : "bg-cream text-forest border-warm-300 hover:bg-warm-100",
+      ].join(" ")}
+    >
+      <div className="font-display font-medium text-[15px] leading-tight">
+        {label}
+      </div>
+      <div className={`text-[11px] mt-0.5 leading-snug ${primary ? "opacity-85" : "text-warm-600"}`}>
+        {hint}
+      </div>
+    </button>
   );
 }
 

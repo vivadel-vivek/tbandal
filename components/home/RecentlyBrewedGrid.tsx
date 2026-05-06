@@ -2,19 +2,19 @@
 
 import type { Tea } from "@/lib/types";
 import { useMember } from "@/contexts/MemberContext";
-import { useTweaks } from "@/contexts/TweaksContext";
 import { TeaCard } from "@/components/tea/TeaCard";
 
 /**
  * Client island that renders the 3-column "Recently brewed" grid on the
- * home page. Reads `tweaks.density` and `member.settings.flavorMode` to
- * choose card density + per-tea hideReviews. The parent page stays RSC
- * and passes the tea list down as serializable JSON.
+ * home page. Reads `member.settings.flavorMode` to choose per-tea
+ * hideReviews; the parent page stays RSC and passes the tea list down
+ * as serializable JSON.
+ *
+ * Density was a tweaks-panel toggle (cozy / compact); the grid now
+ * uses the cozy default unconditionally.
  */
 export function RecentlyBrewedGrid({ teas }: { teas: Tea[] }) {
   const { isBlindFor } = useMember();
-  const { tweaks } = useTweaks();
-  const hide = (slug: string) => tweaks.hideReviews || isBlindFor(slug);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
@@ -22,8 +22,8 @@ export function RecentlyBrewedGrid({ teas }: { teas: Tea[] }) {
         <TeaCard
           key={t.slug}
           tea={t}
-          density={tweaks.density}
-          hideReviews={hide(t.slug)}
+          density="cozy"
+          hideReviews={isBlindFor(t.slug)}
         />
       ))}
     </div>

@@ -6,6 +6,7 @@ import { TeaTypeTag } from "@/components/ui/TeaTypeTag";
 import { RatingScore } from "@/components/ui/RatingScore";
 import { TeaStain } from "@/components/ui/TeaStain";
 import { Glossarized } from "@/components/glossary/Glossarized";
+import { LibraryStatusToggle } from "@/components/library/LibraryStatusToggle";
 
 type Props = {
   tea: Tea;
@@ -102,13 +103,14 @@ function HeroSplit({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
         <p className="text-[17px] text-warm-700 leading-relaxed mb-5">
           <Glossarized>{tea.summary}</Glossarized>
         </p>
-        <div className="flex gap-2.5">
+        <div className="flex gap-2.5 flex-wrap items-center">
           <Button variant="primary" onClick={onLogSession}>
             Log a session
           </Button>
           <Button variant="secondary" onClick={onVisitVendor}>
             Buy from {tea.vendor} ↗
           </Button>
+          <LibraryStatusToggle kind="tea" slug={tea.slug} size="md" />
         </div>
       </div>
     </div>
@@ -172,13 +174,14 @@ function HeroStain({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
         >
           &ldquo;<Glossarized>{tea.summary}</Glossarized>&rdquo;
         </p>
-        <div className="inline-flex gap-2.5">
+        <div className="inline-flex gap-2.5 flex-wrap items-center justify-center">
           <Button variant="primary" size="lg" onClick={onLogSession}>
             Log a session
           </Button>
           <Button variant="secondary" size="lg" onClick={onVisitVendor}>
             Buy from {tea.vendor} ↗
           </Button>
+          <LibraryStatusToggle kind="tea" slug={tea.slug} size="md" />
         </div>
         <div
           className="mt-10 rounded-2xl shadow-elevated"
@@ -254,10 +257,11 @@ function HeroEditorial({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<P
             </span>
             <Glossarized>{tea.summary.slice(1)}</Glossarized>
           </p>
-          <div className="flex gap-2.5">
+          <div className="flex gap-2.5 flex-wrap items-center">
             <Button variant="primary" onClick={onLogSession}>
               Log a session
             </Button>
+            <LibraryStatusToggle kind="tea" slug={tea.slug} size="md" />
             <Button variant="secondary" onClick={onVisitVendor}>
               Buy from {tea.vendor} ↗
             </Button>

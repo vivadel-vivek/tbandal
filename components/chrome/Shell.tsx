@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { ClientProviders } from "./ClientProviders";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
-import { TweaksPanel } from "@/components/tweaks/TweaksPanel";
+import { SessionLogLauncher } from "@/components/session/SessionLogLauncher";
 
 export function Shell({ children }: { children: ReactNode }) {
   return (
@@ -16,8 +16,11 @@ export function Shell({ children }: { children: ReactNode }) {
         <div className="flex-1">{children}</div>
         <Footer />
       </div>
-      {/* Floating design-time controls — collapses to a pill when closed. */}
-      <TweaksPanel />
+      {/* Floating "Log a session" launcher — replaces the old tweaks
+          panel. Reads the current pathname for contextual prefill,
+          gated to members (currently localStorage-backed; Phase B
+          flips to Supabase auth). */}
+      <SessionLogLauncher />
     </ClientProviders>
   );
 }

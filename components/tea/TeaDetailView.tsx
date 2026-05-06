@@ -16,7 +16,6 @@ import type {
 import { CONTRIBUTORS, vendorByName } from "@/lib/data";
 import { BASIC_AXES, FLAVOR_AXES, rollUpProfile, topFlavors } from "@/lib/flavor";
 import { useMember } from "@/contexts/MemberContext";
-import { useTweaks } from "@/contexts/TweaksContext";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -53,8 +52,11 @@ function memberRatingToReview(r: MemberRating): ReviewBody {
 
 export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
   const { member, isBlindFor, unblind } = useMember();
-  const { tweaks } = useTweaks();
   const router = useRouter();
+  // Composite-radar overlay (all three palates at once) is now stored
+  // on member settings — used to be a tweaks-panel toggle. Off by default
+  // for newcomers; opt-in via /member/settings.
+  const showComposite = member.settings.composite;
 
   // Bind once and let TS narrow naturally — no `memberRating!` needed.
   const mr = member.ratings.find((r) => r.slug === tea.slug);
@@ -73,7 +75,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
     : FLAVOR_AXES;
 
   // Member-level blind state for THIS tea (vs the Discover-launched blind flow)
-  const isBlinded = isBlindFor(tea.slug) || tweaks.hideReviews || blindMode;
+  const isBlinded = isBlindFor(tea.slug) || blindMode;
   const memberBlind = isBlinded && memberMode === "blind" && !blindMode;
 
   const reviewMap: Record<ReviewTab, ReviewBody | null> = {
@@ -102,7 +104,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
   const profilesForRadar: RP[] = useMemo(() => {
     const toRadar = (v: Record<string, number>) =>
       isBasic ? rollUpProfile(v as FlavorProfile) : v;
-    const raw: RP[] = tweaks.showComposite
+    const raw: RP[] = showComposite
       ? [
           ...(tea.reviews.vivek
             ? [{ values: tea.flavor.vivek, color: CONTRIBUTORS.vivek.color, label: "Vivek" }]
@@ -129,7 +131,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
           ]
         : [];
     return raw.map((p) => ({ ...p, values: toRadar(p.values) }));
-  }, [tweaks.showComposite, tea, profile, safeTab, mr, isBasic]);
+  }, [showComposite, tea, profile, safeTab, mr, isBasic]);
 
   // Helper used outside the memo for non-radar consumers (top notes badges)
   const toRadarValues = (vals: Record<string, number>) =>
@@ -163,7 +165,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
 
         <TeaHero
           tea={tea}
-          variant={tweaks.heroVariant}
+          variant="split"
           hideReviews={isBlinded}
           onVisitVendor={handleVisitVendor}
           onLogSession={handleLogSession}
@@ -287,7 +289,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                   </Eyebrow>
                   <FlavorModeToggle mode={displayMode} onChange={setDisplayMode} />
                 </div>
-                {tweaks.showComposite && (
+                {showComposite && (
                   <div className="flex gap-3 text-[11px] text-warm-600 flex-wrap mb-1">
                     {tea.reviews.vivek && <LegendDot color={CONTRIBUTORS.vivek.color} label="Vivek" />}
                     {tea.reviews.james && <LegendDot color={CONTRIBUTORS.james.color} label="James" />}
@@ -298,7 +300,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                 <RadarChart
                   profiles={profilesForRadar}
                   axes={radarAxes}
-                  style={tweaks.radarStyle}
+                  style="fill"
                   size={400}
                 />
                 {isBasic && (

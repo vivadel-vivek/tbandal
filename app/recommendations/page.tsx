@@ -10,7 +10,6 @@ import type { Tea, FlavorProfile } from "@/lib/types";
 import { CONTRIBUTORS, TEAS, teaAvg, teaUrl } from "@/lib/data";
 import { FLAVOR_AXES, compositeProfile, profileOverlap } from "@/lib/flavor";
 import { useMember } from "@/contexts/MemberContext";
-import { useTweaks } from "@/contexts/TweaksContext";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -32,7 +31,6 @@ const MODES: { key: Mode; label: string; desc: string }[] = [
 
 export default function RecommendationsPage() {
   const { member, isBlindFor } = useMember();
-  const { tweaks } = useTweaks();
   const [mode, setMode] = useState<Mode>("recommend");
 
   const targetProfile = useMemo<Profile>(() => {
@@ -105,7 +103,7 @@ export default function RecommendationsPage() {
   const blindCandidates = ranked.slice(0, 4);
 
   const aligned = CONTRIBUTORS[member.aligned];
-  const hide = (slug: string) => tweaks.hideReviews || isBlindFor(slug);
+  const hide = (slug: string) => isBlindFor(slug);
 
   return (
     <main>
@@ -162,7 +160,7 @@ export default function RecommendationsPage() {
           <RecommendPanel
             recommended={recommended}
             target={targetProfile}
-            radarStyle={tweaks.radarStyle}
+            radarStyle="fill"
             isBlindFor={hide}
           />
         )}
@@ -170,7 +168,7 @@ export default function RecommendationsPage() {
           <DifferentPanel
             teas={different}
             target={targetProfile}
-            radarStyle={tweaks.radarStyle}
+            radarStyle="fill"
             isBlindFor={hide}
           />
         )}

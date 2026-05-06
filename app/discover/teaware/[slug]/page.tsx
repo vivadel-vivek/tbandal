@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { StarRow } from "@/components/ui/StarRow";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { TeaCard } from "@/components/tea/TeaCard";
+import { LibraryStatusToggle } from "@/components/library/LibraryStatusToggle";
 
 // ISR: pre-render all teaware at build, revalidate hourly,
 // dynamicParams: true so newly-listed items render on first hit.
@@ -91,7 +92,7 @@ export default function TeawareDetailPage({
               </p>
             ))}
 
-            <div className="flex gap-3 mt-6">
+            <div className="flex gap-3 mt-6 flex-wrap items-center">
               <a
                 href={`/go/teaware/${item.slug}`}
                 target="_blank"
@@ -102,6 +103,7 @@ export default function TeawareDetailPage({
                   Buy from {item.vendor} ↗
                 </Button>
               </a>
+              <LibraryStatusToggle kind="teaware" slug={item.slug} size="md" />
               {internalVendor && (
                 <Link
                   href={`/discover/vendors/${internalVendor.slug}`}

@@ -335,22 +335,71 @@ export type Member = {
   aligned: ContributorKey;
   ratings: MemberRating[];
   settings: MemberSettings;
+  /** User's saved tea collection — links to catalog teas or holds
+   *  free-form entries for teas we don't review. Phase A scaffolds
+   *  this in localStorage; Phase B persists in Supabase. */
+  library: UserLibrary;
 };
 
 // =====================================================================
-// TWEAKS — design-time overrides
+// LIBRARY — user-owned collections of teas and teaware
+// =====================================================================
+//
+// Two libraries (teas, teaware) of the same shape: each entry tracks a
+// catalog reference (when the item is one we review) OR free-form
+// fields (custom_*) for off-catalog items. Status moves through the
+// natural lifecycle as the user wishlist → owns → tries → retires the
+// item; downstream features (restock notifications, "you finished this"
+// prompts) read off these states.
+
+export type UserTeaStatus = "wishlist" | "owned" | "tried" | "retired";
+export type UserTeawareStatus = "wishlist" | "owned";
+
+export type UserTea = {
+  /** Stable ID — random uuid in localStorage scaffolding, Postgres uuid in Phase B. */
+  id: string;
+  /** When the user added it to their library, ISO date string. */
+  addedAt: string;
+  /** Current state. Affects sort + filter on /member/library. */
+  status: UserTeaStatus;
+  /** Catalog tea slug when the user added a reviewed tea. NULL means
+   *  the user added a tea we don't catalog (custom fields below). */
+  teaSlug: string | null;
+  /** Free-form fields used only when teaSlug is null. */
+  customName?: string;
+  customVendor?: string;
+  customYear?: string;
+  customType?: TeaTypeName;
+  /** Free-form notes the user keeps about the tea (storage history,
+   *  cake number, gift origin, etc.) — separate from session notes. */
+  notes?: string;
+};
+
+export type UserTeaware = {
+  id: string;
+  addedAt: string;
+  status: UserTeawareStatus;
+  /** Catalog teaware slug, or NULL for off-catalog items. */
+  teawareSlug: string | null;
+  customName?: string;
+  customMaterial?: string;
+  customVolumeMl?: number;
+  notes?: string;
+};
+
+export type UserLibrary = {
+  teas: UserTea[];
+  teaware: UserTeaware[];
+};
+
+// =====================================================================
+// VARIANT TYPES — kept as exported unions because TeaCard, RadarChart,
+// and TeaHero still take them as props (the design supports multiple
+// variants even though we ship the defaults). The Tweaks bundle and
+// runtime panel were removed in Phase A; per-component density / radar
+// style / hero variant are baked-in callers of these unions.
 // =====================================================================
 
 export type RadarStyle = "fill" | "outline" | "dotted";
 export type CardDensity = "cozy" | "compact";
 export type HeroVariant = "split" | "stain" | "editorial";
-
-export type Tweaks = {
-  theme: "parchment" | "cream" | "dark";
-  radarStyle: RadarStyle;
-  density: CardDensity;
-  heroVariant: HeroVariant;
-  showComposite: boolean;
-  /** Force-hide reviews + ratings (design preview override) */
-  hideReviews: boolean;
-};

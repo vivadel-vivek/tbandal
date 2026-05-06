@@ -4,7 +4,6 @@ import { useState } from "react";
 import { teaAvg } from "@/lib/data";
 import type { Tea, TeaTypeName, Vendor } from "@/lib/types";
 import { useMember } from "@/contexts/MemberContext";
-import { useTweaks } from "@/contexts/TweaksContext";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { TeaCard } from "@/components/tea/TeaCard";
 
@@ -34,8 +33,7 @@ export function TeaBrowser({ teas, vendors }: Props) {
   const [region, setRegion] = useState<string>("All");
   const [sort, setSort] = useState<SortKey>("rating");
   const { isBlindFor } = useMember();
-  const { tweaks } = useTweaks();
-  const hide = (slug: string) => tweaks.hideReviews || isBlindFor(slug);
+  const hide = (slug: string) => isBlindFor(slug);
 
   const regions: string[] = [
     "All",
@@ -131,18 +129,12 @@ export function TeaBrowser({ teas, vendors }: Props) {
             })}
           </div>
         </div>
-        <div
-          className={
-            tweaks.density === "compact"
-              ? "grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5"
-              : "grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5"
-          }
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           {filtered.map((t) => (
             <TeaCard
               key={t.slug}
               tea={t}
-              density={tweaks.density}
+              density="cozy"
               hideReviews={hide(t.slug)}
             />
           ))}
