@@ -15,7 +15,25 @@ export const metadata: Metadata = {
 };
 
 export default async function PasswordPage() {
-  const supabase = await createSupabaseServerClient();
+  let supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>;
+  try {
+    supabase = await createSupabaseServerClient();
+  } catch (err) {
+    if (!(err instanceof Error) || !err.message.includes("Missing Supabase env")) {
+      throw err;
+    }
+    return (
+      <AuthCard
+        eyebrow="Member · Setup"
+        title="Auth isn't wired up yet."
+        intro="Set the Supabase env vars in this environment to enable the password page."
+      >
+        <div className="text-[13px] text-warm-700">
+          See SUPABASE.md for the local walkthrough.
+        </div>
+      </AuthCard>
+    );
+  }
   const {
     data: { user },
   } = await supabase.auth.getUser();
