@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Tea, FlavorProfile } from "@/lib/types";
-import { CONTRIBUTORS, TEAS, featuredTea, teaAvg, teaUrl } from "@/lib/data";
+import { CONTRIBUTORS, TEAS, teaAvg, teaUrl } from "@/lib/data";
 import { FLAVOR_AXES, compositeProfile, profileOverlap } from "@/lib/flavor";
 import { useMember } from "@/contexts/MemberContext";
 import { useTweaks } from "@/contexts/TweaksContext";
@@ -60,29 +60,43 @@ export default function RecommendationsPage() {
       }
       return out;
     }
-    // No ratings yet — anchor on the aligned contributor's signature
-    // (using the catalogue's first tea as a starter shape). Cheap
-    // proxy until Phase 6 stores a per-contributor "default profile".
-    const seed = featuredTea().flavor[member.aligned];
-    const out: Profile = { ...seed };
-    member.ratings.forEach((r) => {
-      const t = TEAS.find((x) => x.slug === r.slug);
-      if (!t) return;
-      const w = r.rating / 10;
-      const prof = compositeProfile(t);
-      for (const ax of FLAVOR_AXES) {
-        out[ax.key] =
-          (out[ax.key] ?? 0) * (1 - 0.15 * w) + prof[ax.key] * 0.15 * w;
-      }
-    });
+    // No ratings yet — derive the cold-start target from the aligned
+    // contributor's PALATE SIGNATURE: the rating-weighted mean of every
+    // tea the contributor has reviewed. This is real signal (their
+    // taste shape across the whole catalogue) instead of the prior
+    // single-seed anchor, which made Menghai top recommendation for
+    // every newcomer aligned with Vivek.
+    const out = {} as Profile;
+    let totalW = 0;
+    const contribProfiles: { prof: Profile; w: number }[] = [];
+    for (const t of TEAS) {
+      const review = t.reviews[member.aligned];
+      if (!review) continue;
+      const w = Math.max(0.1, review.rating / 10);
+      contribProfiles.push({ prof: t.flavor[member.aligned], w });
+      totalW += w;
+    }
+    for (const ax of FLAVOR_AXES) {
+      let s = 0;
+      for (const p of contribProfiles) s += (p.prof[ax.key] ?? 0) * p.w;
+      out[ax.key] = totalW > 0 ? s / totalW : 0;
+    }
     return out;
   }, [member]);
 
   const ranked = useMemo(
     () =>
-      TEAS.map((t) => ({ t, score: profileOverlap(compositeProfile(t), targetProfile) })).sort(
-        (a, b) => b.score - a.score,
-      ),
+      TEAS.map((t) => {
+        // Blend cosine overlap with the tea's quality signal so high-rated
+        // teas naturally float up. Pure overlap was rating-blind — a 9.4
+        // gyokuro and an 8.4 dianhong tied if their flavor shapes
+        // matched equally. 65/35 weighting was tuned in the experienced-
+        // drinker re-audit; the overlap term still dominates for taste
+        // similarity, but quality breaks ties.
+        const overlap = profileOverlap(compositeProfile(t), targetProfile);
+        const quality = teaAvg(t) / 10;
+        return { t, score: 0.65 * overlap + 0.35 * quality };
+      }).sort((a, b) => b.score - a.score),
     [targetProfile],
   );
 

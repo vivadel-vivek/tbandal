@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "Discover",
   description:
     "Three doors into Two Buds and a Leaf — browse the tea library, the vendor atlas, or the glossary of terms.",
+  alternates: { canonical: "/discover" },
 };
 
 type HubCard = {

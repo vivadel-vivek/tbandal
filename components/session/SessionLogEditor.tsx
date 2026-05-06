@@ -635,6 +635,7 @@ function FlavorSection({
                       step={1}
                       value={v5}
                       onChange={(e) => setBasic(ax.key, Number(e.target.value))}
+                      aria-label={`${ax.label} intensity, 0 to 5, currently ${v5}`}
                       className="flex-1"
                       style={{ accentColor: ax.color }}
                     />
@@ -663,6 +664,7 @@ function FlavorSection({
                   step={1}
                   value={profile[ax.key] ?? 0}
                   onChange={(e) => setAdv(ax.key, Number(e.target.value))}
+                  aria-label={`${ax.label} intensity, 0 to 10, currently ${profile[ax.key] ?? 0}`}
                   className="flex-1"
                   style={{ accentColor: ax.color }}
                 />
@@ -842,6 +844,7 @@ function SteepCard({
               onChange={(e) =>
                 onChange({ rating: isBasic ? Number(e.target.value) * 2 : Number(e.target.value) })
               }
+              aria-label={`Score for steep ${steep.index}, ${isBasic ? `${(score / 2).toFixed(1)} out of 5` : `${score.toFixed(1)} out of 10`}`}
               className="flex-1 accent-burgundy"
             />
             <div className="min-w-[36px] text-right font-mono text-[12px] text-burgundy font-bold">
@@ -881,6 +884,7 @@ function SteepCard({
                       step={1}
                       value={v5}
                       onChange={(e) => setBasic(ax.key, Number(e.target.value))}
+                      aria-label={`${ax.label} for this steep, 0 to 5, currently ${v5}`}
                       className="flex-1"
                       style={{ accentColor: ax.color }}
                     />
@@ -905,6 +909,7 @@ function SteepCard({
                     step={1}
                     value={flavor[ax.key] ?? 0}
                     onChange={(e) => setAdv(ax.key, Number(e.target.value))}
+                    aria-label={`${ax.label} for this steep, 0 to 10, currently ${flavor[ax.key] ?? 0}`}
                     className="flex-1"
                     style={{ accentColor: ax.color }}
                   />
@@ -1014,6 +1019,7 @@ function SliderRow({
         step={0.5}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
+        aria-label={`${label} (${leftLabel} to ${rightLabel}, current ${value.toFixed(1)})`}
         className="w-full accent-burgundy"
       />
       <div
@@ -1049,6 +1055,7 @@ function ScoreSlider({
         step={0.5}
         value={value / 2}
         onChange={(e) => onChange(Number(e.target.value) * 2)}
+        aria-label={`Overall score, ${(value / 2).toFixed(1)} out of 5`}
         className="w-full accent-burgundy mb-1"
       />
       <div className="flex justify-between text-[10px] text-warm-700 tracking-wide uppercase font-bold">
@@ -1072,6 +1079,7 @@ function ScoreSlider({
         step={0.1}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
+        aria-label={`Overall score, ${value.toFixed(1)} out of 10`}
         className="w-full accent-burgundy"
       />
     </>

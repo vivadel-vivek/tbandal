@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "Teas",
   description:
     "Every tea we've brewed — filtered by type, origin, vendor, and flavor. The full catalogue, with notes you can act on.",
+  alternates: { canonical: "/discover/teas" },
 };
 
 export default function TeasPage() {

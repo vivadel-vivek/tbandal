@@ -254,7 +254,7 @@ export const VENDORS: Vendor[] = [
     slug: "yunnan-sourcing", name: "Yunnan Sourcing",
     city: "Kunming", country: "China", continent: "Asia",
     tagline: "The comprehensive catalog. The place to learn the landscape.",
-    body: "Scott Wilson's enormous catalog is the practical reference for Western buyers. Not every tea is special, but the meta-knowledge — the consistent labeling, the seasonal repeats — is unmatched.",
+    body: "Scott Wilson's enormous catalog is the practical reference for Western buyers. The catalogue is uneven by design — that's the point — and the meta-knowledge it provides, the consistent labeling and seasonal repeats, is unmatched.",
     rating: 4, swatch: "#8B9A7D", teaCount: 412, founded: 2004,
     specialties: ["Pu'er", "Yunnan black", "Encyclopaedic"],
     url: "https://yunnansourcing.com/",

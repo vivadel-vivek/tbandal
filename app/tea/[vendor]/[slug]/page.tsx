@@ -33,12 +33,20 @@ export async function generateMetadata({
   if (!tea) return { title: "Tea not found" };
   const desc =
     tea.summary.length > 155 ? tea.summary.slice(0, 152) + "…" : tea.summary;
+  const path = `/tea/${params.vendor}/${params.slug}`;
   return {
     title: tea.name,
     description: desc,
+    alternates: { canonical: path },
     openGraph: {
       title: `${tea.name} · ${tea.region}`,
       description: desc,
+      url: path,
+      type: "article",
+      // Per-route openGraph overrides the layout-level og:image; we
+      // re-reference the convention route so the editorial card still
+      // ships on tea pages (Lighthouse SEO + social previews).
+      images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
     },
   };
 }

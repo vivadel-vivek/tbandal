@@ -141,8 +141,11 @@ function HeroStain({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
         </Eyebrow>
         {tea.chinese && (
           <div
+            // 0.55 was failing WCAG large-text contrast (2.83:1, needs ≥3:1).
+            // 0.72 puts it just above the floor while preserving the
+            // intentional faded-stamp feel.
             className="font-display italic mt-3 tracking-tight text-burgundy text-[32px] sm:text-[44px]"
-            style={{ opacity: 0.55 }}
+            style={{ opacity: 0.72 }}
           >
             {tea.chinese}
           </div>

@@ -60,7 +60,7 @@ export default function Home() {
                   the poetic H1 lands second; readers need a one-line
                   value prop FIRST so newcomers don't bounce. */}
               <p className="text-warm-700 italic font-display text-[18px] sm:text-[22px] leading-snug mb-4 sm:mb-5">
-                Honest single-origin tea reviews from two friends — no jargon required to start.
+                Honest tea reviews from two friends — a flavor map of every cup, no jargon required.
               </p>
               <p className="text-base sm:text-lg text-warm-700 max-w-[540px] leading-relaxed mb-6 sm:mb-7">
                 Vivek and James review tea — single-origin, vendor-sourced, and

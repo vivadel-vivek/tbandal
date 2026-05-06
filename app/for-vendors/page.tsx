@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "For vendors",
   description:
     "Submit a tea for review, get featured in the atlas, and partner with Two Buds and a Leaf — vendor guidelines, sample policy, and how we rate.",
+  alternates: { canonical: "/for-vendors" },
 };
 
 const REQUIREMENTS = [

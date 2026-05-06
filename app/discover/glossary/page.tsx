@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Glossary",
   description:
     "The words for what's in the cup — tea types, brewing methods, vessels, flavor terms, and mouthfeel. Each entry written twice: a plain-language line and the technical detail underneath.",
+  alternates: { canonical: "/discover/glossary" },
 };
 
 export default function GlossaryPage() {
@@ -103,7 +104,7 @@ export default function GlossaryPage() {
                   </header>
 
                   <p className="text-[15px] text-forest leading-relaxed m-0 mb-3">
-                    <span className="font-bold text-burgundy">Why this matters —</span>{" "}
+                    <span className="font-bold text-burgundy">Key points —</span>{" "}
                     {entry.lay}
                   </p>
 

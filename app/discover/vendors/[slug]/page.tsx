@@ -25,9 +25,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const v = vendorBySlug(params.slug);
   if (!v) return { title: "Vendor not found" };
+  const path = `/discover/vendors/${params.slug}`;
   return {
     title: v.name,
     description: v.tagline,
+    alternates: { canonical: path },
+    openGraph: {
+      title: v.name,
+      description: v.tagline,
+      url: path,
+      images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
+    },
   };
 }
 

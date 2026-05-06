@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   title: "Teaware",
   description:
     "Vessels, kettles, and the small instruments that actually change how the cup tastes — every item here is something one of us uses every week.",
+  alternates: { canonical: "/discover/teaware" },
 };
 
 const grouped = groupTeawareByCategory();

@@ -10,14 +10,19 @@ import { useEffect, useRef, useState } from "react";
  * a one-tap timer that writes its result into the field is the
  * difference between "I'll log this later" and "I logged this now".
  *
- * Behavior:
- *   - First tap: start counting from 0 (or resume).
- *   - Second tap: stop, format elapsed as "{n}s" or "{m}m{s}s" and
- *     write into the parent's time field via onCommit.
- *   - Long-press / right-click → reset to 00:00 without committing.
+ * Behavior (post-re-audit):
+ *   - Primary tap (44px target): start counting from 0; second tap
+ *     stops, formats elapsed as "{n}s" or "{m}m{s}s", and commits to
+ *     the parent's time field via onCommit.
+ *   - Visible "↺" reset button appears once the timer is running or
+ *     has a captured value — drops elapsed back to 0 without committing.
+ *     Right-click on the main button still works on desktop.
  *
- * The timer is local (no Web Worker, no setInterval drift correction
- * beyond rAF) — for steeps under 5 minutes the drift is sub-second.
+ * Tab-backgrounded resilience: setInterval at 250ms instead of rAF,
+ * because rAF stops ticking when the tab loses focus and the display
+ * would freeze mid-steep on a phone in your pocket. Elapsed is always
+ * computed from Date.now() so the displayed value is accurate when the
+ * tab returns even if intermediate ticks were missed.
  */
 export function SteepTimer({
   onCommit,
@@ -30,24 +35,36 @@ export function SteepTimer({
   const [running, setRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0); // ms
   const startedAt = useRef<number | null>(null);
-  const rafRef = useRef<number | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // Resync display whenever the tab becomes visible again.
+  useEffect(() => {
+    const onVis = () => {
+      if (running && startedAt.current !== null) {
+        setElapsed(Date.now() - startedAt.current);
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, [running]);
+
+  // setInterval (not rAF) so the display keeps updating when the tab
+  // is backgrounded — phones lock-screen often, kettle counters can't
+  // pause while the user pours.
   useEffect(() => {
     if (!running) return;
     const tick = () => {
       if (startedAt.current === null) return;
       setElapsed(Date.now() - startedAt.current);
-      rafRef.current = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
+    intervalRef.current = setInterval(tick, 250);
     return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+      if (intervalRef.current !== null) clearInterval(intervalRef.current);
     };
   }, [running]);
 
-  const handleClick = () => {
+  const handleStartStop = () => {
     if (running) {
-      // Stop + commit.
       const totalSec = Math.round(elapsed / 1000);
       const formatted =
         totalSec >= 60
@@ -56,8 +73,6 @@ export function SteepTimer({
       onCommit(formatted);
       setRunning(false);
       startedAt.current = null;
-      // Keep the elapsed visible briefly; user can tap again to restart
-      // (which re-zeroes via the start branch below).
     } else {
       startedAt.current = Date.now();
       setElapsed(0);
@@ -65,8 +80,8 @@ export function SteepTimer({
     }
   };
 
-  const handleReset = (e: React.MouseEvent | React.PointerEvent) => {
-    e.preventDefault();
+  const handleReset = (e?: React.MouseEvent) => {
+    e?.preventDefault();
     setRunning(false);
     startedAt.current = null;
     setElapsed(0);
@@ -78,36 +93,50 @@ export function SteepTimer({
       ? `${Math.floor(totalSec / 60)}:${String(totalSec % 60).padStart(2, "0")}`
       : `0:${String(totalSec).padStart(2, "0")}`;
 
+  const showReset = running || elapsed > 0;
+
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      onContextMenu={handleReset}
-      aria-label={
-        running
-          ? `Stop timer at ${display} and record`
-          : elapsed > 0
-            ? `Restart timer (currently ${display})`
-            : "Start timer"
-      }
-      className={[
-        "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-pill border font-mono text-[11px] font-bold cursor-pointer transition-colors",
-        running
-          ? "bg-burgundy text-cream border-burgundy"
-          : elapsed > 0
-            ? "bg-gold-muted text-burgundy border-gold-dark"
-            : "bg-cream text-forest border-warm-300 hover:bg-warm-100",
-        className,
-      ].join(" ")}
-    >
-      <span
-        aria-hidden
+    <span className={`inline-flex items-center gap-1 ${className}`}>
+      <button
+        type="button"
+        onClick={handleStartStop}
+        onContextMenu={(e) => handleReset(e)}
+        aria-label={
+          running
+            ? `Stop timer at ${display} and record`
+            : elapsed > 0
+              ? `Restart timer (currently ${display})`
+              : "Start timer"
+        }
         className={[
-          "inline-block w-2 h-2 rounded-full",
-          running ? "bg-cream animate-pulse" : "bg-current opacity-60",
+          // 44px tap target (h-11) — was 28px and flagged in the re-audit.
+          "inline-flex items-center gap-1.5 h-11 px-3.5 rounded-pill border font-mono text-[12px] font-bold cursor-pointer transition-colors",
+          running
+            ? "bg-burgundy text-cream border-burgundy"
+            : elapsed > 0
+              ? "bg-gold-muted text-burgundy border-gold-dark"
+              : "bg-cream text-forest border-warm-300 hover:bg-warm-100",
         ].join(" ")}
-      />
-      {running ? display : elapsed > 0 ? `↻ ${display}` : "⏱ Start"}
-    </button>
+      >
+        <span
+          aria-hidden
+          className={[
+            "inline-block w-2 h-2 rounded-full",
+            running ? "bg-cream animate-pulse" : "bg-current opacity-60",
+          ].join(" ")}
+        />
+        {running ? display : elapsed > 0 ? `↻ ${display}` : "⏱ Start"}
+      </button>
+      {showReset && (
+        <button
+          type="button"
+          onClick={() => handleReset()}
+          aria-label="Reset timer"
+          className="inline-flex items-center justify-center w-11 h-11 rounded-full border border-warm-300 bg-cream text-warm-700 cursor-pointer text-[14px] hover:bg-warm-100"
+        >
+          ↺
+        </button>
+      )}
+    </span>
   );
 }

@@ -25,15 +25,19 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const post = postBySlug(params.slug);
   if (!post) return { title: "Post not found" };
+  const path = `/journal/${params.slug}`;
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: { canonical: path },
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: "article",
+      url: path,
       authors: [post.author],
       publishedTime: post.date,
+      images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
     },
   };
 }

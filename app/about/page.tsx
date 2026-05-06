@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "About",
   description:
     "Two friends, a lot of teaware, and stubborn opinions. The story behind Two Buds and a Leaf and how we rate every tea.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

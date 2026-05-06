@@ -55,10 +55,20 @@ export function RadarChart({
       .join(" ") + " Z";
 
   return (
+    // The SVG previously had aria-hidden, which conflicted with the
+    // axis-label glossary anchors we added — focusable <a> inside an
+    // aria-hidden subtree is a Lighthouse aria-hidden-focus violation.
+    // Now we expose the chart as a labeled image-with-links and let the
+    // anchors carry their own aria-labels.
     <svg
       viewBox={`0 0 ${size} ${size}`}
       style={{ width: "100%", height: "auto", display: "block", overflow: "visible" }}
-      aria-hidden
+      role="group"
+      aria-label={
+        showLabels
+          ? `Flavor radar across ${axes.length} axes — tap a label to read the glossary entry.`
+          : "Flavor radar"
+      }
     >
       {/* Concentric grid rings at 2/4/6/8/10 */}
       {showGrid &&
@@ -159,12 +169,35 @@ export function RadarChart({
             Math.cos(a) > 0.3 ? "start" : Math.cos(a) < -0.3 ? "end" : "middle";
           const fontSize = axes.length <= 6 ? 11 : 10;
           return (
+            // Only one accessible name per anchor: the visible label
+            // text inside <text> is what screen readers announce. A
+            // separate <title> would concatenate ("Floral — see glossary"
+            // + "Floral") and surface in audit tooling. The href + the
+            // visible text are enough; native browser tooltip on the
+            // text element handles hover affordance.
+            //
+            // The transparent <rect> below extends the link's hit-area
+            // to ~60×32 around each label so phone-thumb taps land
+            // (experienced-drinker + lay-user re-audit flagged the bare
+            // SVG <text> as a sub-30px target).
             <a
               key={ax.key}
               href={`/discover/glossary#${ax.key}`}
-              aria-label={`${ax.label} — open glossary entry`}
             >
-              <title>{`${ax.label} — see glossary`}</title>
+              <rect
+                x={
+                  align === "start"
+                    ? x - 4
+                    : align === "end"
+                      ? x - 56
+                      : x - 30
+                }
+                y={y - 16}
+                width={60}
+                height={32}
+                fill="transparent"
+                style={{ cursor: "pointer" }}
+              />
               <circle cx={dotX} cy={dotY} r={3} fill={ax.color} opacity={0.7} />
               <text
                 x={x}
@@ -176,7 +209,7 @@ export function RadarChart({
                 fontWeight={600}
                 fill="var(--forest, #2D3A2E)"
                 letterSpacing={0.3}
-                style={{ textTransform: "uppercase", cursor: "pointer" }}
+                style={{ textTransform: "uppercase", cursor: "pointer", pointerEvents: "none" }}
               >
                 {ax.label}
               </text>

@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "Journal",
   description:
     "Long reads, brewing notes, and vendor spotlights — two reviewers writing one cup at a time. Phase 3 wires up the unified feed and session log.",
+  alternates: { canonical: "/journal" },
 };
 
 const CATS = ["All", "Brewing", "Culture", "Origin", "Vendor Spotlight"] as const;

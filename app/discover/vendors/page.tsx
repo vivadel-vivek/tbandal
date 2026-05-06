@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   title: "Vendors",
   description:
     "An atlas of tea vendors we trust — grouped by continent and country, with their specialties and the teas of theirs we've reviewed.",
+  alternates: { canonical: "/discover/vendors" },
 };
 
 const grouped = groupVendorsByGeography();

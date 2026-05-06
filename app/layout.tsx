@@ -33,8 +33,10 @@ export const metadata: Metadata = {
   // the same host. Falls back to the canonical alias instead of the
   // VERCEL_URL deployment-hash to keep crawlers on one URL.
   metadataBase: new URL(getSiteUrl()),
-  // Page-level canonical fallback. Per-route metadata can override this
-  // via its own `alternates.canonical`.
+  // Default canonical = "/" for the home page. Every other route MUST
+  // set its own `alternates.canonical` in generateMetadata or the
+  // page-level export so we don't ship the home URL on every route
+  // (Lighthouse SEO regression).
   alternates: { canonical: "/" },
   openGraph: {
     title: "Two Buds and a Leaf",

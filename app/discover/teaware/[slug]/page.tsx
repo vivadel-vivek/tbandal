@@ -25,9 +25,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const t = teawareBySlug(params.slug);
   if (!t) return { title: "Teaware not found" };
+  const path = `/discover/teaware/${params.slug}`;
   return {
     title: t.name,
     description: t.tagline,
+    alternates: { canonical: path },
+    openGraph: {
+      title: t.name,
+      description: t.tagline,
+      url: path,
+      images: [{ url: "/opengraph-image", width: 1200, height: 630 }],
+    },
   };
 }
 
