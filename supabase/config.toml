@@ -19,7 +19,9 @@ max_rows = 1000
 [db]
 port = 54322
 shadow_port = 54320
-major_version = 15
+# Match the hosted project's Postgres version. Bumped from 15 → 17 after
+# `supabase link` reported the remote major version was newer.
+major_version = 17
 
 [db.pooler]
 enabled = false
