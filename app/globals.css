@@ -58,7 +58,14 @@
 /* The prototype uses Cormorant Garamond as both --font-display AND
    --font-serif (review pull quotes, long-read body). Alias here so we
    load the font once and use it from either token. */
-html { --font-serif: var(--font-display); scroll-behavior: smooth; }
+html {
+  --font-serif: var(--font-display);
+  scroll-behavior: smooth;
+  /* Clip horizontal overflow on the root too; otherwise documentElement
+     still reports scrollWidth past the viewport even when body is clipped,
+     and the page rocks horizontally on mobile. Pairs with body{overflow-x:clip}. */
+  overflow-x: clip;
+}
 
 body {
   background: var(--bg);
@@ -67,6 +74,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-wrap: pretty;
+  /* The mobile nav drawer is fixed-positioned with translateX(100%) when
+     closed — its transformed position contributes to scrollWidth and
+     creates ~50–60px of horizontal overflow on iPhone-class viewports.
+     overflow-x: clip is the off-canvas-drawer canonical fix; doesn't
+     create a scroll context (unlike `hidden`), so position: sticky on
+     descendants still works. */
+  overflow-x: clip;
 }
 
 h1, h2, h3, h4, h5, h6 {

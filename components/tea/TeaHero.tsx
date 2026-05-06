@@ -127,13 +127,13 @@ function HeroStain({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
         size={520}
         color={tea.swatch}
         opacity={0.18}
-        className="absolute -top-10 -right-20 pointer-events-none"
+        className="absolute -top-10 -right-20 pointer-events-none hidden sm:block"
       />
       <TeaStain
         size={280}
         color="#C4A35A"
         opacity={0.12}
-        className="absolute -bottom-14 -left-24 pointer-events-none"
+        className="absolute -bottom-14 -left-24 pointer-events-none hidden sm:block"
       />
       <div className="relative max-w-narrow mx-auto text-center">
         <Eyebrow>
