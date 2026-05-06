@@ -27,6 +27,7 @@ import { Container } from "@/components/ui/Container";
 import { RadarChart } from "@/components/tea/RadarChart";
 import { MouthfeelGrid } from "@/components/tea/MouthfeelGrid";
 import { SteepTimer } from "@/components/session/SteepTimer";
+import { LabeledSlider } from "@/components/session/LabeledSlider";
 
 type Scale = "basic" | "advanced";
 
@@ -770,55 +771,35 @@ function FlavorSection({
               const v10 = basicView[ax.key] ?? 0;
               const v5 = Math.round(v10 / 2);
               return (
-                <div key={ax.key}>
-                  <div className="flex items-center gap-2">
-                    <div className="min-w-[70px] text-xs font-bold text-forest">
-                      {ax.label}
-                    </div>
-                    <input
-                      type="range"
-                      min={0}
-                      max={5}
-                      step={1}
-                      value={v5}
-                      onChange={(e) => setBasic(ax.key, Number(e.target.value))}
-                      aria-label={`${ax.label} intensity, 0 to 5, currently ${v5}`}
-                      className="flex-1"
-                      style={{ accentColor: ax.color }}
-                    />
-                    <div className="min-w-[28px] text-[11px] text-warm-700 text-right font-mono font-semibold">
-                      {v5}/5
-                    </div>
-                  </div>
-                  <div className="text-[10px] text-warm-700 ml-[78px] mt-0.5 leading-snug italic">
-                    {ax.lay}
-                  </div>
-                </div>
+                <LabeledSlider
+                  key={ax.key}
+                  label={ax.label}
+                  value={v5}
+                  min={0}
+                  max={5}
+                  step={1}
+                  color={ax.color}
+                  hint={ax.lay}
+                  onChange={(v) => setBasic(ax.key, v)}
+                />
               );
             })}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
             {FLAVOR_AXES.map((ax) => (
-              <div key={ax.key} className="flex items-center gap-2">
-                <div className="min-w-[64px] text-[11px] text-forest font-semibold">
-                  {ax.label}
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={10}
-                  step={1}
-                  value={profile[ax.key] ?? 0}
-                  onChange={(e) => setAdv(ax.key, Number(e.target.value))}
-                  aria-label={`${ax.label} intensity, 0 to 10, currently ${profile[ax.key] ?? 0}`}
-                  className="flex-1"
-                  style={{ accentColor: ax.color }}
-                />
-                <div className="min-w-[14px] text-[11px] text-warm-700 text-right font-mono">
-                  {profile[ax.key] ?? 0}
-                </div>
-              </div>
+              <LabeledSlider
+                key={ax.key}
+                label={ax.label}
+                value={profile[ax.key] ?? 0}
+                min={0}
+                max={10}
+                step={1}
+                color={ax.color}
+                compact
+                showDenominator={false}
+                onChange={(v) => setAdv(ax.key, v)}
+              />
             ))}
           </div>
         )}
@@ -872,15 +853,28 @@ function SteepList({
   onChange: (s: SteepLog[]) => void;
 }) {
   const addSteep = () => {
-    const next = blankSteep(steeps.length + 1, tea);
-    // Carry forward the previous steep's flavor / mouthfeel as a
-    // sensible starting point — most steeps drift gradually.
+    const idx = steeps.length + 1;
     const prev = steeps[steeps.length - 1];
+    // Full carry-forward when there's a previous steep — most teas drift
+    // gradually and re-typing time/temp/flavor every steep is friction
+    // mid-pour. The user can edit any field after; we just want a
+    // sensible default. Notes are intentionally NOT carried (they're
+    // per-steep observations, not session-wide context).
     if (prev) {
-      next.flavor = prev.flavor ? { ...prev.flavor } : undefined;
-      next.mouthfeel = prev.mouthfeel ? { ...prev.mouthfeel } : undefined;
+      onChange([
+        ...steeps,
+        {
+          index: idx,
+          ...(prev.time !== undefined ? { time: prev.time } : {}),
+          ...(prev.tempC !== undefined ? { tempC: prev.tempC } : {}),
+          ...(prev.flavor ? { flavor: { ...prev.flavor } } : {}),
+          ...(prev.mouthfeel ? { mouthfeel: { ...prev.mouthfeel } } : {}),
+          ...(prev.rating !== undefined ? { rating: prev.rating } : {}),
+        },
+      ]);
+      return;
     }
-    onChange([...steeps, next]);
+    onChange([...steeps, blankSteep(idx, tea)]);
   };
 
   const removeSteep = (index: number) => {
@@ -1020,50 +1014,36 @@ function SteepCard({
               {BASIC_AXES.map((ax) => {
                 const v5 = Math.round((basicView[ax.key] ?? 0) / 2);
                 return (
-                  <div key={ax.key} className="flex items-center gap-2">
-                    <div className="min-w-[60px] text-[10px] font-bold text-forest">
-                      {ax.label}
-                    </div>
-                    <input
-                      type="range"
-                      min={0}
-                      max={5}
-                      step={1}
-                      value={v5}
-                      onChange={(e) => setBasic(ax.key, Number(e.target.value))}
-                      aria-label={`${ax.label} for this steep, 0 to 5, currently ${v5}`}
-                      className="flex-1"
-                      style={{ accentColor: ax.color }}
-                    />
-                    <div className="min-w-[20px] text-[10px] text-warm-700 text-right font-mono">
-                      {v5}
-                    </div>
-                  </div>
+                  <LabeledSlider
+                    key={ax.key}
+                    label={ax.label}
+                    value={v5}
+                    min={0}
+                    max={5}
+                    step={1}
+                    color={ax.color}
+                    compact
+                    showDenominator={false}
+                    onChange={(v) => setBasic(ax.key, v)}
+                  />
                 );
               })}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1 mt-3">
               {FLAVOR_AXES.map((ax) => (
-                <div key={ax.key} className="flex items-center gap-1.5">
-                  <div className="min-w-[52px] text-[10px] text-forest font-semibold">
-                    {ax.label}
-                  </div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={10}
-                    step={1}
-                    value={flavor[ax.key] ?? 0}
-                    onChange={(e) => setAdv(ax.key, Number(e.target.value))}
-                    aria-label={`${ax.label} for this steep, 0 to 10, currently ${flavor[ax.key] ?? 0}`}
-                    className="flex-1"
-                    style={{ accentColor: ax.color }}
-                  />
-                  <div className="min-w-[12px] text-[10px] text-warm-700 text-right font-mono">
-                    {flavor[ax.key] ?? 0}
-                  </div>
-                </div>
+                <LabeledSlider
+                  key={ax.key}
+                  label={ax.label}
+                  value={flavor[ax.key] ?? 0}
+                  min={0}
+                  max={10}
+                  step={1}
+                  color={ax.color}
+                  compact
+                  showDenominator={false}
+                  onChange={(v) => setAdv(ax.key, v)}
+                />
               ))}
             </div>
           )}
