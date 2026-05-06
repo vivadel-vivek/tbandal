@@ -38,6 +38,12 @@ yarn-error.log*
 /supabase/.env
 /.supabase/
 
+# Playwright test scaffolding — seeded credentials are ephemeral
+# (regen on every `npm run test:seed`); HTML reports are large.
+/tests/.test-users.json
+/test-results/
+/playwright-report/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
