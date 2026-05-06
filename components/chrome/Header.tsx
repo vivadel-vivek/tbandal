@@ -31,9 +31,15 @@ const MOBILE_NAV_ITEMS = [
   { href: "/about",              label: "About",     desc: "Who we are, how we rate" },
 ] as const;
 
-export function Header() {
+type HeaderProps = {
+  /** Session passed in from the server-side Shell. null = signed-out. */
+  session: { email: string | null; userId: string } | null;
+};
+
+export function Header({ session }: HeaderProps) {
   const pathname = usePathname() ?? "/";
   const { member } = useMember();
+  const isAuthed = session !== null;
 
   // Desktop dropdown — hover or click to open.
   const [open, setOpen] = useState(false);
@@ -229,24 +235,44 @@ export function Header() {
             About
           </Link>
 
-          <Link
-            href="/member"
-            className="ml-3 inline-flex items-center gap-2 pl-1.5 pr-3 py-1 border border-warm-300 rounded-pill bg-[var(--bg-elevated)] font-sans text-xs font-semibold text-forest no-underline"
-          >
-            <AvatarChip who={member.aligned} size={26} />
-            {member.name || "You"}
-          </Link>
+          {isAuthed ? (
+            <Link
+              href="/member"
+              className="ml-3 inline-flex items-center gap-2 pl-1.5 pr-3 py-1 border border-warm-300 rounded-pill bg-[var(--bg-elevated)] font-sans text-xs font-semibold text-forest no-underline"
+              title={session?.email ?? undefined}
+            >
+              <AvatarChip who={member.aligned} size={26} />
+              {member.name || "You"}
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="ml-3 inline-flex items-center px-3.5 py-2 rounded-pill border border-warm-300 bg-[var(--bg-elevated)] font-sans text-[12px] font-bold text-forest no-underline hover:bg-cream"
+            >
+              Sign in
+            </Link>
+          )}
         </nav>
 
         {/* MOBILE TRIGGER — hidden on desktop */}
         <div className="flex sm:hidden items-center gap-2">
-          <Link
-            href="/member"
-            className="inline-flex items-center justify-center w-11 h-11 rounded-full border border-warm-300 bg-[var(--bg-elevated)]"
-            aria-label="Member profile"
-          >
-            <AvatarChip who={member.aligned} size={26} />
-          </Link>
+          {isAuthed ? (
+            <Link
+              href="/member"
+              className="inline-flex items-center justify-center w-11 h-11 rounded-full border border-warm-300 bg-[var(--bg-elevated)]"
+              aria-label="Member profile"
+            >
+              <AvatarChip who={member.aligned} size={26} />
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center h-11 px-3 rounded-full border border-warm-300 bg-[var(--bg-elevated)] text-[12px] font-bold text-forest"
+              aria-label="Sign in"
+            >
+              Sign in
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
@@ -268,6 +294,7 @@ export function Header() {
         pathname={pathname}
         memberName={member.name || "You"}
         memberKey={member.aligned}
+        isAuthed={isAuthed}
       />
     </header>
   );
@@ -279,10 +306,12 @@ function MobileDrawer({
   pathname,
   memberName,
   memberKey,
+  isAuthed,
 }: {
   open: boolean;
   onClose: () => void;
   pathname: string;
+  isAuthed: boolean;
   memberName: string;
   memberKey: "vivek" | "james";
 }) {
@@ -384,27 +413,44 @@ function MobileDrawer({
         </nav>
 
         <div className="px-6 py-5 border-t border-warm-200 bg-cream">
-          <Link
-            href="/member"
-            onClick={onClose}
-            className="flex items-center gap-3 no-underline"
-          >
-            <AvatarChip who={memberKey} size={36} />
-            <div className="flex-1 min-w-0">
-              <div className="text-[10px] tracking-widest uppercase text-warm-600 font-bold">
-                Your profile
-              </div>
-              <div className="font-display italic text-burgundy text-[18px] font-medium truncate">
-                {memberName}
-              </div>
-            </div>
-            <span
-              aria-hidden
-              className="text-burgundy text-[18px] font-bold"
+          {isAuthed ? (
+            <Link
+              href="/member"
+              onClick={onClose}
+              className="flex items-center gap-3 no-underline"
             >
-              →
-            </span>
-          </Link>
+              <AvatarChip who={memberKey} size={36} />
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] tracking-widest uppercase text-warm-600 font-bold">
+                  Your profile
+                </div>
+                <div className="font-display italic text-burgundy text-[18px] font-medium truncate">
+                  {memberName}
+                </div>
+              </div>
+              <span aria-hidden className="text-burgundy text-[18px] font-bold">
+                →
+              </span>
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              onClick={onClose}
+              className="flex items-center justify-between gap-3 no-underline"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] tracking-widest uppercase text-warm-600 font-bold">
+                  Member
+                </div>
+                <div className="font-display italic text-burgundy text-[18px] font-medium">
+                  Sign in
+                </div>
+              </div>
+              <span aria-hidden className="text-burgundy text-[18px] font-bold">
+                →
+              </span>
+            </Link>
+          )}
         </div>
       </div>
     </>

@@ -1,0 +1,6 @@
+-- Local seed — runs on `supabase db reset`. Hosted projects ignore this.
+--
+-- Empty for now. Phase C will move tea/teaware/vendor/post content into
+-- managed tables and seed them here so contributors have something to
+-- edit on a fresh database. Until then `lib/data.ts` is the catalog
+-- and Supabase only holds user-owned data.

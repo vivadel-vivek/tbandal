@@ -9,9 +9,18 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "prototype": "cd prototype && npx --yes serve . -l 3001"
+    "prototype": "cd prototype && npx --yes serve . -l 3001",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:reset": "supabase db reset",
+    "supabase:diff": "supabase db diff -f new_migration",
+    "supabase:push": "supabase db push",
+    "supabase:gen-types": "supabase gen types typescript --local > lib/supabase/types.ts"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.105.3",
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18"

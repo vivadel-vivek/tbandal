@@ -31,6 +31,13 @@ yarn-error.log*
 # vercel
 .vercel
 
+# supabase — local stack debris (config.toml IS committed; runtime
+# state and the linked-project marker are not)
+/supabase/.branches
+/supabase/.temp
+/supabase/.env
+/.supabase/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
