@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Cormorant_Garamond, Nunito_Sans } from "next/font/google";
 import { Shell } from "@/components/chrome/Shell";
+import { ServiceWorkerRegister } from "@/components/chrome/ServiceWorkerRegister";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -43,6 +44,36 @@ export const metadata: Metadata = {
     type: "website",
   },
   robots: { index: true, follow: true },
+  // PWA install hooks — manifest is served by app/manifest.ts; iOS picks
+  // up the apple-* meta tags below so "Add to Home Screen" launches in
+  // standalone mode with the editorial title bar instead of Safari chrome.
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Two Buds",
+  },
+  applicationName: "Two Buds and a Leaf",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-192.svg", sizes: "192x192", type: "image/svg+xml" },
+    ],
+    apple: { url: "/icons/icon-192.svg", sizes: "192x192", type: "image/svg+xml" },
+  },
+};
+
+export const viewport: Viewport = {
+  // Status bar / address bar tint — matches the burgundy hero accents on
+  // mobile Chrome and Edge. iOS reads this through apple-mobile-web-app-status-bar-style.
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FAF7F2" },
+    { media: "(prefers-color-scheme: dark)", color: "#2A2522" },
+  ],
+  // Allow user zoom — never set maximumScale=1 on a content site (a11y).
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -52,6 +83,7 @@ export default function RootLayout({
     <html lang="en" className={`${display.variable} ${sans.variable}`}>
       <body data-theme="parchment" className="font-sans min-h-screen">
         <Shell>{children}</Shell>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

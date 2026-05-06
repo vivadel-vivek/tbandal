@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="Two Buds and a Leaf">
+  <rect width="192" height="192" fill="#FAF7F2"/>
+  <rect x="3" y="3" width="186" height="186" rx="24" ry="24" fill="none" stroke="#E8E5E2" stroke-width="1"/>
+  <g transform="translate(40 28) scale(1.9375)" fill="none" stroke="#722F37" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M32 56 C 32 44, 32 32, 32 18"/>
+    <path d="M32 30 C 24 28, 18 22, 18 14 C 24 14, 30 18, 32 26" fill="#722F37" fill-opacity="0.18"/>
+    <path d="M32 24 C 40 22, 46 16, 46 8 C 40 8, 34 12, 32 20" fill="#722F37" fill-opacity="0.18"/>
+    <path d="M32 18 C 28 10, 32 4, 32 4 C 32 4, 36 10, 32 18 Z" fill="#C4A35A" fill-opacity="0.55" stroke="#A68B3D"/>
+    <path d="M32 6 L 32 16" stroke="#A68B3D" stroke-width="1.2"/>
+  </g>
+</svg>
