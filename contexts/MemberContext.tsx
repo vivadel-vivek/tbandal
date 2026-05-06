@@ -38,6 +38,11 @@ import {
   deleteUserTeaware as deleteUserTeawareRemote,
   migrateLibraryToSupabase,
 } from "@/lib/member/library-sync";
+import {
+  loadUserSessions,
+  saveSession,
+  migrateSessionsToSupabase,
+} from "@/lib/member/sessions-sync";
 
 const STORAGE_KEY = "tbandal:member:v1";
 
@@ -327,6 +332,38 @@ export function MemberProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated, userId]);
 
+  // Authed: load sessions on sign-in. Same pattern as library — cloud
+  // wins when populated; otherwise migrate localStorage ratings up
+  // (only the catalog-anchored ones; off-catalog rows would need a
+  // user_teas FK we may not have created yet).
+  useEffect(() => {
+    if (!hydrated || !userId) return;
+    let cancelled = false;
+    (async () => {
+      const supabase = supabaseOrNull();
+      if (!supabase) return;
+      try {
+        const localRatings = member.ratings;
+        const localLibTeas = member.library.teas;
+        const remote = await loadUserSessions(supabase, userId);
+        if (cancelled) return;
+        if (remote.length > 0) {
+          setMember((prev) => ({ ...prev, ratings: remote }));
+        } else if (localRatings.length > 0) {
+          await migrateSessionsToSupabase(
+            supabase, userId, localRatings, localLibTeas,
+          );
+        }
+      } catch {
+        // Silent — keep localStorage ratings on the page.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated, userId]);
+
   const isBlindFor = useCallback(
     (slug: string) => {
       const mode = member.settings.flavorMode;
@@ -361,12 +398,28 @@ export function MemberProvider({ children }: { children: ReactNode }) {
     setMember((m) => ({ ...m, settings: { ...m.settings, flavorMode: mode } }));
   }, []);
 
-  const upsertRating = useCallback((rating: MemberRating) => {
-    setMember((m) => {
-      const others = m.ratings.filter((r) => r.slug !== rating.slug);
-      return { ...m, ratings: [...others, rating] };
-    });
-  }, []);
+  const upsertRating = useCallback(
+    (rating: MemberRating) => {
+      // Look up the user_teas row for this slug BEFORE the state
+      // update so the Supabase write has a stable FK target. If the
+      // user added the tea to their library before logging (the
+      // standard add-to-library prompt path), this is already there;
+      // if not, sessions-sync.saveSession synthesises one.
+      let userTeaForSlug: UserTea | undefined;
+      setMember((m) => {
+        userTeaForSlug = m.library.teas.find(
+          (t) => t.teaSlug === rating.slug,
+        );
+        const others = m.ratings.filter((r) => r.slug !== rating.slug);
+        return { ...m, ratings: [...others, rating] };
+      });
+      if (userId) {
+        const sb = supabaseOrNull();
+        if (sb) saveSession(sb, userId, rating, userTeaForSlug).catch(() => {});
+      }
+    },
+    [userId],
+  );
 
   // ---- Library helpers ----
   // crypto.randomUUID is the simple path; falls back to a timestamp-based

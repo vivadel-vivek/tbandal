@@ -980,14 +980,6 @@ export const Constants = {
 
 
 
-// =====================================================================
-// Friendly aliases — added to the generated schema so call sites can
-// import { UserRole } from "@/lib/supabase/types" instead of the
-// verbose Database["public"]["Enums"]["user_role"] form. Keep this
-// block at the END of the file; re-running the codegen will overwrite
-// everything above it, so we re-add these aliases each time.
-// =====================================================================
-
 export type UserRole = Database["public"]["Enums"]["user_role"];
 export type UserTeaStatus = Database["public"]["Enums"]["user_tea_status"];
 export type UserTeawareStatus = Database["public"]["Enums"]["user_teaware_status"];
