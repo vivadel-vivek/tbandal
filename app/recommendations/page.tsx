@@ -257,37 +257,50 @@ function RecRow({
   return (
     <Link
       href={teaUrl(tea)}
-      className="no-underline group bg-[var(--bg-elevated)] rounded-xl p-4.5 shadow-card border border-warm-200 grid items-center gap-4.5 cursor-pointer transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5"
-      style={{ gridTemplateColumns: "auto 100px 1fr auto", padding: 18, gap: 18 }}
+      // Mobile: stack header (rank + thumb + match) above title and summary.
+      // Desktop: 4-col grid as before. The fixed gridTemplateColumns in the
+      // inline style was the overflow culprit on /recommendations.
+      className="no-underline group bg-[var(--bg-elevated)] rounded-xl p-4 sm:p-[18px] shadow-card border border-warm-200 flex flex-col sm:grid sm:grid-cols-[auto_100px_1fr_auto] gap-4 sm:gap-[18px] sm:items-center cursor-pointer transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5"
     >
-      <div
-        className="font-display italic text-gold font-medium leading-none w-10 text-center text-[48px]"
-        aria-hidden
-      >
-        {rank}
+      <div className="flex items-center gap-3 sm:contents">
+        <div
+          className="font-display italic text-gold font-medium leading-none w-10 sm:text-center text-[40px] sm:text-[48px]"
+          aria-hidden
+        >
+          {rank}
+        </div>
+        <div
+          className="w-16 h-16 sm:w-[100px] sm:h-[100px] rounded-lg shrink-0"
+          style={{ background: tea.gradient }}
+        />
+        <div className="ml-auto sm:hidden bg-gold text-forest px-3 py-1.5 rounded-pill text-[13px] font-bold font-sans">
+          {Math.round(score * 100)}% match
+        </div>
       </div>
-      <div
-        className="w-[100px] h-[100px] rounded-lg shrink-0"
-        style={{ background: tea.gradient }}
-      />
       <div>
-        <div className="flex gap-2 items-center mb-1">
+        <div className="flex gap-2 items-center mb-1 flex-wrap">
           <TeaTypeTag type={tea.type} small />
           <span className="text-[11px] text-warm-600 tracking-wider uppercase font-bold">
             {tea.region}
           </span>
         </div>
-        <h3 className="font-display text-burgundy font-medium tracking-tight m-0 mb-1.5 text-[26px]">
+        <h3 className="font-display text-burgundy font-medium tracking-tight m-0 mb-1.5 text-[22px] sm:text-[26px]">
           {tea.name}
         </h3>
         <p className="text-[13px] text-warm-700 leading-snug m-0 max-w-[460px]">
           {tea.summary.slice(0, 110)}…
         </p>
       </div>
-      <div className="text-right flex flex-col gap-2 items-end">
+      <div className="hidden sm:flex text-right flex-col gap-2 items-end">
         <div className="bg-gold text-forest px-4 py-2 rounded-pill text-sm font-bold font-sans">
           {Math.round(score * 100)}% match
         </div>
+        {!hideReviews && <RatingScore value={avg} />}
+        <span className="text-[11px] text-warm-600 font-mono">
+          ${tea.price.toFixed(2)}/g
+        </span>
+      </div>
+      <div className="flex sm:hidden gap-3 items-center justify-between pt-2 border-t border-warm-200">
         {!hideReviews && <RatingScore value={avg} />}
         <span className="text-[11px] text-warm-600 font-mono">
           ${tea.price.toFixed(2)}/g
@@ -394,11 +407,13 @@ function BlindPanel({ teas }: { teas: { t: Tea; score: number }[] }) {
           <article
             key={t.slug}
             onClick={() => launchBlind(t)}
-            className="bg-[var(--bg-elevated)] rounded-xl shadow-card border border-warm-200 overflow-hidden cursor-pointer transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5 grid"
-            style={{ gridTemplateColumns: "140px 1fr" }}
+            // Mobile: stack the gradient banner above the metadata.
+            // Desktop: 140px column thumbnail. Inline gridTemplateColumns
+            // was the overflow vector at narrow widths.
+            className="bg-[var(--bg-elevated)] rounded-xl shadow-card border border-warm-200 overflow-hidden cursor-pointer transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5 flex flex-col sm:grid sm:grid-cols-[140px_1fr]"
           >
             <div
-              className="relative"
+              className="relative aspect-[16/7] sm:aspect-auto"
               style={{ background: t.gradient }}
               aria-hidden
             >
@@ -406,12 +421,12 @@ function BlindPanel({ teas }: { teas: { t: Tea; score: number }[] }) {
                 className="absolute inset-0 flex items-center justify-center"
                 style={{ background: "rgba(45,58,46,0.3)" }}
               >
-                <span className="font-display italic font-medium text-[64px]" style={{ color: "rgba(250,247,242,0.9)" }}>
+                <span className="font-display italic font-medium text-[48px] sm:text-[64px]" style={{ color: "rgba(250,247,242,0.9)" }}>
                   ?
                 </span>
               </div>
             </div>
-            <div className="px-4.5 py-4">
+            <div className="px-4 sm:px-4.5 py-4">
               <TeaTypeTag type={t.type} small />
               <h3 className="font-display text-burgundy font-medium tracking-tight m-0 mt-1.5 mb-1 text-[22px]">
                 {t.name}

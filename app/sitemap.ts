@@ -1,11 +1,8 @@
 import type { MetadataRoute } from "next";
 import { POSTS, TEAS, TEAWARE, VENDORS, teaUrl } from "@/lib/data";
+import { getSiteUrl } from "@/lib/site-url";
 
-const BASE =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000");
+const BASE = getSiteUrl();
 
 /**
  * Site map regenerated as part of every ISR rebuild. Once Airtable lands,

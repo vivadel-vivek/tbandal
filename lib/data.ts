@@ -80,7 +80,7 @@ export const TEAS: Tea[] = [
     swatch: "#C4A35A",
     summary:
       "Orchid right out of the gate, then toasted rice and butter through the middle. The classic green-style Anxi shape — bright, floral, gently creamy.",
-    brewing: { style: "Gongfu", ratio: "6g/100ml", temp: "92°C", first: "15s" },
+    brewing: { style: "Gongfu", ratio: "6g/100ml", temp: "92°C", first: "8s" },
     mouthfeel: { astringent: 2, bodyFull: 4 },
     finish: ["Floral aftertaste", "Soft sweetness"],
     sessions: 8, peakSteeps: [2, 3],

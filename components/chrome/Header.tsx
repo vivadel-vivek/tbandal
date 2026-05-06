@@ -298,8 +298,10 @@ function MobileDrawer({
         ].join(" ")}
       />
 
-      {/* Panel — slides in from the right, full warm-paper canvas. */}
-      <aside
+      {/* Panel — slides in from the right, full warm-paper canvas.
+          Uses <div role="dialog">: <aside> doesn't allow role=dialog
+          per ARIA-allowed-roles (Lighthouse aria-allowed-role audit). */}
+      <div
         role="dialog"
         aria-modal="true"
         aria-label="Site navigation"
@@ -404,7 +406,7 @@ function MobileDrawer({
             </span>
           </Link>
         </div>
-      </aside>
+      </div>
     </>
   );
 }

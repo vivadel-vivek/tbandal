@@ -9,6 +9,7 @@ export const revalidate = 3600;
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { TeaBrowser } from "@/components/tea/TeaBrowser";
+import { ItemListJsonLd, teaListItems } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
   title: "Teas",
@@ -19,6 +20,11 @@ export const metadata: Metadata = {
 export default function TeasPage() {
   return (
     <main className="relative">
+      <ItemListJsonLd
+        name="Teas — Two Buds and a Leaf"
+        description="The full library of single-origin teas reviewed across 12 flavor axes."
+        items={teaListItems(TEAS)}
+      />
       <Container>
         <Link href="/discover" className="back-link mt-8">
           ← Discover

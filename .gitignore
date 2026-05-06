@@ -35,8 +35,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# audit reports (Lighthouse output)
+# audit reports (Lighthouse output + Playwright capture artifacts)
 /.audit
+/audit-artifacts/
+
+# locally-running scheduled-task bookkeeping
+/.claude/scheduled_tasks.lock
 
 # persona-agent curl debris (created when sub-agents fetch pages with
 # `curl -o` and accidentally use a Windows-style path as the filename,

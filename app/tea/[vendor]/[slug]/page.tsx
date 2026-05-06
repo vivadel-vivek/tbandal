@@ -8,6 +8,7 @@ import {
 import { compositeProfile, profileOverlap } from "@/lib/flavor";
 import type { Tea } from "@/lib/types";
 import { TeaDetailView } from "@/components/tea/TeaDetailView";
+import { ProductReviewJsonLd } from "@/components/seo/JsonLd";
 
 // ISR: pre-render every (vendor, slug) pair at build, revalidate hourly,
 // dynamicParams: true so newly-added teas ISR on first request.
@@ -65,5 +66,10 @@ export default function TeaDetailPage({
 
   const similar = findSimilar(tea);
   const blindMode = searchParams.blind === "1";
-  return <TeaDetailView tea={tea} similar={similar} blindMode={blindMode} />;
+  return (
+    <>
+      <ProductReviewJsonLd tea={tea} />
+      <TeaDetailView tea={tea} similar={similar} blindMode={blindMode} />
+    </>
+  );
 }

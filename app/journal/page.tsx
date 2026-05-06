@@ -66,7 +66,7 @@ export default function JournalIndex() {
                 style={{ background: p.grad }}
               />
               <div className="px-5 sm:px-6 pt-5 pb-5 sm:pb-6">
-                <Eyebrow color="var(--sage-dark, #6B7A5D)">
+                <Eyebrow color="var(--sage-text, #556649)">
                   {p.cat} · {p.readTime} min
                 </Eyebrow>
                 <h3

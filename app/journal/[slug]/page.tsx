@@ -7,6 +7,7 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { AvatarChip } from "@/components/ui/AvatarChip";
 import { TeaCard } from "@/components/tea/TeaCard";
 import { Glossarized } from "@/components/glossary/Glossarized";
+import { ArticleJsonLd } from "@/components/seo/JsonLd";
 
 // ISR: pre-render every post slug, dynamicParams: true so new posts ISR
 // on first hit once Airtable lands.
@@ -51,11 +52,13 @@ export default function JournalPost({
 
   return (
     <main>
+      <ArticleJsonLd post={post} />
+      <article>
       <Container size="narrow">
         <Link href="/journal" className="back-link mt-8 mb-2">
           ← Back to journal
         </Link>
-        <Eyebrow color="var(--sage-dark, #6B7A5D)">
+        <Eyebrow color="var(--sage-text, #556649)">
           {post.cat} · {post.readTime} min read
         </Eyebrow>
         <h1 className="font-display text-burgundy font-medium tracking-tight leading-hero mt-3 mb-5 text-[40px] sm:text-hero-xl">
@@ -68,7 +71,12 @@ export default function JournalPost({
           />
           <div>
             <div className="text-sm font-bold text-forest">{post.author}</div>
-            <div className="text-xs text-warm-600">{post.date}</div>
+            <time
+              className="text-xs text-warm-600 block"
+              dateTime={post.date}
+            >
+              {post.date}
+            </time>
           </div>
         </div>
       </Container>
@@ -102,6 +110,7 @@ export default function JournalPost({
           </div>
         )}
       </Container>
+      </article>
       <div className="h-16" />
     </main>
   );

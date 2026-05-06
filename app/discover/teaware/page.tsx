@@ -12,6 +12,7 @@ import type { Teaware } from "@/lib/types";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { StarRow } from "@/components/ui/StarRow";
+import { ItemListJsonLd, teawareListItems } from "@/components/seo/JsonLd";
 
 export const revalidate = 3600;
 
@@ -33,6 +34,11 @@ export default function TeawareDirectory() {
 
   return (
     <main>
+      <ItemListJsonLd
+        name="Teaware — Two Buds and a Leaf"
+        description="Vessels, kettles, and instruments we use to brew tea every week."
+        items={teawareListItems(TEAWARE)}
+      />
       <Container>
         <Link
           href="/discover"

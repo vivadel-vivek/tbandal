@@ -441,7 +441,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                     </p>
 
                     {review.session && (
-                      <div className="bg-cream px-4 py-3 rounded-md mb-4 text-xs text-warm-700 font-mono">
+                      <div className="bg-cream px-4 py-3 rounded-md mb-4 text-xs text-warm-700 font-mono break-words">
                         <div className="text-[10px] tracking-widest uppercase text-warm-600 mb-1 font-sans font-bold">
                           Brewed
                         </div>

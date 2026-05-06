@@ -192,7 +192,7 @@ function FeaturedPost({ post }: { post: Post }) {
         style={{ background: post.grad }}
       />
       <div className="px-5 sm:px-7 pt-5 sm:pt-6 pb-5 sm:pb-7">
-        <Eyebrow color="var(--sage-dark, #6B7A5D)">
+        <Eyebrow color="var(--sage-text, #556649)">
           {post.cat} · {post.readTime} min
         </Eyebrow>
         <h3 className="font-display text-burgundy font-medium leading-tight tracking-tight mt-2 mb-2.5 text-[28px] sm:text-hero-md">
@@ -226,7 +226,7 @@ function PostMini({ post }: { post: Post }) {
         style={{ background: post.grad }}
       />
       <div>
-        <Eyebrow color="var(--sage-dark, #6B7A5D)" className="text-[9px]">
+        <Eyebrow color="var(--sage-text, #556649)" className="text-[9px]">
           {post.cat}
         </Eyebrow>
         <h4 className="font-display text-burgundy font-medium leading-snug m-0 mt-1 mb-1 text-[19px]">

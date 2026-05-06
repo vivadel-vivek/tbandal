@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import {
   CONTINENT_ORDER,
   TEAS,
+  VENDORS,
   groupVendorsByGeography,
   teaUrl,
 } from "@/lib/data";
@@ -13,6 +14,7 @@ export const revalidate = 3600;
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { StarRow } from "@/components/ui/StarRow";
+import { ItemListJsonLd, vendorListItems } from "@/components/seo/JsonLd";
 import type { Vendor } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -32,6 +34,11 @@ export default function VendorsAtlas() {
 
   return (
     <main>
+      <ItemListJsonLd
+        name="Tea Vendors — Two Buds and a Leaf"
+        description="An atlas of tea vendors we trust, grouped by continent and country."
+        items={vendorListItems(VENDORS)}
+      />
       <Container>
         <Link
           href="/discover"

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Cormorant_Garamond, Nunito_Sans } from "next/font/google";
 import { Shell } from "@/components/chrome/Shell";
 import { ServiceWorkerRegister } from "@/components/chrome/ServiceWorkerRegister";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -28,14 +29,13 @@ export const metadata: Metadata = {
   },
   description:
     "A two-person tea journal. Single-origin reviews, a 12-axis flavor radar, and brewing parameters that actually got the cup we describe.",
-  // Resolve from explicit site URL → Vercel preview URL → localhost fallback.
-  // Affects all OG / og:image / canonical paths derived from metadata.
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ??
-      (process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000"),
-  ),
+  // Resolves through lib/site-url so sitemap/robots/canonical all share
+  // the same host. Falls back to the canonical alias instead of the
+  // VERCEL_URL deployment-hash to keep crawlers on one URL.
+  metadataBase: new URL(getSiteUrl()),
+  // Page-level canonical fallback. Per-route metadata can override this
+  // via its own `alternates.canonical`.
+  alternates: { canonical: "/" },
   openGraph: {
     title: "Two Buds and a Leaf",
     description:
