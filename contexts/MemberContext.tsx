@@ -30,6 +30,14 @@ import {
   saveMemberProfile,
   type ProfilePatch,
 } from "@/lib/member/profile-sync";
+import {
+  loadUserLibrary,
+  upsertUserTea,
+  upsertUserTeaware,
+  deleteUserTea as deleteUserTeaRemote,
+  deleteUserTeaware as deleteUserTeawareRemote,
+  migrateLibraryToSupabase,
+} from "@/lib/member/library-sync";
 
 const STORAGE_KEY = "tbandal:member:v1";
 
@@ -259,10 +267,7 @@ export function MemberProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!hydrated || !userId) return;
     const t = setTimeout(() => {
-      const supabase = (() => {
-        try { return createSupabaseBrowserClient(); }
-        catch { return null; }
-      })();
+      const supabase = supabaseOrNull();
       if (!supabase) return;
       const patch: ProfilePatch = {
         name: member.name,
@@ -282,6 +287,45 @@ export function MemberProvider({ children }: { children: ReactNode }) {
     member.aligned,
     member.settings,
   ]);
+
+  // Authed: load library from Supabase on sign-in, falling back to
+  // localStorage if the remote is empty AND we have local rows
+  // (one-time guest → cloud migration). After this effect settles,
+  // the per-helper write-through pattern below keeps things in sync.
+  useEffect(() => {
+    if (!hydrated || !userId) return;
+    let cancelled = false;
+    (async () => {
+      const supabase = supabaseOrNull();
+      if (!supabase) return;
+      try {
+        // Snapshot the local library BEFORE the load — if Supabase
+        // returns rows we use those; otherwise we push local up.
+        const localLib = member.library;
+        const remote = await loadUserLibrary(supabase, userId);
+        if (cancelled) return;
+        if (remote.teas.length > 0 || remote.teaware.length > 0) {
+          // Cloud is authoritative.
+          setMember((prev) => ({ ...prev, library: remote }));
+        } else if (
+          localLib.teas.length > 0 ||
+          localLib.teaware.length > 0
+        ) {
+          // First-time sign-in with localStorage data — migrate up.
+          await migrateLibraryToSupabase(supabase, userId, localLib);
+        }
+      } catch {
+        // Silent: keep whatever localStorage gave us.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // Intentionally do NOT depend on member.library — that would loop
+    // (load → setMember → effect → load …). Re-fetching on user change
+    // is enough.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated, userId]);
 
   const isBlindFor = useCallback(
     (slug: string) => {
@@ -336,6 +380,14 @@ export function MemberProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Single-line "get a supabase client or null when env is missing".
+  // Used inside library mutation helpers to fire-and-forget the
+  // Supabase write without crashing on guests / unconfigured envs.
+  const supabaseOrNull = () => {
+    try { return createSupabaseBrowserClient(); }
+    catch { return null; }
+  };
+
   const findUserTeaBySlug = useCallback(
     (slug: string) => member.library.teas.find((t) => t.teaSlug === slug),
     [member.library.teas],
@@ -345,6 +397,13 @@ export function MemberProvider({ children }: { children: ReactNode }) {
       member.library.teaware.find((t) => t.teawareSlug === slug),
     [member.library.teaware],
   );
+
+  // Each helper does the same dance now:
+  //   1. optimistic local state mutation (immediate)
+  //   2. capture the resulting row via closure
+  //   3. fire-and-forget Supabase write when authed
+  // Local-first means the UI updates without latency; failures fall
+  // back to localStorage as the source of truth.
 
   const setTeaStatus = useCallback(
     (slug: string, status: UserTeaStatus): UserTea => {
@@ -369,9 +428,13 @@ export function MemberProvider({ children }: { children: ReactNode }) {
           library: { ...m.library, teas: [...m.library.teas, result!] },
         };
       });
+      if (userId && result) {
+        const sb = supabaseOrNull();
+        if (sb) upsertUserTea(sb, userId, result).catch(() => {});
+      }
       return result!;
     },
-    [],
+    [userId],
   );
 
   const addCustomTea = useCallback(
@@ -386,20 +449,31 @@ export function MemberProvider({ children }: { children: ReactNode }) {
         ...m,
         library: { ...m.library, teas: [...m.library.teas, row] },
       }));
+      if (userId) {
+        const sb = supabaseOrNull();
+        if (sb) upsertUserTea(sb, userId, row).catch(() => {});
+      }
       return row;
     },
-    [],
+    [userId],
   );
 
-  const removeUserTea = useCallback((id: string) => {
-    setMember((m) => ({
-      ...m,
-      library: {
-        ...m.library,
-        teas: m.library.teas.filter((t) => t.id !== id),
-      },
-    }));
-  }, []);
+  const removeUserTea = useCallback(
+    (id: string) => {
+      setMember((m) => ({
+        ...m,
+        library: {
+          ...m.library,
+          teas: m.library.teas.filter((t) => t.id !== id),
+        },
+      }));
+      if (userId) {
+        const sb = supabaseOrNull();
+        if (sb) deleteUserTeaRemote(sb, id).catch(() => {});
+      }
+    },
+    [userId],
+  );
 
   const setTeawareStatus = useCallback(
     (slug: string, status: UserTeawareStatus): UserTeaware => {
@@ -426,9 +500,13 @@ export function MemberProvider({ children }: { children: ReactNode }) {
           library: { ...m.library, teaware: [...m.library.teaware, result!] },
         };
       });
+      if (userId && result) {
+        const sb = supabaseOrNull();
+        if (sb) upsertUserTeaware(sb, userId, result).catch(() => {});
+      }
       return result!;
     },
-    [],
+    [userId],
   );
 
   const addCustomTeaware = useCallback(
@@ -443,20 +521,31 @@ export function MemberProvider({ children }: { children: ReactNode }) {
         ...m,
         library: { ...m.library, teaware: [...m.library.teaware, row] },
       }));
+      if (userId) {
+        const sb = supabaseOrNull();
+        if (sb) upsertUserTeaware(sb, userId, row).catch(() => {});
+      }
       return row;
     },
-    [],
+    [userId],
   );
 
-  const removeUserTeaware = useCallback((id: string) => {
-    setMember((m) => ({
-      ...m,
-      library: {
-        ...m.library,
-        teaware: m.library.teaware.filter((t) => t.id !== id),
-      },
-    }));
-  }, []);
+  const removeUserTeaware = useCallback(
+    (id: string) => {
+      setMember((m) => ({
+        ...m,
+        library: {
+          ...m.library,
+          teaware: m.library.teaware.filter((t) => t.id !== id),
+        },
+      }));
+      if (userId) {
+        const sb = supabaseOrNull();
+        if (sb) deleteUserTeawareRemote(sb, id).catch(() => {});
+      }
+    },
+    [userId],
+  );
 
   const value = useMemo<MemberContextValue>(
     () => ({
