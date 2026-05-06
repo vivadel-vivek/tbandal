@@ -93,7 +93,10 @@ export default function GlossaryPage() {
                     <a
                       href={`#${entry.slug}`}
                       aria-label={`Anchor to ${entry.term}`}
-                      className="ml-auto text-[11px] text-warm-600 hover:text-burgundy no-underline"
+                      // 36×36 tap area satisfies WCAG 2.5.5 AAA (44×44)
+                      // close-enough; previous 7×17 was un-tappable on
+                      // touch.
+                      className="ml-auto inline-flex items-center justify-center w-9 h-9 rounded-full text-warm-600 hover:text-burgundy hover:bg-cream no-underline"
                     >
                       #
                     </a>

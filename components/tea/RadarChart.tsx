@@ -143,7 +143,10 @@ export function RadarChart({
         });
       })()}
 
-      {/* Axis labels */}
+      {/* Axis labels — wrapped in SVG <a> so each one links to its
+          glossary entry. Lay-user audit asked for definitional access
+          on radar terms; advanced + basic axis keys both map 1:1 to
+          glossary slugs (floral, fruity, sweet, …). */}
       {showLabels &&
         axes.map((ax, i) => {
           const a = angle(i);
@@ -156,7 +159,12 @@ export function RadarChart({
             Math.cos(a) > 0.3 ? "start" : Math.cos(a) < -0.3 ? "end" : "middle";
           const fontSize = axes.length <= 6 ? 11 : 10;
           return (
-            <g key={ax.key}>
+            <a
+              key={ax.key}
+              href={`/discover/glossary#${ax.key}`}
+              aria-label={`${ax.label} — open glossary entry`}
+            >
+              <title>{`${ax.label} — see glossary`}</title>
               <circle cx={dotX} cy={dotY} r={3} fill={ax.color} opacity={0.7} />
               <text
                 x={x}
@@ -168,11 +176,11 @@ export function RadarChart({
                 fontWeight={600}
                 fill="var(--forest, #2D3A2E)"
                 letterSpacing={0.3}
-                style={{ textTransform: "uppercase" }}
+                style={{ textTransform: "uppercase", cursor: "pointer" }}
               >
                 {ax.label}
               </text>
-            </g>
+            </a>
           );
         })}
     </svg>

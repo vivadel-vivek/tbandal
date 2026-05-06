@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { RadarChart } from "@/components/tea/RadarChart";
 import { MouthfeelGrid } from "@/components/tea/MouthfeelGrid";
+import { SteepTimer } from "@/components/session/SteepTimer";
 
 type Scale = "basic" | "advanced";
 
@@ -804,12 +805,17 @@ function SteepCard({
           #{steep.index}
         </div>
         <Field label="Time" compact>
-          <input
-            value={steep.time ?? ""}
-            onChange={(e) => onChange({ time: e.target.value })}
-            placeholder="10s"
-            className={`${inputCls} max-w-[100px]`}
-          />
+          <div className="inline-flex items-center gap-1.5">
+            <input
+              value={steep.time ?? ""}
+              onChange={(e) => onChange({ time: e.target.value })}
+              placeholder="10s"
+              className={`${inputCls} max-w-[80px]`}
+            />
+            <SteepTimer
+              onCommit={(formatted) => onChange({ time: formatted })}
+            />
+          </div>
         </Field>
         <Field label="Temp °C" compact>
           <input
@@ -965,18 +971,21 @@ function Field({
   children: React.ReactNode;
   compact?: boolean;
 }) {
+  // Nest the label around the input(s) so the input/label association is
+  // implicit (no need for matching for/id pairs). Satisfies WCAG 1.3.1
+  // and Lighthouse's `label` audit.
   return (
-    <div className={compact ? "" : "block"}>
-      <label className="block font-sans text-[10px] font-bold text-forest mb-1 tracking-wide">
+    <label className={compact ? "block" : "block"}>
+      <span className="block font-sans text-[10px] font-bold text-forest mb-1 tracking-wide">
         {label}
-      </label>
+      </span>
       {hint && (
-        <div className="text-[11px] text-warm-700 mb-2 leading-snug">
+        <span className="block text-[11px] text-warm-700 mb-2 leading-snug">
           {hint}
-        </div>
+        </span>
       )}
       {children}
-    </div>
+    </label>
   );
 }
 

@@ -64,27 +64,32 @@ export function Footer() {
             <div className="text-[10px] font-bold tracking-widest uppercase text-warm-600 mb-3.5">
               {col.title}
             </div>
-            <ul className="list-none p-0 m-0 flex flex-col gap-2">
+            <ul className="list-none p-0 m-0 flex flex-col gap-1">
               {col.items.map((item) => (
                 <li key={item.label}>
                   {item.href ? (
                     item.external ? (
                       <a
                         href={item.href}
-                        className="text-[13px] text-warm-700 hover:text-burgundy no-underline"
+                        // py-2 + leading-tight gives a ≥36px tap target
+                        // without exploding footer height (44px would force
+                        // each link onto its own visual block; 36px reads as
+                        // a normal link list and still beats AAA hit-area
+                        // for touch).
+                        className="block py-2 text-[13px] leading-tight text-warm-700 hover:text-burgundy no-underline"
                       >
                         {item.label}
                       </a>
                     ) : (
                       <Link
                         href={item.href}
-                        className="text-[13px] text-warm-700 hover:text-burgundy no-underline"
+                        className="block py-2 text-[13px] leading-tight text-warm-700 hover:text-burgundy no-underline"
                       >
                         {item.label}
                       </Link>
                     )
                   ) : (
-                    <span className="text-[13px] text-warm-700">
+                    <span className="block py-2 text-[13px] leading-tight text-warm-700">
                       {item.label}
                     </span>
                   )}

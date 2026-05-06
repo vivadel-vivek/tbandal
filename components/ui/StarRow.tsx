@@ -7,6 +7,7 @@ type Props = {
 export function StarRow({ value, max = 5, size = 14 }: Props) {
   return (
     <span
+      role="img"
       className="inline-flex gap-px tracking-[1px] leading-none"
       style={{ fontSize: size }}
       aria-label={`${value} out of ${max} stars`}

@@ -88,7 +88,7 @@ export default function TeawareDetailPage({
                 href={`/go/teaware/${item.slug}`}
                 target="_blank"
                 rel="noopener nofollow sponsored"
-                className="no-underline"
+                className="inline-flex no-underline"
               >
                 <Button variant="primary">
                   Buy from {item.vendor} ↗
@@ -97,7 +97,7 @@ export default function TeawareDetailPage({
               {internalVendor && (
                 <Link
                   href={`/discover/vendors/${internalVendor.slug}`}
-                  className="no-underline"
+                  className="inline-flex no-underline"
                 >
                   <Button variant="secondary">Vendor profile</Button>
                 </Link>

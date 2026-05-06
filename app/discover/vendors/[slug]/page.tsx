@@ -70,7 +70,7 @@ export default function VendorDetailPage({
                 href={`/go/${vendor.slug}`}
                 target="_blank"
                 rel="noopener nofollow sponsored"
-                className="no-underline"
+                className="inline-flex no-underline"
               >
                 <Button variant="primary">Visit shop ↗</Button>
               </a>

@@ -19,13 +19,26 @@ const REQUIREMENTS = [
   ["You're OK with critical reviews",      "If we don't like a tea we'll say so — fairly. If that's a problem, we're not the right venue."],
 ];
 
+// Practical "what we ask of you" — answers the questions vendors actually
+// have before pitching. Vendor-farmer audit flagged this whole list as
+// missing; deferred-until-after-yes wasn't enough up-front detail.
+const ASKS = [
+  ["Sample size",         "5–8g for gongfu-friendly teas, 10g for whites and matcha. Cakes / blocks: a single broken-off chunk is fine."],
+  ["Shipping address",    "Sent privately when we say yes — please don't ship blind. International senders: we cover return / re-ship if applicable."],
+  ["Photography",         "We don't do unboxing or studio photo work. Cards use vendor-supplied or design-system gradients. If you have product photography you want considered, link it."],
+  ["Embargo on launch",   "Honored if the public-launch date lines up with our publish schedule. We won't run reviews that hide negative findings."],
+  ["Right of reply",      "If a review is critical, we share a draft 48 hours pre-publish and offer a vendor-response slot beneath the review. We don't pull reviews."],
+];
+
 const FAQ = [
+  ["What's your publication cadence?",      "Roughly one tea review per week, plus 1–2 long-form journal pieces per month. Current queue: ~4–6 weeks for newly-accepted samples; we'll tell you the realistic slot when we say yes."],
   ["How do you handle samples?",            "Mail us 5–8 grams. We'll send the address with our reply email — please don't ship blind. If we publish a review you keep the sample; if we pass, we'll ship it back at our cost on request."],
   ["Turnaround?",                           "Two to six weeks from receipt. Pu'er and aged teas can run longer — we like multiple sessions before publishing."],
+  ["What if the review is negative?",       "We send a draft 48 hours pre-publish and offer a vendor-response slot beneath the review (rendered as a quote, attributed to you). We don't pull reviews. The radar, brewing parameters, and verdict stand; your context is added, not subtracted."],
   ["Can I pay to be in the atlas?",         "No. Vendors in the atlas are ones we've bought from, brewed from, and would tell a friend about."],
   ["Do you take affiliate?",                "Yes — disclosed on every page that links out. We use a /go/[vendor] tracker so attribution is honest. We do not adjust ratings based on affiliate revenue."],
+  ["What UTM should I whitelist?",          "Every outbound from us appends utm_source=twobudsandaleaf, utm_medium=referral, and one of utm_campaign=atlas (vendor links) / teaware (tool links). Per-item links also send utm_content=<slug>."],
   ["What about exclusives or first-look?",  "Happy to honor an embargo on a public-launch date if it lines up with our publish schedule. We won't run reviews that hide negative findings."],
-  ["Where do my outbound links go?",        "Through /go/[your-slug] with a UTM tag (utm_source=twobudsandaleaf). You can attribute traffic in your analytics under that source."],
   ["Atlas listing without a tea review?",   "Yes — we'll add small, transparent vendors to the atlas without a specific tea review if we've bought from you and can vouch. Email and we'll talk."],
   ["Conflicts of interest?",                "If we have a personal relationship with you (friend, host, mutual project) we'll say so on the review. We won't pretend it's not there."],
 ];
@@ -99,6 +112,25 @@ Notes:`}
               <Button variant="primary">Email hello@twobudsandaleaf.com →</Button>
             </a>
           </div>
+        </section>
+
+        <section className="card-surface p-5 sm:p-7 mb-8 sm:mb-10">
+          <Eyebrow>What we ask of you</Eyebrow>
+          <h2 className="font-display text-burgundy font-medium m-0 mt-2 mb-5 text-[26px] sm:text-hero-sm">
+            Practical details before you ship
+          </h2>
+          <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+            {ASKS.map(([k, v]) => (
+              <div key={k}>
+                <dt className="font-display text-burgundy text-base font-medium mb-1">
+                  {k}
+                </dt>
+                <dd className="text-sm text-warm-700 leading-relaxed m-0">
+                  {v}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </section>
 
         <section className="card-surface p-5 sm:p-7 mb-8 sm:mb-10">

@@ -51,11 +51,17 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-8 sm:gap-14 items-center">
             <div>
               <Eyebrow>A two-person tea journal · est. 2024</Eyebrow>
-              <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter mt-3 sm:mt-4 mb-4 sm:mb-5 text-[44px] sm:text-hero-2xl text-balance">
+              <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter mt-3 sm:mt-4 mb-3 text-[44px] sm:text-hero-2xl text-balance">
                 <span className="italic">Two buds,</span>
                 <br /> a leaf, and a long
                 <br /> afternoon to brew it.
               </h1>
+              {/* Plain-language tagline — flagged by the lay-user audit:
+                  the poetic H1 lands second; readers need a one-line
+                  value prop FIRST so newcomers don't bounce. */}
+              <p className="text-warm-700 italic font-display text-[18px] sm:text-[22px] leading-snug mb-4 sm:mb-5">
+                Honest single-origin tea reviews from two friends — no jargon required to start.
+              </p>
               <p className="text-base sm:text-lg text-warm-700 max-w-[540px] leading-relaxed mb-6 sm:mb-7">
                 Vivek and James review tea — single-origin, vendor-sourced, and
                 everything between. Twelve flavor axes, dual ratings, and

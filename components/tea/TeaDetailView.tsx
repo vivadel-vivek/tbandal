@@ -654,7 +654,11 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                 href={vendorOutboundHref}
                 target="_blank"
                 rel="noopener nofollow sponsored"
-                className="no-underline"
+                // inline-flex so the anchor's bounding box matches the
+                // wrapped Button — without this, Lighthouse reports the
+                // <a> as a sub-44px target even though the visible
+                // button is 44px+ tall (target-size audit).
+                className="inline-flex no-underline"
               >
                 <Button variant="gold" size="lg">
                   Visit {tea.vendor} ↗

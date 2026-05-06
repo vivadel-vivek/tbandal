@@ -42,6 +42,9 @@ export function GET(
     target.searchParams.set("utm_source", "twobudsandaleaf");
     target.searchParams.set("utm_medium", "referral");
     target.searchParams.set("utm_campaign", "teaware");
+    // Per-item attribution so vendors can see which catalog page drove
+    // a click — flagged by the experienced-drinker audit.
+    target.searchParams.set("utm_content", item.slug);
   }
 
   return NextResponse.redirect(target.toString(), 302);
