@@ -23,6 +23,13 @@ import type {
   UserTeaware,
   UserTeawareStatus,
 } from "@/lib/types";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useSupabaseSession } from "@/lib/supabase/useSession";
+import {
+  loadMemberProfile,
+  saveMemberProfile,
+  type ProfilePatch,
+} from "@/lib/member/profile-sync";
 
 const STORAGE_KEY = "tbandal:member:v1";
 
@@ -184,9 +191,14 @@ const MemberContext = createContext<MemberContextValue | null>(null);
 export function MemberProvider({ children }: { children: ReactNode }) {
   const [member, setMember] = useState<Member>(DEFAULT_MEMBER);
   const [hydrated, setHydrated] = useState(false);
+  const session = useSupabaseSession();
+  const userId = session?.userId ?? null;
 
   // Hydrate from localStorage on mount (avoids SSR mismatch). All values
   // are validated against their union types before being merged in.
+  // When the user is authed, the next effect overrides profile fields
+  // with the Supabase row — localStorage is the guest-mode + offline
+  // cache, not the source of truth.
   useEffect(() => {
     const raw = (() => {
       try { return localStorage.getItem(STORAGE_KEY); }
@@ -199,7 +211,39 @@ export function MemberProvider({ children }: { children: ReactNode }) {
     setHydrated(true);
   }, []);
 
-  // Persist on change (after hydration so we don't overwrite with defaults)
+  // Authed: load profile/settings from Supabase on every sign-in. If the
+  // hosted row has data we replace those Member fields; library + sessions
+  // still come from localStorage (Phase B-final.2 + .3 will move them).
+  // On sign-out we don't reset state — the user keeps whatever they had,
+  // and the next sign-in re-hydrates.
+  useEffect(() => {
+    if (!hydrated || !userId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const supabase = createSupabaseBrowserClient();
+        const remote = await loadMemberProfile(supabase, userId);
+        if (cancelled || !remote) return;
+        setMember((prev) => ({
+          ...prev,
+          name: remote.name ?? prev.name,
+          aligned: remote.aligned ?? prev.aligned,
+          settings: { ...prev.settings, ...(remote.settings ?? {}) },
+        }));
+      } catch {
+        // No env, network blip, or RLS denial — stay on localStorage.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, userId]);
+
+  // Persist on change. Always write to localStorage (cheap; useful as
+  // offline cache for the next visit). When authed, ALSO write the
+  // profile fields to Supabase via the helper. Library/sessions
+  // currently only round-trip localStorage; the next two commits move
+  // them onto Supabase too.
   useEffect(() => {
     if (!hydrated) return;
     try {
@@ -208,6 +252,36 @@ export function MemberProvider({ children }: { children: ReactNode }) {
       /* quota / private mode — ignore */
     }
   }, [member, hydrated]);
+
+  // Debounced profile write-through. Settings update → ~400ms later we
+  // upsert to Supabase. Ignores the very first render (post-hydration
+  // settle) so we don't write defaults.
+  useEffect(() => {
+    if (!hydrated || !userId) return;
+    const t = setTimeout(() => {
+      const supabase = (() => {
+        try { return createSupabaseBrowserClient(); }
+        catch { return null; }
+      })();
+      if (!supabase) return;
+      const patch: ProfilePatch = {
+        name: member.name,
+        aligned: member.aligned,
+        settings: member.settings,
+      };
+      saveMemberProfile(supabase, userId, patch).catch(() => {
+        // RLS denial / offline / etc. — silent. localStorage holds the
+        // pending change; next mutation tries again.
+      });
+    }, 400);
+    return () => clearTimeout(t);
+  }, [
+    hydrated,
+    userId,
+    member.name,
+    member.aligned,
+    member.settings,
+  ]);
 
   const isBlindFor = useCallback(
     (slug: string) => {
