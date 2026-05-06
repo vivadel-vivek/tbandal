@@ -5,6 +5,11 @@ import { AuthCard } from "@/components/auth/AuthCard";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+// Always per-request: the session cookie decides whether to redirect
+// or render the form, and the friendly env-missing fallback should
+// reflect the live env state, not whatever was true at build time.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Sign in",
   description: "Sign in to Two Buds and a Leaf.",

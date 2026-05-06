@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { useMember } from "@/contexts/MemberContext";
+import { useSupabaseSession } from "@/lib/supabase/useSession";
 import { AvatarChip } from "@/components/ui/AvatarChip";
 
 const DISCOVER_ITEMS = [
@@ -31,14 +32,14 @@ const MOBILE_NAV_ITEMS = [
   { href: "/about",              label: "About",     desc: "Who we are, how we rate" },
 ] as const;
 
-type HeaderProps = {
-  /** Session passed in from the server-side Shell. null = signed-out. */
-  session: { email: string | null; userId: string } | null;
-};
-
-export function Header({ session }: HeaderProps) {
+export function Header() {
   const pathname = usePathname() ?? "/";
   const { member } = useMember();
+  // Client-side session read — Shell stays a static server component
+  // so SSG isn't compromised. Initial render always shows the
+  // signed-out chrome; the chip flips to the authed pill on hydration
+  // when there's a live session cookie.
+  const session = useSupabaseSession();
   const isAuthed = session !== null;
 
   // Desktop dropdown — hover or click to open.

@@ -6,6 +6,12 @@ import { AccountForm } from "@/components/auth/AccountForm";
 import { Button } from "@/components/ui/Button";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+// Always rendered per-request — depends on the auth session cookie.
+// Without this, Next.js tries to statically prerender at build time
+// (when there's no session and Supabase env vars may not be set yet)
+// and the build fails on the missing-env throw.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Account",
   description: "Profile, password, and account preferences.",

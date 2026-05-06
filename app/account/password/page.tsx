@@ -5,6 +5,8 @@ import { AuthCard } from "@/components/auth/AuthCard";
 import { PasswordForm } from "@/components/auth/PasswordForm";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Change password",
   description: "Update your account password.",

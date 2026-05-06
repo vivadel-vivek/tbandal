@@ -7,35 +7,19 @@ import { ClientProviders } from "./ClientProviders";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { SessionLogLauncher } from "@/components/session/SessionLogLauncher";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function Shell({ children }: { children: ReactNode }) {
-  // Fetch the auth-state server-side so the Header doesn't need its own
-  // round-trip + flicker. We read the lighter `getUser()` rather than
-  // joining to profiles here because (a) most pages don't need the
-  // role; (b) /account already pulls the profile row when needed; (c)
-  // it keeps the global Shell fast for the 99% logged-out case.
-  //
-  // When env vars aren't set yet (first dev boot before .env.local
-  // exists), createSupabaseServerClient throws — catch and treat as
-  // signed-out so the rest of the site keeps rendering.
-  let session: { email: string | null; userId: string } | null = null;
-  try {
-    const supabase = await createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) {
-      session = { email: user.email ?? null, userId: user.id };
-    }
-  } catch {
-    // No env / no Supabase reachable — render the signed-out chrome.
-  }
-
+export function Shell({ children }: { children: ReactNode }) {
+  // Auth state is intentionally NOT read here. If we awaited the
+  // Supabase session in this server component, every page that wraps
+  // its content in <Shell> would render a build-time snapshot of
+  // "no session" into the static HTML — which then sticks even after
+  // the user signs in. Instead, the Header reads the session via a
+  // client-side hook, so SSG stays cheap and the chip updates on
+  // hydration.
   return (
     <ClientProviders>
       <div className="min-h-screen flex flex-col">
-        <Header session={session} />
+        <Header />
         <div className="flex-1">{children}</div>
         <Footer />
       </div>
