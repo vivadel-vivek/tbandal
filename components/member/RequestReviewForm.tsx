@@ -157,8 +157,8 @@ export function RequestReviewForm({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           {(
             [
-              { key: "vivek",  label: "Vivek",  sub: "Likes earthy, mineral, mature." },
-              { key: "james",  label: "James",  sub: "Likes floral, vegetal, bright." },
+              { key: "james",  label: "James",  sub: "Likes earthy, mineral, mature." },
+              { key: "vivek",  label: "Vivek",  sub: "Likes sweet, nutty, malty." },
               { key: "either", label: "Either", sub: "First one available." },
             ] as { key: Reviewer; label: string; sub: string }[]
           ).map((opt) => {

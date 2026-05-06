@@ -50,7 +50,7 @@ export default function AboutPage() {
         </div>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 mt-10 sm:mt-12">
-          {[CONTRIBUTORS.vivek, CONTRIBUTORS.james].map((c) => (
+          {[CONTRIBUTORS.james, CONTRIBUTORS.vivek].map((c) => (
             <article key={c.key} className="card-surface p-6 sm:p-8">
               <div className="flex items-center gap-4 mb-4">
                 <AvatarChip who={c.key} size={64} />

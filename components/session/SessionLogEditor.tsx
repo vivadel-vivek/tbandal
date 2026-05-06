@@ -552,16 +552,46 @@ function SessionMeta({
   onBrewStyleOverride: (v: string) => void;
   onToggleAdvanced: () => void;
 }) {
-  // Vessel picker: rendered as a select sourced from /discover/teaware,
-  // with "Custom" falling through to the inline text input. Selecting
-  // a catalog item populates the vessel string with its display name —
-  // we keep the field as freeform on save so old ratings stay valid.
-  const vessels = vesselTeaware();
-  const matched = vessels.find((v) => v.name === vessel);
-  const [usingCustom, setUsingCustom] = useState<boolean>(
-    vessel.length > 0 && !matched,
+  // Vessel picker: split into "Your teaware" (the user's library — both
+  // catalog references and custom entries) on top, then "From the
+  // catalog" with anything not already in the library, then "Other /
+  // custom…" which falls through to the freeform text input.
+  //
+  // Whatever the user picks, we set `vessel` to a human-readable string;
+  // the model stays freeform so older ratings still display correctly.
+  // Phase B will gain a vessel_id FK; for now string is enough.
+  const { member } = useMember();
+  const allCatalog = vesselTeaware();
+  const libCatalogSlugs = new Set(
+    member.library.teaware
+      .map((row) => row.teawareSlug)
+      .filter((s): s is string => Boolean(s)),
   );
-  const isCustom = usingCustom || (!matched && vessel.length === 0);
+  const libraryVessels = member.library.teaware
+    .map((row) => {
+      if (row.teawareSlug) {
+        const c = allCatalog.find((v) => v.slug === row.teawareSlug);
+        return c ? { value: `cat:${c.slug}`, name: c.name } : null;
+      }
+      return row.customName
+        ? { value: `lib:${row.id}`, name: row.customName }
+        : null;
+    })
+    .filter((x): x is { value: string; name: string } => x !== null);
+  const catalogVessels = allCatalog
+    .filter((v) => !libCatalogSlugs.has(v.slug))
+    .map((v) => ({ value: `cat:${v.slug}`, name: v.name }));
+
+  // Detect whether the current vessel string matches a known option so
+  // the select reflects the saved value rather than reverting to "—".
+  const matchedValue =
+    libraryVessels.find((x) => x.name === vessel)?.value ??
+    catalogVessels.find((x) => x.name === vessel)?.value ??
+    "";
+  const [usingCustom, setUsingCustom] = useState<boolean>(
+    vessel.length > 0 && matchedValue === "",
+  );
+  const isCustom = usingCustom || (!matchedValue && vessel.length === 0);
 
   return (
     <section className="card-surface p-6 mb-5">
@@ -578,7 +608,7 @@ function SessionMeta({
         <Field label="Vessel" hint="Pot / cup you brewed in.">
           <div className="flex flex-col gap-1.5">
             <select
-              value={isCustom ? "__custom__" : (matched?.slug ?? "")}
+              value={isCustom ? "__custom__" : matchedValue}
               onChange={(e) => {
                 const v = e.target.value;
                 if (v === "__custom__") {
@@ -586,17 +616,42 @@ function SessionMeta({
                   return;
                 }
                 setUsingCustom(false);
-                const picked = vessels.find((x) => x.slug === v);
+                if (!v) {
+                  onVessel("");
+                  return;
+                }
+                const picked =
+                  libraryVessels.find((x) => x.value === v) ??
+                  catalogVessels.find((x) => x.value === v);
                 onVessel(picked?.name ?? "");
               }}
               className={inputCls}
             >
-              <option value="">— Pick from teaware —</option>
-              {vessels.map((v) => (
-                <option key={v.slug} value={v.slug}>
-                  {v.name}
-                </option>
-              ))}
+              <option value="">— Pick a vessel —</option>
+              {libraryVessels.length > 0 && (
+                <optgroup label="Your teaware">
+                  {libraryVessels.map((v) => (
+                    <option key={v.value} value={v.value}>
+                      {v.name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {catalogVessels.length > 0 && (
+                <optgroup
+                  label={
+                    libraryVessels.length > 0
+                      ? "From the catalog"
+                      : "Catalog"
+                  }
+                >
+                  {catalogVessels.map((v) => (
+                    <option key={v.value} value={v.value}>
+                      {v.name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
               <option value="__custom__">Other / custom…</option>
             </select>
             {isCustom && (

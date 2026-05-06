@@ -62,7 +62,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
   const mr = member.ratings.find((r) => r.slug === tea.slug);
   const hasMember = mr !== undefined;
 
-  const [activeTab, setActiveTab] = useState<ReviewTab>("vivek");
+  const [activeTab, setActiveTab] = useState<ReviewTab>("james");
 
   // Effective flavor mode: "blind" is whole-site; tea-detail toggles only basic/advanced
   const memberMode = member.settings.flavorMode;
@@ -92,9 +92,10 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
     you: mr ? mr.profile : null,
   };
 
+  // James leads the contributor order site-wide — he's the tea lead.
   const tabOrder: ReviewTab[] = hasMember
-    ? ["vivek", "james", "members", "you"]
-    : ["vivek", "james", "members"];
+    ? ["james", "vivek", "members", "you"]
+    : ["james", "vivek", "members"];
   const safeTab: ReviewTab = tabOrder.includes(activeTab) ? activeTab : "members";
   const review = reviewMap[safeTab];
   const profile = profileMap[safeTab];
@@ -104,13 +105,15 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
   const profilesForRadar: RP[] = useMemo(() => {
     const toRadar = (v: Record<string, number>) =>
       isBasic ? rollUpProfile(v as FlavorProfile) : v;
+    // Composite-overlay order matches the rest of the site: James (lead),
+    // then Vivek, then members aggregate, then the current member.
     const raw: RP[] = showComposite
       ? [
-          ...(tea.reviews.vivek
-            ? [{ values: tea.flavor.vivek, color: CONTRIBUTORS.vivek.color, label: "Vivek" }]
-            : []),
           ...(tea.reviews.james
             ? [{ values: tea.flavor.james, color: CONTRIBUTORS.james.color, label: "James" }]
+            : []),
+          ...(tea.reviews.vivek
+            ? [{ values: tea.flavor.vivek, color: CONTRIBUTORS.vivek.color, label: "Vivek" }]
             : []),
           { values: tea.flavor.members, color: "var(--gold-dark, #A68B3D)", label: "Members" },
           ...(mr
@@ -237,8 +240,8 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
             {/* Tabs */}
             <div className="flex gap-1 mb-7 p-1 bg-cream rounded-pill w-fit border border-warm-200 flex-wrap">
               {[
-                { key: "vivek" as const, label: "Vivek's Review" },
                 { key: "james" as const, label: "James's Review" },
+                { key: "vivek" as const, label: "Vivek's Review" },
                 { key: "members" as const, label: "Member Reviews" },
                 ...(hasMember ? [{ key: "you" as const, label: "Your Review" }] : []),
               ].map((t) => {
@@ -291,8 +294,8 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                 </div>
                 {showComposite && (
                   <div className="flex gap-3 text-[11px] text-warm-600 flex-wrap mb-1">
-                    {tea.reviews.vivek && <LegendDot color={CONTRIBUTORS.vivek.color} label="Vivek" />}
                     {tea.reviews.james && <LegendDot color={CONTRIBUTORS.james.color} label="James" />}
+                    {tea.reviews.vivek && <LegendDot color={CONTRIBUTORS.vivek.color} label="Vivek" />}
                     <LegendDot color="var(--gold-dark, #A68B3D)" label="Members" />
                     {hasMember && <LegendDot color="var(--forest, #2D3A2E)" label="You" />}
                   </div>

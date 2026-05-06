@@ -110,7 +110,7 @@ export function MemberSettingsView() {
           />
           <SettingsToggle
             label="Sample-send opportunities"
-            sub="Vivek and James occasionally have spare grams of teas they're reviewing."
+            sub="James and Vivek occasionally have spare grams of teas they're reviewing."
             value={s.notifications.sampleRequests}
             onChange={(v) => setNotif("sampleRequests", v)}
           />
@@ -140,7 +140,7 @@ export function MemberSettingsView() {
           </SettingsField>
           <SettingsToggle
             label="Show all radars overlaid by default"
-            sub="On tea detail pages, show Vivek + James + Members at once instead of one tab at a time."
+            sub="On tea detail pages, show James + Vivek + Members at once instead of one tab at a time."
             value={s.composite}
             onChange={(v) => setSetting("composite", v)}
           />

@@ -131,7 +131,7 @@ export function MemberProfileView() {
                 rated a few teas of your own.
               </p>
               <div className="flex gap-2.5">
-                {[CONTRIBUTORS.vivek, CONTRIBUTORS.james].map((c) => {
+                {[CONTRIBUTORS.james, CONTRIBUTORS.vivek].map((c) => {
                   const active = member.aligned === c.key;
                   return (
                     <button

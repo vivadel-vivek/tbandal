@@ -63,7 +63,7 @@ export default function Home() {
                 Honest tea reviews from two friends — a flavor map of every cup, no jargon required.
               </p>
               <p className="text-base sm:text-lg text-warm-700 max-w-[540px] leading-relaxed mb-6 sm:mb-7">
-                Vivek and James review tea — single-origin, vendor-sourced, and
+                James and Vivek review tea — single-origin, vendor-sourced, and
                 everything between. Twelve flavor axes, dual ratings, and
                 brewing parameters that actually got the cup we describe.
               </p>
@@ -143,7 +143,7 @@ export default function Home() {
             href="/about"
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-            {[CONTRIBUTORS.vivek, CONTRIBUTORS.james].map((c) => (
+            {[CONTRIBUTORS.james, CONTRIBUTORS.vivek].map((c) => (
               <article
                 key={c.key}
                 className="bg-white rounded-xl p-5 sm:p-7 shadow-card border border-warm-200 flex gap-4 sm:gap-5"

@@ -15,22 +15,27 @@ import type {
 } from "./types";
 import { profileFromArray as p } from "./flavor";
 
+// James is the tea lead — listed first across the site (tabs, legends,
+// contributor cards). Both bios match the personas the team identified:
+// James leans into sheng pu'er and the deep / aged / mature corner;
+// Vivek prefers the subtle (vanilla, malty aged whites) and the bold
+// nutty / roasted register.
 export const CONTRIBUTORS: Record<"vivek" | "james", Contributor> = {
-  vivek: {
-    key: "vivek",
-    name: "Vivek",
-    initials: "V",
-    color: "#722F37",
-    bio: "Pu'er obsessive. Will brew anything in a 60ml gaiwan.",
-    palate: "Likes earthy, mineral, mature.",
-  },
   james: {
     key: "james",
     name: "James",
     initials: "J",
+    color: "#722F37",
+    bio: "Tea lead. Sheng pu'er and the aged corner of the cabinet — gives a tea time before he calls it.",
+    palate: "Likes earthy, mineral, mature.",
+  },
+  vivek: {
+    key: "vivek",
+    name: "Vivek",
+    initials: "V",
     color: "#8B9A7D",
-    bio: "Spring oolongs and high-mountain greens. Cups stay warm.",
-    palate: "Likes floral, vegetal, bright.",
+    bio: "Subtle aged whites with vanilla and malt — and the nutty, roasted register when he wants something bold.",
+    palate: "Likes sweet, nutty, malty.",
   },
 };
 

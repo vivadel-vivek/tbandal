@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { GLOSSARY, glossaryEntryBySlug } from "@/lib/glossary";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { CopyAnchorButton } from "@/components/glossary/CopyAnchorButton";
 
 export const revalidate = 604800;
 
@@ -91,20 +92,15 @@ export default function GlossaryPage() {
                         also: {entry.aliases.join(", ")}
                       </span>
                     )}
-                    <a
-                      href={`#${entry.slug}`}
-                      aria-label={`Anchor to ${entry.term}`}
-                      // 36×36 tap area satisfies WCAG 2.5.5 AAA (44×44)
-                      // close-enough; previous 7×17 was un-tappable on
-                      // touch.
-                      className="ml-auto inline-flex items-center justify-center w-9 h-9 rounded-full text-warm-600 hover:text-burgundy hover:bg-cream no-underline"
-                    >
-                      #
-                    </a>
+                    <CopyAnchorButton slug={entry.slug} term={entry.term} />
                   </header>
 
-                  <p className="text-[15px] text-forest leading-relaxed m-0 mb-3">
-                    <span className="font-bold text-burgundy">Key points —</span>{" "}
+                  {/* The lay description IS the lede — bumped one weight
+                      and given the burgundy color so it reads as the
+                      primary line. The "Key points —" label that used
+                      to introduce it was redundant once the visual
+                      hierarchy did the job. */}
+                  <p className="text-[16px] text-burgundy font-semibold leading-relaxed m-0 mb-3">
                     {entry.lay}
                   </p>
 

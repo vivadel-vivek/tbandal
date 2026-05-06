@@ -38,11 +38,17 @@ type Props = {
 //   the chart legible in cramped per-steep cards.
 // =====================================================================
 
+// Sommelier-style descriptors per quadrant. Refined by tea-content-writer:
+//   Mouth-coating — already in our glossary, the canonical term for the
+//                   slick polysaccharide film of aged sheng / gyokuro.
+//   Bracing       — tannic grip + weight (young sheng, Darjeeling 2nd flush).
+//   Silken        — oily but weightless (Silver Needle, shaded sencha).
+//   Brisk         — clean light astringency (the snap-pea Longjing register).
 const QUADRANTS = [
-  { label: "Viscous",    cx: 0.25, cy: 0.25, hint: "oily + full body" },
-  { label: "Puckering",  cx: 0.75, cy: 0.25, hint: "astringent + full body" },
-  { label: "Ephemeral",  cx: 0.25, cy: 0.75, hint: "oily + light body" },
-  { label: "Refreshing", cx: 0.75, cy: 0.75, hint: "astringent + light body" },
+  { label: "Mouth-coating", cx: 0.25, cy: 0.25, hint: "slick film, weight that lingers" },
+  { label: "Bracing",       cx: 0.75, cy: 0.25, hint: "tannic grip with weight behind it" },
+  { label: "Silken",        cx: 0.25, cy: 0.75, hint: "soft, slippery, weightless on the tongue" },
+  { label: "Brisk",         cx: 0.75, cy: 0.75, hint: "clean grip, snap-pea bite, no weight" },
 ] as const;
 
 export function MouthfeelGrid({ point, points, size = 260 }: Props) {
@@ -55,7 +61,11 @@ export function MouthfeelGrid({ point, points, size = 260 }: Props) {
   // size 160 without bumping into the inner grid.
   const pad = 32;
   const inner = size - pad * 2;
-  const showQuadrantLabels = size >= 200;
+  // 240 is the floor where "Mouth-coating" (longest label, 13 chars at
+  // 11px font ≈ 91px wide) fits inside a quadrant (≈88px wide at 240).
+  // Below that the labels would crash into each other; <title> tooltips
+  // still carry the descriptors for hover users.
+  const showQuadrantLabels = size >= 240;
   const axisFont = size >= 220 ? 10 : 9;
   const quadFont = size >= 260 ? 12 : 11;
 

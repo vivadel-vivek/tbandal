@@ -30,7 +30,9 @@ const EMPTY_LIBRARY: UserLibrary = { teas: [], teaware: [] };
 
 const DEFAULT_MEMBER: Member = {
   name: "You",
-  aligned: "vivek",
+  // James is the tea lead — newcomers default to his palate alignment;
+  // they can flip to Vivek's in /member/settings.
+  aligned: "james",
   ratings: [],
   library: EMPTY_LIBRARY,
   settings: {

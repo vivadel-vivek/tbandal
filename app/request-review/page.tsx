@@ -36,7 +36,7 @@ export default function RequestReviewPage({
           <p className="text-base text-warm-700 leading-relaxed max-w-[640px] m-0">
             Send us a tea you&apos;d like brewed and written up. If you have a
             sample we&apos;ll cover return shipping; otherwise drop a purchase
-            link and we&apos;ll source it. Vivek and James each handle a
+            link and we&apos;ll source it. James and Vivek each handle a
             different stack — pick whichever palate you trust on this one.
           </p>
         </div>
