@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { TEAS, VENDORS } from "@/lib/data";
+import { TEAS, VENDORS, TEAWARE } from "@/lib/data";
 
 // Hub page — pure copy. Revalidate weekly so vendor/tea counts refresh.
 export const revalidate = 604800;
@@ -28,6 +28,7 @@ type HubCard = {
 export default function DiscoverHub() {
   const teaCount = TEAS.length;
   const vendorCount = VENDORS.length;
+  const teawareCount = TEAWARE.length;
 
   const cards: HubCard[] = [
     {
@@ -51,6 +52,16 @@ export default function DiscoverHub() {
       mark: "店",
     },
     {
+      href: "/discover/teaware",
+      eyebrow: "The instruments",
+      title: "Teaware",
+      desc:
+        "Vessels, kettles, and the small instruments that change how the cup actually tastes. A short, opinionated list of what we use every week.",
+      stat: `${teawareCount} item${teawareCount === 1 ? "" : "s"} listed`,
+      grad: "linear-gradient(135deg,#8B7355 0%,#5C4033 100%)",
+      mark: "器",
+    },
+    {
       href: "/discover/glossary",
       eyebrow: "The reference",
       title: "Glossary",
@@ -65,25 +76,25 @@ export default function DiscoverHub() {
   return (
     <main>
       <Container>
-        <div className="relative pt-14 pb-8">
+        <div className="relative pt-10 sm:pt-14 pb-6 sm:pb-8">
           <TeaStain
             size={320}
             color="#C4A35A"
             opacity={0.14}
-            className="absolute top-0 -right-20 pointer-events-none"
+            className="absolute top-0 -right-20 pointer-events-none hidden sm:block"
           />
           <Eyebrow>Discover</Eyebrow>
-          <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter mt-3 mb-5 text-[72px]">
+          <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter mt-3 mb-4 sm:mb-5 text-[48px] sm:text-[72px]">
             <span className="italic">Find your way in.</span>
           </h1>
-          <p className="text-lg text-warm-700 max-w-[640px] leading-relaxed m-0">
+          <p className="text-base sm:text-lg text-warm-700 max-w-[640px] leading-relaxed m-0">
             Three doors into the same room. Pick the leaves, the people who
             sourced them, or the words we use to describe what&apos;s in the
             cup.
           </p>
         </div>
 
-        <section className="grid grid-cols-3 gap-6 pb-16">
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 pb-12 sm:pb-16">
           {cards.map((c) => {
             const inner = (
               <article

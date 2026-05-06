@@ -10,6 +10,7 @@ import type {
   Tea,
   Vendor,
   Post,
+  Teaware,
   TeaReviews,
 } from "./types";
 import { profileFromArray as p } from "./flavor";
@@ -305,6 +306,121 @@ export const POSTS: Post[] = [
 ];
 
 // =====================================================================
+// TEAWARE — vessels, kettles, and the small instruments that matter
+// =====================================================================
+// Curated short list — every item is something one of us actually uses.
+// Phase 6 swaps for Airtable; the call-sites don't change.
+
+export const TEAWARE: Teaware[] = [
+  {
+    slug: "jingdezhen-100ml-gaiwan",
+    name: "Jingdezhen porcelain gaiwan, 100ml",
+    category: "Gaiwan",
+    volumeMl: 100,
+    material: "Porcelain",
+    origin: "Jingdezhen, China",
+    vendor: "Tea Drunk",
+    price: 38,
+    gradient: "linear-gradient(135deg,#E8E5E2 0%,#B5B0AA 100%)",
+    swatch: "#D4C4A0",
+    tagline:
+      "The neutral 100ml gaiwan we keep coming back to — clean lines, comfortable rim.",
+    body:
+      "If you only own one gaiwan, this is roughly the shape it should be. 100ml is the cooperative middle — small enough to gongfu a 5g session, big enough that you don't burn your hand on the rim. The white interior reads tea color honestly, which matters more than people admit when you're judging a young shen against an aged one.\n\nThe glaze on the inside is the part to inspect: a slightly cooler white reads liquor color more accurately than a creamy ivory. We've broken three cheaper gaiwans of the same nominal size before settling on this one, which has held up to two years of daily use.",
+    goodFor: ["Pu'er", "Oolong", "Black", "White"],
+    rating: 5,
+  },
+  {
+    slug: "tokoname-kyusu-180ml",
+    name: "Tokoname kyusu, 180ml",
+    category: "Kyusu",
+    volumeMl: 180,
+    material: "Stoneware",
+    origin: "Tokoname, Japan",
+    vendor: "Ippodo Tea",
+    price: 92,
+    gradient: "linear-gradient(135deg,#A65D57 0%,#5C4033 100%)",
+    swatch: "#A65D57",
+    tagline:
+      "Side-handle stoneware kyusu with an integrated mesh — the right tool for gyokuro and sencha.",
+    body:
+      "A kyusu is not a teapot you can substitute for. The side handle, the wide-low body, and the integrated mesh are all there to do one specific job: brew Japanese green tea at low temperatures with short, controlled pours.\n\nThis Tokoname is unglazed inside (the iron in the clay is supposed to soften the tea over time — controversial but plausible) and glazed lightly outside. 180ml is on the larger end for gongfu-style gyokuro; we use it for a 5g session and pour out into two small cups.",
+    goodFor: ["Green"],
+    rating: 5,
+  },
+  {
+    slug: "yixing-zisha-120ml",
+    name: "Yixing zisha pot, 120ml",
+    category: "Teapot",
+    volumeMl: 120,
+    material: "Yixing zisha",
+    origin: "Yixing, Jiangsu",
+    vendor: "white2tea",
+    price: 145,
+    gradient: "linear-gradient(135deg,#8B7355 0%,#5C4033 100%)",
+    swatch: "#5C4033",
+    tagline:
+      "A single-tea-type pot that earns its keep on aged shen and ripe pu'er.",
+    body:
+      "Yixing pots come with a rule: you season them to one tea type and you leave them there. The unglazed clay absorbs and slowly returns flavor, which is a good thing if you're disciplined and a bad thing if you brew a green in your shen pot.\n\nWe season this one exclusively for aged sheng and the occasional shou. The 120ml capacity is forgiving with a 6g session, and the clay does soften the early-steep edges in a way porcelain doesn't.",
+    goodFor: ["Pu'er"],
+    rating: 5,
+  },
+  {
+    slug: "glass-fairness-pitcher-200ml",
+    name: "Glass fairness pitcher, 200ml",
+    category: "Pitcher",
+    volumeMl: 200,
+    material: "Glass",
+    vendor: "Tea Drunk",
+    price: 24,
+    gradient: "linear-gradient(135deg,#A8B49C 0%,#6B7A5D 100%)",
+    swatch: "#7A9A6D",
+    tagline:
+      "Plain heat-resistant glass — the right vessel for actually seeing what came out of the gaiwan.",
+    body:
+      "A fairness pitcher (gong dao bei) does two things: it equalizes the steep across cups, and — if it's glass — it shows you the liquor color. Color is the cheapest diagnostic in the kit. A young shen should pour pale gold; if it's coming out brown you've over-steeped. Glass tells you that.\n\nWe use a 200ml capacity to match a 100ml gaiwan with a little headroom for fast pours.",
+    goodFor: ["Pu'er", "Oolong", "Black", "White", "Green"],
+    rating: 4,
+  },
+  {
+    slug: "fellow-stagg-ekg",
+    name: "Fellow Stagg EKG kettle",
+    category: "Kettle",
+    volumeMl: 900,
+    material: "Stainless steel",
+    vendor: "Fellow",
+    externalUrl: "https://fellowproducts.com/products/staggekg-electric-pour-over-kettle",
+    price: 195,
+    gradient: "linear-gradient(135deg,#5A6B7A 0%,#2D3A2E 100%)",
+    swatch: "#5A6B7A",
+    tagline:
+      "Variable-temperature gooseneck — set to 55°C for gyokuro, 95°C for shen, no guessing.",
+    body:
+      "Yes, you can heat water in a saucepan. You can also drive without a speedometer. The Stagg EKG holds a target temperature with one-degree resolution, which matters most for the cool-water teas — gyokuro at 55°C, sencha at 70°C, anything in the Japanese-green family that punishes a five-degree miss.\n\nThe gooseneck spout is fine but secondary to the temperature control. We've used cheaper kettles with the same accuracy that hold up just as well; this one earns its price tag on build quality and how often you reach for it.",
+    goodFor: ["Pu'er", "Oolong", "Black", "White", "Green", "Yellow", "Herbal"],
+    rating: 5,
+  },
+  {
+    slug: "acaia-pearl-scale",
+    name: "Acaia Pearl scale (0.1g)",
+    category: "Scale",
+    material: "Aluminum",
+    vendor: "Acaia",
+    externalUrl: "https://acaia.co/products/pearl",
+    price: 165,
+    gradient: "linear-gradient(135deg,#3A3A3A 0%,#1A1A1A 100%)",
+    swatch: "#3A3A3A",
+    tagline:
+      "0.1g scale built for coffee that does the same job for tea — leaf weight you can trust.",
+    body:
+      "A scale is the single piece of equipment most likely to actually change your tea. People consistently overestimate how much leaf they're using by a gram or two; with a 100ml gaiwan that's the difference between balanced and bitter.\n\nThe Pearl is overkill — a $25 jewelry scale will do the same arithmetic — but it has the decisive advantage of being nice to look at on the counter, which means you actually use it. The 0.1g resolution matters for sub-3g leaf weights (matcha, Japanese greens); for everything else 0.5g is fine.",
+    goodFor: ["Pu'er", "Oolong", "Black", "White", "Green", "Yellow", "Herbal"],
+    rating: 4,
+  },
+];
+
+// =====================================================================
 // HELPERS
 // =====================================================================
 
@@ -403,6 +519,55 @@ export function groupVendorsByGeography(): Record<string, Record<string, Vendor[
   }
   return out;
 }
+
+/** Look up a teaware item by slug. */
+export function teawareBySlug(slug: string): Teaware | undefined {
+  return TEAWARE.find((t) => t.slug === slug);
+}
+
+/**
+ * Vessel categories — those that actually hold the brew. Used by the
+ * session-log vessel picker so kettles/scales don't show up as "what
+ * you brewed in".
+ */
+export const VESSEL_CATEGORIES = [
+  "Gaiwan",
+  "Teapot",
+  "Kyusu",
+  "Pitcher",
+  "Cup",
+] as const;
+
+/** Teaware that can serve as a brewing vessel — used by the picker. */
+export function vesselTeaware(): Teaware[] {
+  return TEAWARE.filter((t) =>
+    (VESSEL_CATEGORIES as readonly string[]).includes(t.category),
+  );
+}
+
+/** Group teaware by category for the discover listing. */
+export function groupTeawareByCategory(): Record<string, Teaware[]> {
+  const out: Record<string, Teaware[]> = {};
+  for (const item of TEAWARE) {
+    const cat = item.category;
+    if (!out[cat]) out[cat] = [];
+    out[cat].push(item);
+  }
+  return out;
+}
+
+/** Display order for teaware categories on the listing page. */
+export const TEAWARE_CATEGORY_ORDER = [
+  "Gaiwan",
+  "Teapot",
+  "Kyusu",
+  "Pitcher",
+  "Cup",
+  "Kettle",
+  "Scale",
+  "Strainer",
+  "Other",
+] as const;
 
 export const CONTINENT_ORDER = [
   "Asia",

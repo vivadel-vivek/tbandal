@@ -161,6 +161,42 @@ export type Vendor = {
   url: string;
 };
 
+export type TeawareCategory =
+  | "Gaiwan" | "Teapot" | "Kyusu" | "Pitcher" | "Cup"
+  | "Kettle" | "Scale" | "Strainer" | "Other";
+
+export type Teaware = {
+  slug: string;
+  name: string;
+  category: TeawareCategory;
+  /** Vessel capacity in ml — gaiwans, teapots, pitchers, cups, kettles. */
+  volumeMl?: number;
+  /** Primary material — "Porcelain", "Yixing zisha", "Glass", "Stoneware". */
+  material: string;
+  /** Origin region — "Jingdezhen, China" / "Tokoname, Japan". */
+  origin?: string;
+  /** Vendor.name we sell through, or the brand for external items. */
+  vendor: string;
+  /** External brand URL — used when the item isn't carried by a known
+   *  Vendor (e.g. kettles & scales). Both vendor *and* externalUrl can
+   *  coexist; the redirect prefers internal Vendor when present. */
+  externalUrl?: string;
+  /** Retail price in USD. */
+  price: number;
+  /** Card hero gradient placeholder. */
+  gradient: string;
+  /** Single accent color. */
+  swatch: string;
+  /** Short one-liner shown on cards. */
+  tagline: string;
+  /** Editorial body — 2-3 paragraphs. */
+  body: string;
+  /** Tea types this vessel performs well with. */
+  goodFor: TeaTypeName[];
+  /** Our 1-5 rating. */
+  rating: number;
+};
+
 export type PostCategory =
   | "Brewing" | "Culture" | "Origin" | "Vendor Spotlight";
 
@@ -205,15 +241,92 @@ export type MemberSettings = {
   tastedTeas: string[];
 };
 
+// =====================================================================
+// SESSION LOG — what gets captured when a member rates a tea
+// =====================================================================
+//
+// Quick mode: one overall flavor + mouthfeel + score (the original
+//   shape; preserved for backward compat).
+// Per-steep mode: an array of SteepLog entries; the overall flavor /
+//   mouthfeel / rating fields are then computed as the mean of the
+//   per-steep values (the editor writes them back so downstream
+//   consumers don't need to know which mode produced the rating).
+
+export type SessionMode = "quick" | "per-steep";
+
+/** Where the brew water came from. Structured so search/filtering can
+ *  group sessions by water type once we land the journal feed. */
+export type WaterSource =
+  | "filtered"
+  | "spring"
+  | "tap"
+  | "ro"          // reverse osmosis
+  | "distilled"
+  | "well"
+  | "bottled"
+  | "unknown";
+
+export type SteepLog = {
+  /** 1-indexed steep number within the session */
+  index: number;
+  /** Steep duration as freeform string ("5s", "30s", "2m") */
+  time?: string;
+  /** Brewing temperature in °C */
+  tempC?: number;
+  /** Per-steep flavor profile, internal 0-10 (always 12-axis) */
+  flavor?: FlavorProfile;
+  /** Per-steep mouthfeel */
+  mouthfeel?: Mouthfeel;
+  /** Optional 0-10 per-steep score */
+  rating?: number;
+  /** Free-text notes for this specific steep */
+  notes?: string;
+};
+
 export type MemberRating = {
   slug: string;
   name: string;
-  rating: number;          // 0–10 internal
+  /** Overall 0-10 — entered directly in Quick mode, or mean of steep
+   *  scores in Per-steep mode (Per-steep auto-fills if not set). */
+  rating: number;
   body: string;
   date: string;
-  session?: string;
-  profile: FlavorProfile;
+  /** Display-scale used at entry time ("4.5/5" vs "9.0/10") */
   scale: "basic" | "advanced";
+  /** Overall flavor profile — entered or mean of steeps */
+  profile: FlavorProfile;
+  /** Overall mouthfeel — entered or mean of steeps. Optional for back-
+   *  compat with pre-7.1 ratings that didn't capture mouthfeel. */
+  mouthfeel?: Mouthfeel;
+  /** Which entry mode produced this rating. Defaults to "quick". */
+  mode?: SessionMode;
+  /** Per-steep entries. Present only in Per-steep mode. */
+  steeps?: SteepLog[];
+  /** Vessel description, freeform — "100ml porcelain gaiwan" */
+  vessel?: string;
+  /** Water description / TDS — "filtered (60 TDS)" or "spring water".
+   *  Kept as freeform for backward compat; new ratings prefer the
+   *  structured waterSource + waterTdsPpm fields below. */
+  water?: string;
+  /** Structured water source — selectable from a fixed enum so we can
+   *  filter / group sessions by water type. */
+  waterSource?: WaterSource;
+  /** Total dissolved solids in ppm. Useful diagnostic — most softer-water
+   *  teas (Japanese greens, fresh shen) want 30–80 ppm; hard water above
+   *  150 noticeably flattens mid-range flavors. */
+  waterTdsPpm?: number;
+  /** Override for tea.brewing.style — set when the member intentionally
+   *  brewed off-spec ("brewed Western even though we recommend Gongfu").
+   *  Empty / undefined means "I followed the recommendation". */
+  brewStyleOverride?: string;
+  /** Leaf weight in grams */
+  leafG?: number;
+  /** Water volume in ml */
+  waterMl?: number;
+  /** Legacy single-line brewing string ("5g · 100ml gaiwan · 95°C") —
+   *  kept so older saved ratings still display correctly. New ratings
+   *  prefer vessel / water / leafG / waterMl above. */
+  session?: string;
 };
 
 export type Member = {

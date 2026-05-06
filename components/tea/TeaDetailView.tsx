@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import type {
   Tea,
@@ -10,6 +11,7 @@ import type {
   ReviewBody,
   FlavorProfile,
   MemberRating,
+  WaterSource,
 } from "@/lib/types";
 import { CONTRIBUTORS, vendorByName } from "@/lib/data";
 import { BASIC_AXES, FLAVOR_AXES, rollUpProfile, topFlavors } from "@/lib/flavor";
@@ -26,7 +28,6 @@ import { TeaCard } from "@/components/tea/TeaCard";
 import { TeaHero } from "@/components/tea/TeaHero";
 import { RadarChart } from "@/components/tea/RadarChart";
 import { MouthfeelGrid } from "@/components/tea/MouthfeelGrid";
-import { ReviewModal } from "@/components/tea/ReviewModal";
 import { Glossarized } from "@/components/glossary/Glossarized";
 
 type ReviewTab = ContributorKey | "members" | "you";
@@ -51,15 +52,15 @@ function memberRatingToReview(r: MemberRating): ReviewBody {
 }
 
 export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
-  const { member, isBlindFor, unblind, upsertRating } = useMember();
+  const { member, isBlindFor, unblind } = useMember();
   const { tweaks } = useTweaks();
+  const router = useRouter();
 
   // Bind once and let TS narrow naturally — no `memberRating!` needed.
   const mr = member.ratings.find((r) => r.slug === tea.slug);
   const hasMember = mr !== undefined;
 
   const [activeTab, setActiveTab] = useState<ReviewTab>("vivek");
-  const [showRateModal, setShowRateModal] = useState(false);
 
   // Effective flavor mode: "blind" is whole-site; tea-detail toggles only basic/advanced
   const memberMode = member.settings.flavorMode;
@@ -141,7 +142,10 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
     const v = vendorByName(tea.vendor);
     if (v) window.open(`/go/${v.slug}`, "_blank", "noopener,noreferrer");
   };
-  const handleLogSession = () => setShowRateModal(true);
+  // Session-log entry now lives on a dedicated page (was a cramped
+  // modal). Vendor info comes from the URL params we're already on.
+  const logHref = `/tea/${vendorByName(tea.vendor)?.slug ?? tea.vendor}/${tea.pathSlug}/log`;
+  const handleLogSession = () => router.push(logHref);
   // Used by the bottom burgundy vendor banner — rendered as an anchor
   // for proper rel="nofollow sponsored" + indexable href semantics.
   const vendorOutboundHref =
@@ -176,7 +180,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                 Reviews and ratings are hidden until you log yours.
               </div>
             </div>
-            <Button variant="gold" onClick={() => setShowRateModal(true)}>
+            <Button variant="gold" onClick={() => router.push(logHref)}>
               Rate this tea →
             </Button>
           </div>
@@ -200,7 +204,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
               </p>
             </div>
             <div className="flex gap-2.5 shrink-0">
-              <Button variant="secondary" onClick={() => setShowRateModal(true)}>
+              <Button variant="secondary" onClick={() => router.push(logHref)}>
                 Rate it first
               </Button>
               <Button variant="primary" onClick={() => unblind(tea.slug)}>
@@ -274,7 +278,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
               })}
             </div>
 
-            <div className="grid grid-cols-[1.1fr_1fr] gap-8 items-start">
+            <div className="grid grid-cols-1 sm:grid-cols-[1.1fr_1fr] gap-6 sm:gap-8 items-start">
               {/* Radar + mouthfeel */}
               <div className="bg-[var(--bg-elevated)] rounded-xl p-7 shadow-card border border-warm-200">
                 <div className="flex justify-between items-center mb-2 flex-wrap gap-3">
@@ -305,7 +309,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
 
                 <div className="mt-6 pt-6 border-t border-warm-200">
                   <Eyebrow>Mouthfeel</Eyebrow>
-                  <div className="grid grid-cols-[1.2fr_1fr] gap-4 mt-3 items-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-4 mt-3 items-center">
                     <MouthfeelGrid point={tea.mouthfeel} size={220} />
                     <div>
                       <div className="text-[11px] text-warm-600 tracking-widest uppercase font-bold mb-1.5">
@@ -445,6 +449,73 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                       </div>
                     )}
 
+                    {safeTab === "you" && mr && (mr.vessel || mr.water || mr.leafG || mr.waterMl || mr.waterSource || mr.waterTdsPpm !== undefined || mr.brewStyleOverride) && (
+                      <div className="bg-cream px-4 py-3 rounded-md mb-4 text-xs text-warm-700">
+                        <div className="text-[10px] tracking-widest uppercase text-warm-600 mb-1.5 font-sans font-bold">
+                          Session
+                        </div>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono">
+                          {mr.leafG && mr.waterMl && (
+                            <span>{mr.leafG}g / {mr.waterMl}ml</span>
+                          )}
+                          {mr.vessel && <span>{mr.vessel}</span>}
+                          {(mr.waterSource || mr.waterTdsPpm !== undefined) && (
+                            <span>
+                              {mr.waterSource && waterSourceLabel(mr.waterSource)}
+                              {mr.waterSource && mr.waterTdsPpm !== undefined ? " · " : ""}
+                              {mr.waterTdsPpm !== undefined && `${mr.waterTdsPpm} TDS`}
+                            </span>
+                          )}
+                          {!mr.waterSource && !mr.waterTdsPpm && mr.water && <span>{mr.water}</span>}
+                          {mr.brewStyleOverride && (
+                            <span className="text-burgundy">
+                              brewed {mr.brewStyleOverride}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {safeTab === "you" && mr?.steeps && mr.steeps.length > 0 && (
+                      <div className="mb-4">
+                        <Eyebrow color="var(--warm-600, #6B6560)">
+                          Per-steep breakdown · {mr.steeps.length} {mr.steeps.length === 1 ? "steep" : "steeps"}
+                        </Eyebrow>
+                        <div className="mt-2.5 flex flex-col gap-1.5">
+                          {mr.steeps.map((s) => {
+                            const meta: string[] = [];
+                            if (s.time) meta.push(s.time);
+                            if (s.tempC) meta.push(`${s.tempC}°C`);
+                            return (
+                              <div
+                                key={s.index}
+                                className="flex items-baseline gap-3 px-3 py-2 bg-cream rounded-md text-[12px] text-warm-700"
+                              >
+                                <span className="font-display italic text-burgundy text-[15px] shrink-0 w-8">
+                                  #{s.index}
+                                </span>
+                                {meta.length > 0 && (
+                                  <span className="font-mono text-warm-600 shrink-0">
+                                    {meta.join(" · ")}
+                                  </span>
+                                )}
+                                {s.rating !== undefined && (
+                                  <span className="font-display text-forest shrink-0">
+                                    {s.rating.toFixed(1)}/10
+                                  </span>
+                                )}
+                                {s.notes && (
+                                  <span className="font-serif italic text-forest min-w-0 flex-1">
+                                    {s.notes}
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
                     {profile &&
                       (() => {
                         const displayProfile: Record<string, number> = toRadarValues(profile);
@@ -481,12 +552,12 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                     {safeTab === "you" && (
                       <div className="pt-4 border-t border-warm-200 flex justify-between items-center text-[13px] text-warm-700">
                         <span>Saved to your profile · refines recommendations</span>
-                        <button
-                          onClick={() => setShowRateModal(true)}
-                          className="bg-transparent border-0 text-burgundy font-bold cursor-pointer text-[13px]"
+                        <Link
+                          href={logHref}
+                          className="bg-transparent border-0 text-burgundy font-bold cursor-pointer text-[13px] no-underline"
                         >
                           Edit →
-                        </button>
+                        </Link>
                       </div>
                     )}
                   </div>
@@ -499,9 +570,9 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                       Rate this tea to refine your flavor profile and improve
                       recommendations.
                     </p>
-                    <Button variant="primary" onClick={() => setShowRateModal(true)}>
-                      Rate this tea →
-                    </Button>
+                    <Link href={logHref}>
+                      <Button variant="primary">Rate this tea →</Button>
+                    </Link>
                   </div>
                 )}
               </div>
@@ -510,7 +581,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
         )}
 
         {/* ORIGIN & BREWING */}
-        <section className="mt-14 grid grid-cols-2 gap-6">
+        <section className="mt-12 sm:mt-14 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
           <div className="bg-[var(--bg-elevated)] rounded-xl p-7 shadow-card border border-warm-200">
             <Eyebrow>Origin & terroir</Eyebrow>
             <h3 className="font-display text-burgundy font-medium m-0 mt-2 mb-4 text-[28px]">
@@ -594,28 +665,30 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                 Visit {tea.vendor} ↗
               </Button>
             )}
-            <Button
-              variant="secondary"
-              size="lg"
-              style={{
-                background: "transparent",
-                border: "1.5px solid var(--cream, #FAF7F2)",
-                color: "var(--cream, #FAF7F2)",
-              }}
-            >
-              Log a session
-            </Button>
+            <Link href={logHref}>
+              <Button
+                variant="secondary"
+                size="lg"
+                style={{
+                  background: "transparent",
+                  border: "1.5px solid var(--cream, #FAF7F2)",
+                  color: "var(--cream, #FAF7F2)",
+                }}
+              >
+                Log a session
+              </Button>
+            </Link>
           </div>
         </section>
 
         {/* SIMILAR TEAS */}
         {similar.length > 0 && (
-          <section className="mt-14">
+          <section className="mt-12 sm:mt-14">
             <SectionHeader
               eyebrow="More like this"
               title="Teas with overlapping profiles"
             />
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
               {similar.map(({ tea: t, score }) => (
                 <div key={t.slug} className="relative">
                   <TeaCard tea={t} hideReviews={isBlinded} />
@@ -635,20 +708,6 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
         )}
       </Container>
       <div className="h-16" />
-
-      {showRateModal && (
-        <ReviewModal
-          tea={tea}
-          initial={mr}
-          defaultMode={isBasic ? "basic" : "advanced"}
-          onClose={() => setShowRateModal(false)}
-          onSubmit={(rating) => {
-            upsertRating(rating);
-            setShowRateModal(false);
-            setActiveTab("you");
-          }}
-        />
-      )}
     </main>
   );
 }
@@ -729,6 +788,20 @@ function BrewingStat({ k, v, icon }: { k: string; v: string; icon: string }) {
       </div>
     </div>
   );
+}
+
+/** Display string for a structured WaterSource enum value. */
+function waterSourceLabel(s: WaterSource): string {
+  switch (s) {
+    case "filtered": return "filtered";
+    case "spring": return "spring";
+    case "tap": return "tap";
+    case "ro": return "RO";
+    case "distilled": return "distilled";
+    case "well": return "well";
+    case "bottled": return "bottled";
+    case "unknown": return "unknown source";
+  }
 }
 
 /**

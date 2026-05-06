@@ -96,15 +96,15 @@ export default function RecommendationsPage() {
   return (
     <main>
       <Container>
-        <div className="pt-12 pb-6 relative">
+        <div className="pt-10 sm:pt-12 pb-6 relative">
           <TeaStain
             size={360}
             color="#722F37"
             opacity={0.1}
-            className="absolute top-0 -right-20 pointer-events-none"
+            className="absolute top-0 -right-20 pointer-events-none hidden sm:block"
           />
           <Eyebrow>Discover</Eyebrow>
-          <h1 className="font-display text-burgundy font-medium tracking-tight leading-[1.05] mt-2 mb-4 text-[64px]">
+          <h1 className="font-display text-burgundy font-medium tracking-tight leading-[1.05] mt-2 mb-4 text-[40px] sm:text-[64px]">
             <span className="italic">What should</span> we brew next?
           </h1>
           <p className="max-w-[600px] text-warm-700 text-base mb-6 leading-relaxed">
@@ -116,7 +116,7 @@ export default function RecommendationsPage() {
         </div>
 
         {/* Mode tabs */}
-        <div className="flex gap-2 mb-8">
+        <div className="flex gap-2 mb-6 sm:mb-8 flex-wrap">
           {MODES.map((m) => {
             const active = mode === m.key;
             return (
@@ -185,8 +185,8 @@ function RecommendPanel({
   const top = recommended[0];
   return (
     <div>
-      <div className="grid grid-cols-[1fr_1.5fr] gap-8 items-start">
-        <div className="bg-[var(--bg-elevated)] rounded-xl p-6 shadow-card border border-warm-200 sticky top-24">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_1.5fr] gap-6 sm:gap-8 items-start">
+        <div className="bg-[var(--bg-elevated)] rounded-xl p-5 sm:p-6 shadow-card border border-warm-200 sm:sticky sm:top-24">
           <Eyebrow>Your target profile</Eyebrow>
           <h3 className="font-display text-forest font-medium m-0 mt-1.5 mb-3.5 text-[22px]">
             Where your palate sits
@@ -322,7 +322,7 @@ function DifferentPanel({
           things that surprise you.
         </p>
       </div>
-      <div className="grid grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
         {teas.map(({ t, score }) => (
           <div key={t.slug} className="relative">
             <TeaCard tea={t} hideReviews={isBlindFor(t.slug)} />
@@ -368,16 +368,16 @@ function BlindPanel({ teas }: { teas: { t: Tea; score: number }[] }) {
 
   return (
     <div>
-      <div className="bg-burgundy text-cream rounded-xl px-9 py-8 mb-8 relative overflow-hidden">
+      <div className="bg-burgundy text-cream rounded-xl px-6 sm:px-9 py-6 sm:py-8 mb-7 sm:mb-8 relative overflow-hidden">
         <TeaStain
           size={400}
           color="#C4A35A"
           opacity={0.18}
-          className="absolute -top-24 -right-20 pointer-events-none"
+          className="absolute -top-24 -right-20 pointer-events-none hidden sm:block"
         />
         <div className="relative max-w-[600px]">
           <Eyebrow color="rgba(250,247,242,0.7)">Blind tasting</Eyebrow>
-          <h2 className="font-display italic text-cream font-medium tracking-tight leading-[1.05] m-0 mt-2.5 mb-3.5 text-[44px]">
+          <h2 className="font-display italic text-cream font-medium tracking-tight leading-[1.05] m-0 mt-2.5 mb-3.5 text-[30px] sm:text-[44px]">
             Rate it before you read it.
           </h2>
           <p className="text-base leading-relaxed m-0" style={{ color: "rgba(250,247,242,0.85)" }}>
@@ -389,7 +389,7 @@ function BlindPanel({ teas }: { teas: { t: Tea; score: number }[] }) {
       </div>
 
       <Eyebrow>Pick a tea to taste blind</Eyebrow>
-      <div className="grid grid-cols-2 gap-5 mt-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mt-4">
         {teas.map(({ t }) => (
           <article
             key={t.slug}

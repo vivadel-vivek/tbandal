@@ -56,8 +56,8 @@ export function TeaBrowser({ teas, vendors }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-[240px_1fr] gap-8 items-start">
-      <aside className="card-surface p-5 sticky top-24">
+    <div className="grid grid-cols-1 sm:grid-cols-[240px_1fr] gap-5 sm:gap-8 items-start">
+      <aside className="card-surface p-5 sm:sticky sm:top-24">
         <FilterGroup
           label="Type"
           options={TYPE_OPTIONS}
@@ -107,11 +107,11 @@ export function TeaBrowser({ teas, vendors }: Props) {
       </aside>
 
       <div>
-        <div className="flex justify-between items-center mb-5">
+        <div className="flex flex-wrap gap-3 justify-between items-center mb-5">
           <span className="text-[13px] text-warm-600">
             {filtered.length} teas
           </span>
-          <div className="flex gap-1.5">
+          <div className="flex gap-1.5 flex-wrap">
             {SORT_OPTIONS.map((o) => {
               const active = sort === o.key;
               return (
@@ -134,8 +134,8 @@ export function TeaBrowser({ teas, vendors }: Props) {
         <div
           className={
             tweaks.density === "compact"
-              ? "grid grid-cols-3 gap-5"
-              : "grid grid-cols-2 gap-5"
+              ? "grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5"
+              : "grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5"
           }
         >
           {filtered.map((t) => (

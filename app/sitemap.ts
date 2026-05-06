@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { POSTS, TEAS, VENDORS, teaUrl } from "@/lib/data";
+import { POSTS, TEAS, TEAWARE, VENDORS, teaUrl } from "@/lib/data";
 
 const BASE =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/discover`,          lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/discover/teas`,     lastModified: now, changeFrequency: "weekly",  priority: 0.9 },
     { url: `${BASE}/discover/vendors`,  lastModified: now, changeFrequency: "weekly",  priority: 0.8 },
+    { url: `${BASE}/discover/teaware`,  lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/discover/glossary`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/journal`,           lastModified: now, changeFrequency: "weekly",  priority: 0.8 },
     { url: `${BASE}/for-vendors`,       lastModified: now, changeFrequency: "monthly", priority: 0.5 },
@@ -48,5 +49,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...teaRoutes, ...vendorRoutes, ...postRoutes];
+  const teawareRoutes: MetadataRoute.Sitemap = TEAWARE.map((t) => ({
+    url: `${BASE}/discover/teaware/${t.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.5,
+  }));
+
+  return [...staticRoutes, ...teaRoutes, ...vendorRoutes, ...postRoutes, ...teawareRoutes];
 }

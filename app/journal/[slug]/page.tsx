@@ -58,7 +58,7 @@ export default function JournalPost({
         <Eyebrow color="var(--sage-dark, #6B7A5D)">
           {post.cat} · {post.readTime} min read
         </Eyebrow>
-        <h1 className="font-display text-burgundy font-medium tracking-tight leading-hero mt-3 mb-5 text-hero-xl">
+        <h1 className="font-display text-burgundy font-medium tracking-tight leading-hero mt-3 mb-5 text-[40px] sm:text-hero-xl">
           {post.title}
         </h1>
         <div className="flex items-center gap-3 mb-8">
@@ -81,9 +81,9 @@ export default function JournalPost({
       </Container>
 
       <Container size="prose">
-        <div className="font-serif text-forest leading-relaxed text-[20px]">
+        <div className="font-serif text-forest leading-relaxed text-[18px] sm:text-[20px]">
           <p
-            className="text-[22px] italic text-warm-700 mb-6 pl-5"
+            className="text-[20px] sm:text-[22px] italic text-warm-700 mb-6 pl-5"
             style={{ borderLeft: "2px solid var(--gold, #C4A35A)" }}
           >
             {post.excerpt}
@@ -92,9 +92,9 @@ export default function JournalPost({
         </div>
 
         {related.length > 0 && (
-          <div className="mt-14 pt-8 border-t border-warm-200">
+          <div className="mt-12 sm:mt-14 pt-8 border-t border-warm-200">
             <Eyebrow>Teas referenced in this post</Eyebrow>
-            <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
               {related.map((t) => (
                 <TeaCard key={t.slug} tea={t} density="compact" />
               ))}

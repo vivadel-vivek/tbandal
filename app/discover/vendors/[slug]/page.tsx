@@ -51,12 +51,12 @@ export default function VendorDetailPage({
           ← All vendors
         </Link>
 
-        <div className="grid grid-cols-[1.4fr_1fr] gap-12 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-[1.4fr_1fr] gap-8 sm:gap-12 items-start">
           <div>
             <Eyebrow>
               {vendor.city} · est. {vendor.founded}
             </Eyebrow>
-            <h1 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-4 text-[64px]">
+            <h1 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-4 text-[40px] sm:text-[64px]">
               {vendor.name}
             </h1>
             <p className="text-lg text-warm-700 leading-relaxed mb-4">
@@ -105,7 +105,7 @@ export default function VendorDetailPage({
             title="Teas we've brewed"
           />
           {teas.length > 0 ? (
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
               {teas.map((t) => (
                 <TeaCard key={t.slug} tea={t} />
               ))}

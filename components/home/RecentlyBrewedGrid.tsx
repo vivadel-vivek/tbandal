@@ -17,7 +17,7 @@ export function RecentlyBrewedGrid({ teas }: { teas: Tea[] }) {
   const hide = (slug: string) => tweaks.hideReviews || isBlindFor(slug);
 
   return (
-    <div className="grid grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
       {teas.map((t) => (
         <TeaCard
           key={t.slug}

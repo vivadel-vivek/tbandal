@@ -59,7 +59,7 @@ export function TeaHero({
 function HeroSplit({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props, "variant">) {
   const avg = teaAvg(tea);
   return (
-    <div className="grid grid-cols-[1.1fr_1fr] gap-10 mt-4">
+    <div className="grid grid-cols-1 sm:grid-cols-[1.1fr_1fr] gap-6 sm:gap-10 mt-4">
       <div
         className="rounded-2xl shadow-elevated relative overflow-hidden"
         style={{ aspectRatio: "1/1", background: tea.gradient }}
@@ -71,8 +71,8 @@ function HeroSplit({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
           </span>
         </div>
         {tea.chinese && (
-          <div className="absolute bottom-6 left-6 right-6 text-cream">
-            <div className="font-display italic tracking-tight text-[40px]">
+          <div className="absolute bottom-5 sm:bottom-6 left-5 sm:left-6 right-5 sm:right-6 text-cream">
+            <div className="font-display italic tracking-tight text-[28px] sm:text-[40px]">
               {tea.chinese}
             </div>
           </div>
@@ -83,7 +83,7 @@ function HeroSplit({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
         <Eyebrow>
           {tea.region} · {tea.year}
         </Eyebrow>
-        <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter m-0 mt-2 mb-3 text-[64px]">
+        <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter m-0 mt-2 mb-3 text-hero-xl">
           {tea.name}
         </h1>
         {!hideReviews && (
@@ -141,13 +141,13 @@ function HeroStain({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
         </Eyebrow>
         {tea.chinese && (
           <div
-            className="font-display italic mt-3 tracking-tight text-burgundy text-[44px]"
+            className="font-display italic mt-3 tracking-tight text-burgundy text-[32px] sm:text-[44px]"
             style={{ opacity: 0.55 }}
           >
             {tea.chinese}
           </div>
         )}
-        <h1 className="font-display text-burgundy font-medium m-0 mt-1 mb-4 text-[88px]" style={{ letterSpacing: "-0.03em", lineHeight: 1 }}>
+        <h1 className="font-display text-burgundy font-medium m-0 mt-1 mb-4 text-hero-3xl" style={{ letterSpacing: "-0.03em", lineHeight: 1 }}>
           {tea.name}
         </h1>
         {!hideReviews && (
@@ -208,15 +208,15 @@ function HeroEditorial({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<P
       </div>
 
       {/* Big editorial title */}
-      <div className="grid grid-cols-[1fr_auto] items-end gap-8 pb-6 border-b-2 border-burgundy">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-end gap-6 sm:gap-8 pb-5 sm:pb-6 border-b-2 border-burgundy">
         <div>
           {tea.chinese && (
-            <div className="font-display italic text-gold-dark tracking-tight text-[36px]">
+            <div className="font-display italic text-gold-dark tracking-tight text-[28px] sm:text-[36px]">
               {tea.chinese}
             </div>
           )}
           <h1
-            className="font-display text-burgundy font-medium m-0 text-[96px]"
+            className="font-display text-burgundy font-medium m-0 text-hero-4xl"
             style={{ letterSpacing: "-0.03em", lineHeight: 0.95 }}
           >
             {tea.name}

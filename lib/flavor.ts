@@ -134,6 +134,39 @@ export function compositeProfile(tea: Tea): FlavorProfile {
 }
 
 /**
+ * Mean of a list of FlavorProfiles, axis-by-axis. Used by Per-steep
+ * sessions to roll the overall flavor up from per-steep entries.
+ * Empty input returns a zero profile.
+ */
+export function meanProfile(profiles: readonly FlavorProfile[]): FlavorProfile {
+  const out = {} as FlavorProfile;
+  for (const ax of FLAVOR_AXES) out[ax.key] = 0;
+  if (profiles.length === 0) return out;
+  for (const p of profiles) {
+    for (const ax of FLAVOR_AXES) out[ax.key] += p[ax.key] ?? 0;
+  }
+  for (const ax of FLAVOR_AXES) out[ax.key] /= profiles.length;
+  return out;
+}
+
+/**
+ * Mean of a list of mouthfeel readings. Same pattern as meanProfile —
+ * used to roll the session-overall mouthfeel up from per-steep notes.
+ */
+export function meanMouthfeel(
+  values: readonly { astringent: number; bodyFull: number }[],
+): { astringent: number; bodyFull: number } {
+  if (values.length === 0) return { astringent: 0, bodyFull: 0 };
+  let a = 0;
+  let b = 0;
+  for (const v of values) {
+    a += v.astringent;
+    b += v.bodyFull;
+  }
+  return { astringent: a / values.length, bodyFull: b / values.length };
+}
+
+/**
  * Jaccard-style overlap between two profiles on the 0–10 scale.
  * Used by recommendations + similar-teas. Returns 0..1.
  */

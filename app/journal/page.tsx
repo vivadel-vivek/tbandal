@@ -19,9 +19,9 @@ export default function JournalIndex() {
   return (
     <main>
       <Container size="article">
-        <div className="pt-12 pb-8">
+        <div className="pt-10 sm:pt-12 pb-6 sm:pb-8">
           <Eyebrow>Journal</Eyebrow>
-          <h1 className="font-display italic text-burgundy font-medium tracking-tight leading-hero mt-2 mb-4 text-hero-xl">
+          <h1 className="font-display italic text-burgundy font-medium tracking-tight leading-hero mt-2 mb-4 text-[44px] sm:text-hero-xl">
             Recently brewed.
           </h1>
           <p className="text-base text-warm-700 leading-relaxed max-w-[580px] m-0">
@@ -31,7 +31,7 @@ export default function JournalIndex() {
           </p>
         </div>
 
-        <div className="flex gap-2 mb-7">
+        <div className="flex gap-2 mb-6 sm:mb-7 flex-wrap">
           {CATS.map((c, i) => {
             const active = i === 0;
             return (
@@ -51,28 +51,28 @@ export default function JournalIndex() {
           })}
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
           {POSTS.map((p, i) => (
             <Link
               key={p.slug}
               href={`/journal/${p.slug}`}
               className={[
                 "card-surface card-surface-hover overflow-hidden no-underline",
-                i === 0 ? "col-span-2" : "col-span-1",
+                i === 0 ? "sm:col-span-2" : "col-span-1",
               ].join(" ")}
             >
               <div
-                className={i === 0 ? "aspect-[16/6]" : "aspect-[16/9]"}
+                className={i === 0 ? "aspect-[16/9] sm:aspect-[16/6]" : "aspect-[16/9]"}
                 style={{ background: p.grad }}
               />
-              <div className="px-6 pt-5 pb-6">
+              <div className="px-5 sm:px-6 pt-5 pb-5 sm:pb-6">
                 <Eyebrow color="var(--sage-dark, #6B7A5D)">
                   {p.cat} · {p.readTime} min
                 </Eyebrow>
                 <h3
                   className={[
                     "font-display text-burgundy font-medium leading-snug tracking-tight m-0 mt-2 mb-2.5",
-                    i === 0 ? "text-hero-md" : "text-2xl",
+                    i === 0 ? "text-[28px] sm:text-hero-md" : "text-xl sm:text-2xl",
                   ].join(" ")}
                 >
                   {p.title}

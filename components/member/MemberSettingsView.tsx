@@ -45,7 +45,7 @@ export function MemberSettingsView() {
 
         <div className="pt-2 pb-8">
           <Eyebrow>Member · Settings</Eyebrow>
-          <h1 className="font-display text-burgundy font-medium tracking-tight leading-hero mt-2 mb-3 text-[56px]">
+          <h1 className="font-display text-burgundy font-medium tracking-tight leading-hero mt-2 mb-3 text-[36px] sm:text-[56px]">
             <span className="italic">Your settings.</span>
           </h1>
           <p className="text-[15px] text-warm-700 leading-relaxed max-w-[620px] m-0">

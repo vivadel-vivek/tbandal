@@ -119,15 +119,18 @@ const config: Config = {
         "6xl": "3.75rem",
         "7xl": "4.5rem",
         "8xl": "6rem",
-        // Editorial hero scale — names match the design's rhythm so callers
-        // stop falling back to `text-[Npx]` arbitrary values.
-        "hero-sm": "28px",
-        "hero-md": "36px",
-        "hero-lg": "44px",
-        "hero-xl": "64px",
-        "hero-2xl": "76px",
-        "hero-3xl": "88px",
-        "hero-4xl": "96px",
+        // Editorial hero scale — clamp()-based so each name auto-scales
+        // from a mobile-readable floor up to its desktop target. Mobile
+        // floors are tuned for ~375-410px viewports; ceilings match the
+        // original design rhythm. The vw-based middle term lets the
+        // headline grow naturally through tablet widths.
+        "hero-sm":  "clamp(22px, 3.6vw + 12px, 28px)",
+        "hero-md":  "clamp(26px, 4.6vw + 14px, 36px)",
+        "hero-lg":  "clamp(30px, 5.5vw + 16px, 44px)",
+        "hero-xl":  "clamp(38px, 7.8vw + 18px, 64px)",
+        "hero-2xl": "clamp(44px, 9vw   + 20px, 76px)",
+        "hero-3xl": "clamp(48px, 10vw  + 22px, 88px)",
+        "hero-4xl": "clamp(52px, 11vw  + 24px, 96px)",
       },
 
       letterSpacing: {

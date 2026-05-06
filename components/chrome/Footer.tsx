@@ -9,6 +9,7 @@ const COLS: { title: string; items: Item[] }[] = [
       { label: "Discover",  href: "/discover" },
       { label: "Teas",      href: "/discover/teas" },
       { label: "Vendors",   href: "/discover/vendors" },
+      { label: "Teaware",   href: "/discover/teaware" },
       { label: "Glossary",  href: "/discover/glossary" },
       { label: "Journal",   href: "/journal" },
     ],
@@ -34,8 +35,8 @@ const COLS: { title: string; items: Item[] }[] = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-warm-200 bg-[var(--bg)] mt-16 px-10 pt-12 pb-8 font-sans">
-      <div className="max-w-site mx-auto grid grid-cols-[1.5fr_1fr_1fr_1fr] gap-10">
+    <footer className="border-t border-warm-200 bg-[var(--bg)] mt-16 px-5 sm:px-10 pt-10 sm:pt-12 pb-8 font-sans">
+      <div className="max-w-site mx-auto grid grid-cols-1 sm:grid-cols-[1.5fr_1fr_1fr_1fr] gap-8 sm:gap-10">
         <div>
           <div className="flex items-center gap-2.5 mb-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -94,7 +95,7 @@ export function Footer() {
         ))}
       </div>
 
-      <div className="max-w-site mx-auto mt-8 pt-6 border-t border-warm-200 flex justify-between text-[11px] text-warm-600 tracking-wide">
+      <div className="max-w-site mx-auto mt-8 pt-6 border-t border-warm-200 flex flex-col sm:flex-row gap-2 sm:gap-0 justify-between text-[11px] text-warm-600 tracking-wide">
         <span>© 2026 Two Buds and a Leaf · Brewed with care.</span>
         <span>
           <Link href="/about#affiliate-disclosure" className="text-warm-600 hover:text-burgundy no-underline">

@@ -112,9 +112,9 @@ export function RequestReviewForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="card-surface p-7">
+    <form onSubmit={handleSubmit} className="card-surface p-5 sm:p-7">
       <Section title="The tea">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="Tea name" hint="What you call it. Don't worry about hitting our exact spelling." required>
             <input
               type="text"
@@ -154,7 +154,7 @@ export function RequestReviewForm({
       </Section>
 
       <Section title="Who do you want to review it?">
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           {(
             [
               { key: "vivek",  label: "Vivek",  sub: "Likes earthy, mineral, mature." },

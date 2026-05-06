@@ -40,9 +40,9 @@ export default function VendorsAtlas() {
           ← Discover
         </Link>
 
-        <div className="pt-2 pb-8">
+        <div className="pt-2 pb-6 sm:pb-8">
           <Eyebrow>Discover · Vendors</Eyebrow>
-          <h1 className="font-display text-burgundy font-medium tracking-tight leading-[1.05] mt-2 mb-4 text-[64px]">
+          <h1 className="font-display text-burgundy font-medium tracking-tight leading-[1.05] mt-2 mb-4 text-[40px] sm:text-[64px]">
             <span className="italic">An atlas of shops</span> we trust.
           </h1>
           <p className="text-base text-warm-700 leading-relaxed max-w-[640px] m-0">
@@ -53,7 +53,7 @@ export default function VendorsAtlas() {
         </div>
 
         {/* Sticky continent index */}
-        <div className="sticky top-[84px] z-[5] bg-[var(--bg)] pt-2 pb-3 mb-4 border-b border-warm-200 flex gap-2 flex-wrap">
+        <div className="sticky top-[68px] sm:top-[84px] z-[5] bg-[var(--bg)] pt-2 pb-3 mb-4 border-b border-warm-200 flex gap-2 flex-wrap overflow-x-auto">
           {continents.map((c) => (
             <a
               key={c}
@@ -78,8 +78,8 @@ export default function VendorsAtlas() {
               id={`cont-${cont.replace(/\s+/g, "-")}`}
               className="pt-8 pb-4"
             >
-              <div className="flex items-baseline gap-4 mb-6 pb-3.5 border-b-2 border-burgundy-muted">
-                <h2 className="font-display italic text-burgundy font-medium tracking-tight m-0 text-[44px]">
+              <div className="flex items-baseline gap-3 sm:gap-4 mb-5 sm:mb-6 pb-3 sm:pb-3.5 border-b-2 border-burgundy-muted flex-wrap">
+                <h2 className="font-display italic text-burgundy font-medium tracking-tight m-0 text-[32px] sm:text-[44px]">
                   {cont}
                 </h2>
                 <span className="text-[11px] text-warm-600 tracking-widest uppercase font-bold">
@@ -88,9 +88,9 @@ export default function VendorsAtlas() {
               </div>
 
               {countries.map((country) => (
-                <div key={country} className="mb-9">
+                <div key={country} className="mb-8 sm:mb-9">
                   <Eyebrow>{country}</Eyebrow>
-                  <div className="grid grid-cols-2 gap-5 mt-3.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mt-3 sm:mt-3.5">
                     {(byCountry[country] ?? []).map((v) => (
                       <VendorCard key={v.slug} vendor={v} />
                     ))}

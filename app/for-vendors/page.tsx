@@ -34,12 +34,12 @@ export default function ForVendorsPage() {
   return (
     <main>
       <Container size="article">
-        <div className="pt-12 pb-8">
+        <div className="pt-10 sm:pt-12 pb-6 sm:pb-8">
           <Eyebrow>For vendors</Eyebrow>
-          <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter mt-3 mb-4 text-hero-2xl">
+          <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter mt-3 mb-4 text-[44px] sm:text-hero-2xl">
             <span className="italic">Submit a tea</span> for review.
           </h1>
-          <p className="text-lg text-warm-700 leading-relaxed max-w-[640px] m-0">
+          <p className="text-base sm:text-lg text-warm-700 leading-relaxed max-w-[640px] m-0">
             Two Buds and a Leaf is a two-person tea journal. We review what we
             buy and what gets sent to us — single-origin teas, transparent
             blends, and the small vendors who source them. Here&apos;s what we
@@ -47,10 +47,10 @@ export default function ForVendorsPage() {
           </p>
         </div>
 
-        <section className="grid grid-cols-2 gap-6 mb-10">
-          <div className="card-surface p-7">
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 mb-8 sm:mb-10">
+          <div className="card-surface p-5 sm:p-7">
             <Eyebrow>What we cover</Eyebrow>
-            <h2 className="font-display text-burgundy font-medium m-0 mt-2 mb-4 text-hero-sm">
+            <h2 className="font-display text-burgundy font-medium m-0 mt-2 mb-4 text-[26px] sm:text-hero-sm">
               The kind of tea we review
             </h2>
             <ul className="list-none p-0 m-0 flex flex-col gap-3.5 text-sm text-warm-700 leading-relaxed">
@@ -65,9 +65,9 @@ export default function ForVendorsPage() {
             </ul>
           </div>
 
-          <div className="card-surface p-7">
+          <div className="card-surface p-5 sm:p-7">
             <Eyebrow>How to pitch</Eyebrow>
-            <h2 className="font-display text-burgundy font-medium m-0 mt-2 mb-4 text-hero-sm">
+            <h2 className="font-display text-burgundy font-medium m-0 mt-2 mb-4 text-[26px] sm:text-hero-sm">
               Send us a sample
             </h2>
             <p className="text-sm text-warm-700 leading-relaxed mb-4">
@@ -101,9 +101,9 @@ Notes:`}
           </div>
         </section>
 
-        <section className="card-surface p-7 mb-10">
+        <section className="card-surface p-5 sm:p-7 mb-8 sm:mb-10">
           <Eyebrow>FAQ</Eyebrow>
-          <h2 className="font-display text-burgundy font-medium m-0 mt-2 mb-5 text-hero-sm">
+          <h2 className="font-display text-burgundy font-medium m-0 mt-2 mb-5 text-[26px] sm:text-hero-sm">
             Common vendor questions
           </h2>
           <dl className="grid grid-cols-1 gap-5">

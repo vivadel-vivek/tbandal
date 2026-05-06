@@ -53,10 +53,10 @@ export function MemberProfileView() {
   return (
     <main>
       <Container>
-        <div className="pt-12 pb-8 flex justify-between items-end gap-6 flex-wrap">
+        <div className="pt-10 sm:pt-12 pb-6 sm:pb-8 flex justify-between items-end gap-6 flex-wrap">
           <div>
             <Eyebrow>Your profile</Eyebrow>
-            <h1 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-3 text-[56px]">
+            <h1 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-3 text-[36px] sm:text-[56px]">
               <span className="italic">Hello,</span> {member.name}.
             </h1>
             <p className="text-base text-warm-700 max-w-[580px] m-0">
@@ -73,9 +73,9 @@ export function MemberProfileView() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-[1.2fr_1fr] gap-10 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-6 sm:gap-10 items-start">
           {/* Palate radar */}
-          <div className="card-surface p-8">
+          <div className="card-surface p-5 sm:p-8">
             <Eyebrow>Your flavor map</Eyebrow>
             <h3 className="font-display text-forest font-medium m-0 mt-1.5 mb-5 text-hero-sm">
               {isBlind ? "Hidden in blind mode" : "What you tend to like"}

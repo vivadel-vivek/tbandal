@@ -22,20 +22,20 @@ export default function AboutPage() {
   return (
     <main>
       <Container size="article">
-        <div className="relative pt-14 pb-6">
+        <div className="relative pt-10 sm:pt-14 pb-6">
           <TeaStain
             size={300}
             color="#8B9A7D"
             opacity={0.18}
-            className="absolute top-5 -right-16 pointer-events-none"
+            className="absolute top-5 -right-16 pointer-events-none hidden sm:block"
           />
           <Eyebrow>About</Eyebrow>
-          <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter mt-3 mb-6 text-[72px]">
+          <h1 className="font-display text-burgundy font-medium tracking-tightest leading-tighter mt-3 mb-5 sm:mb-6 text-[44px] sm:text-[72px]">
             <span className="italic">Two friends,</span>
             <br /> a lot of teaware,
             <br /> and stubborn opinions.
           </h1>
-          <p className="text-lg text-warm-700 leading-relaxed max-w-[620px] mb-6">
+          <p className="text-base sm:text-lg text-warm-700 leading-relaxed max-w-[620px] mb-5 sm:mb-6">
             We started this site because we kept losing our notes. A shared
             spreadsheet became a database, the database wanted a frontend,
             and somewhere along the way it became a public record of two
@@ -48,13 +48,13 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <section className="grid grid-cols-2 gap-6 mt-12">
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 mt-10 sm:mt-12">
           {[CONTRIBUTORS.vivek, CONTRIBUTORS.james].map((c) => (
-            <article key={c.key} className="card-surface p-8">
+            <article key={c.key} className="card-surface p-6 sm:p-8">
               <div className="flex items-center gap-4 mb-4">
-                <AvatarChip who={c.key} size={72} />
+                <AvatarChip who={c.key} size={64} />
                 <div>
-                  <h3 className="font-display italic text-burgundy font-medium m-0 text-hero-md">
+                  <h3 className="font-display italic text-burgundy font-medium m-0 text-[28px] sm:text-hero-md">
                     {c.name}
                   </h3>
                   <Eyebrow color="var(--warm-600, #6B6560)">{c.palate}</Eyebrow>
@@ -76,9 +76,9 @@ export default function AboutPage() {
           ))}
         </section>
 
-        <section className="mt-16 py-10 border-t border-warm-200">
+        <section className="mt-12 sm:mt-16 py-8 sm:py-10 border-t border-warm-200">
           <Eyebrow>How we rate</Eyebrow>
-          <h2 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-5 text-hero-lg">
+          <h2 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-5 text-[32px] sm:text-hero-lg">
             Twelve axes, two palates, one composite.
           </h2>
           <p className="text-base text-warm-700 leading-relaxed max-w-[680px] mb-6">
@@ -101,10 +101,10 @@ export default function AboutPage() {
           className="mt-12 py-8 border-t border-warm-200 scroll-mt-24"
         >
           <Eyebrow>Methodology</Eyebrow>
-          <h2 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-5 text-hero-md">
+          <h2 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-5 text-[28px] sm:text-hero-md">
             What goes into a review.
           </h2>
-          <ul className="list-none p-0 m-0 grid grid-cols-2 gap-x-8 gap-y-4 text-[15px] text-warm-700 leading-relaxed">
+          <ul className="list-none p-0 m-0 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-[15px] text-warm-700 leading-relaxed">
             {[
               ["Real teaware", "Every review is from a session in a gaiwan, yixing, kyusu, or glass we actually own."],
               ["Real water", "Filtered, ~60 TDS unless noted. The brewing card on each tea spells out which."],
@@ -128,7 +128,7 @@ export default function AboutPage() {
           className="mt-2 py-8 border-t border-warm-200 scroll-mt-24"
         >
           <Eyebrow>Affiliate disclosure</Eyebrow>
-          <h2 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-5 text-hero-sm">
+          <h2 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-5 text-[26px] sm:text-hero-sm">
             How we get paid (and how we don&apos;t).
           </h2>
           <div className="text-[15px] text-warm-700 leading-relaxed grid grid-cols-1 gap-3 max-w-[640px]">

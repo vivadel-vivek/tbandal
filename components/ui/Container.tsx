@@ -23,7 +23,7 @@ export function Container({
 }: Props) {
   return (
     <div
-      className={`${MAX_W[size]} mx-auto px-10 ${className}`}
+      className={`${MAX_W[size]} mx-auto px-5 sm:px-10 ${className}`}
       style={style}
     >
       {children}
