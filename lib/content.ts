@@ -38,18 +38,24 @@ import type { Database } from "./supabase/types";
 // return empty arrays so a missing-env deploy succeeds with empty
 // pages instead of breaking the entire build.
 //
-// `cache: "no-store"` is forced on the underlying fetch so Next.js
-// App Router doesn't memo the supabase responses in its Data Cache.
-// Without this, Studio / contributor-portal edits stay invisible
-// even on dynamically-rendered routes — the fetch result gets reused
-// across requests until the deploy expires it.
+// 60-second revalidate on every Supabase fetch. Without it, Next's
+// Data Cache memoizes responses indefinitely and DB edits stay
+// invisible until the next deploy. With `revalidate: 0` (or
+// `cache: "no-store"`), every consuming page becomes dynamic and
+// statically-prerenderable routes (sitemap, about, journal index)
+// fail to build. 60s is the smallest window that lets all routes
+// stay statically prerendered while keeping content reasonably
+// fresh — contributor-portal save actions still call revalidatePath
+// for instant invalidation; Studio / direct-DB edits surface
+// within a minute.
 function anonClient() {
   try {
     const { url, anon } = getSupabasePublicEnv();
     return createClient<Database>(url, anon, {
       auth: { persistSession: false, autoRefreshToken: false },
       global: {
-        fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+        fetch: (input, init) =>
+          fetch(input, { ...init, next: { revalidate: 60 } }),
       },
     });
   } catch {
