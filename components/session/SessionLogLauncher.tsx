@@ -137,8 +137,16 @@ export function SessionLogLauncher({ teas: TEAS }: Props) {
   }
 
   // ---- Picker variant ----
+  // `flex flex-col items-end` keeps the trigger button anchored to the
+  // right edge of the wrapper when the picker panel opens. Without it
+  // the wrapper expands leftward to fit the 92vw panel and the button
+  // (which flows left-to-right) ends up far from the screen edge —
+  // making the close (✕) hit-target unreachable on mobile.
   return (
-    <div ref={wrapRef} className="fixed bottom-5 right-5 z-40">
+    <div
+      ref={wrapRef}
+      className="fixed bottom-5 right-5 z-40 flex flex-col items-end"
+    >
       {open && (
         <div
           role="dialog"
