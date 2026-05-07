@@ -1,18 +1,21 @@
 # Push Supabase env vars into the linked Vercel project.
 #
-# One-time setup (you run this manually, browser auth flow):
-#   npx vercel login
+# Authentication: pass a token via $env:VERCEL_TOKEN before running.
+# Tokens come from Vercel > Account > Tokens. Alternatively the script
+# falls back to whatever auth `vercel` already has (stored from a prior
+# `vercel login`).
 #
-# Then run this script. It links the repo to the Vercel project (idempotent)
-# and pushes the three Supabase keys into Production + Preview, overwriting
-# any prior values.
-#
-# Why a script: `vercel env add` is interactive — reads the value from stdin
-# and prompts on conflict. We pipe the values through and pass --force so
-# the run is non-interactive end-to-end after the initial login.
+# This script is idempotent: every var is removed (silently no-ops if
+# absent) then re-added, so re-running rotates values without prompts.
 
 $ErrorActionPreference = "Stop"
 Set-Location "$PSScriptRoot\.."
+
+if (-not $env:VERCEL_TOKEN) {
+    Write-Host "VERCEL_TOKEN not set in env -- falling back to interactive auth." -ForegroundColor Yellow
+}
+$tokenArg = if ($env:VERCEL_TOKEN) { "--token=$env:VERCEL_TOKEN" } else { "" }
+$scopeArg = "--scope=vivadelviveks-projects"
 
 # Hosted Supabase values (project ref dnfejeqvolirzepkuncv).
 $SUPABASE_URL = "https://dnfejeqvolirzepkuncv.supabase.co"
@@ -22,18 +25,19 @@ $SITE_URL = "https://two-buds-and-a-leaf.vercel.app"
 $STAGING_SWITCHER = "1"
 
 Write-Host "Linking repo to Vercel project..." -ForegroundColor Cyan
-npx --yes vercel link --yes 2>&1 | Out-String | Write-Host
+& npx --yes vercel link --yes --project two-buds-and-a-leaf $scopeArg $tokenArg 2>&1 | Out-String | Write-Host
 
 function Push-EnvVar {
     param([string]$Name, [string]$Value, [string]$Environment)
-    Write-Host "  pushing $Name → $Environment" -ForegroundColor Gray
-    # Remove any prior value (no-op if absent), then add. The remove
-    # uses `--yes` to skip the confirmation prompt.
-    & cmd /c "npx --yes vercel env rm $Name $Environment --yes 2>nul"
-    $Value | & cmd /c "npx --yes vercel env add $Name $Environment"
+    Write-Host "  pushing $Name to $Environment" -ForegroundColor Gray
+    # Remove any prior value (no-op if absent), then add via stdin.
+    # Both calls are non-interactive when VERCEL_TOKEN is in env.
+    $tok = if ($env:VERCEL_TOKEN) { "--token=$env:VERCEL_TOKEN" } else { "" }
+    & cmd /c "npx --yes vercel env rm $Name $Environment --yes $tok 2>nul"
+    $Value | & cmd /c "npx --yes vercel env add $Name $Environment $tok"
 }
 
-Write-Host "`nPushing Production..." -ForegroundColor Cyan
+Write-Host "Pushing Production..." -ForegroundColor Cyan
 Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_URL"           -Value $SUPABASE_URL      -Environment "production"
 Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_ANON_KEY"      -Value $SUPABASE_ANON     -Environment "production"
 Push-EnvVar -Name "SUPABASE_SERVICE_ROLE_KEY"          -Value $SUPABASE_SERVICE  -Environment "production"
@@ -44,14 +48,14 @@ Push-EnvVar -Name "NEXT_PUBLIC_SITE_URL"               -Value $SITE_URL         
 # Vercel dashboard if a specific production deploy needs it for QA,
 # and remove before the next promotion.
 
-Write-Host "`nPushing Preview..." -ForegroundColor Cyan
+Write-Host "Pushing Preview..." -ForegroundColor Cyan
 Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_URL"           -Value $SUPABASE_URL      -Environment "preview"
 Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_ANON_KEY"      -Value $SUPABASE_ANON     -Environment "preview"
 Push-EnvVar -Name "SUPABASE_SERVICE_ROLE_KEY"          -Value $SUPABASE_SERVICE  -Environment "preview"
 Push-EnvVar -Name "NEXT_PUBLIC_SITE_URL"               -Value $SITE_URL          -Environment "preview"
-# Preview deploys ARE staging — switcher enabled.
+# Preview deploys ARE staging: switcher enabled.
 Push-EnvVar -Name "NEXT_PUBLIC_STAGING_ROLE_SWITCHER"  -Value $STAGING_SWITCHER  -Environment "preview"
 
-Write-Host "`nDone. Trigger a redeploy:" -ForegroundColor Green
+Write-Host "Done. Trigger a redeploy:" -ForegroundColor Green
 Write-Host "  npx vercel --prod"
-Write-Host "Or just push a commit — the next deploy reads the new vars."
+Write-Host "Or just push a commit; the next deploy reads the new vars."
