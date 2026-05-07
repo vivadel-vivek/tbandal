@@ -54,10 +54,10 @@ const ROUTES: RouteCase[] = [
   { path: "/member/library",                                            allow: "any-authed" },
   { path: "/member/settings",                                           allow: "any-authed" },
 
-  // Phase D — contributor portal, gated by requireStaff (admin or
-  // contributor). Phase E vendor portal still pending.
+  // Admin portals: contributor (admin + contributor) and vendor
+  // (admin + vendor).
   { path: "/admin/contributor",                                         allow: "contributor" },
-  { path: "/admin/vendor",                                              allow: "vendor",      notImplemented: true },
+  { path: "/admin/vendor",                                              allow: "vendor" },
 ];
 
 // Map (allow tier, current role) → expected outcome. Anonymous is

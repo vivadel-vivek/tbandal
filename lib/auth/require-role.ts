@@ -42,6 +42,27 @@ export async function requireStaff(): Promise<{ userId: string; role: UserRole; 
   return { userId: user.id, role: profile.role, email: profile.email };
 }
 
+export async function requireVendorOrAdmin(): Promise<{ userId: string; role: UserRole; email: string | null }> {
+  const sb = await createSupabaseServerClient();
+  const { data: { user } } = await sb.auth.getUser();
+
+  if (!user) {
+    redirect("/login?next=/admin/vendor");
+  }
+
+  const { data: profile } = await sb
+    .from("profiles")
+    .select("role, email")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile) redirect("/?msg=no-profile");
+  if (profile.role !== "admin" && profile.role !== "vendor") {
+    redirect("/?msg=forbidden");
+  }
+  return { userId: user.id, role: profile.role, email: profile.email };
+}
+
 export async function requireRole(roles: UserRole[]): Promise<{ userId: string; role: UserRole }> {
   const sb = await createSupabaseServerClient();
   const { data: { user } } = await sb.auth.getUser();

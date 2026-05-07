@@ -619,6 +619,10 @@ export type Database = {
     Functions: {
       is_admin: { Args: { user_id: string }; Returns: boolean }
       is_staff: { Args: { uid: string }; Returns: boolean }
+      owns_teaware_vendor: {
+        Args: { uid: string; vendor_name: string }
+        Returns: boolean
+      }
     }
     Enums: {
       post_category: "Brewing" | "Culture" | "Origin" | "Vendor Spotlight"
@@ -1348,8 +1352,9 @@ export const Constants = {
   },
 } as const
 
+
 // =====================================================================
-// Convenience aliases — keep importers stable across `gen types` runs.
+// Convenience aliases — keep importers stable across gen types runs.
 // =====================================================================
 export type UserRole = Database["public"]["Enums"]["user_role"];
 export type UserTeaStatus = Database["public"]["Enums"]["user_tea_status"];
@@ -1357,5 +1362,4 @@ export type UserTeawareStatus = Database["public"]["Enums"]["user_teaware_status
 export type TeaTypeEnum = Database["public"]["Enums"]["tea_type"];
 export type TeawareCategoryEnum = Database["public"]["Enums"]["teaware_category"];
 export type PostCategoryEnum = Database["public"]["Enums"]["post_category"];
-
 
