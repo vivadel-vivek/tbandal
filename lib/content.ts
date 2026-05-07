@@ -36,13 +36,21 @@ import type { Database } from "./supabase/types";
 // Returns null when Supabase env vars are missing rather than
 // throwing. The getters below treat null as "no catalog yet" and
 // return empty arrays so a missing-env deploy succeeds with empty
-// pages instead of breaking the entire build. Once the env is
-// configured, the same code path fetches normally.
+// pages instead of breaking the entire build.
+//
+// `cache: "no-store"` is forced on the underlying fetch so Next.js
+// App Router doesn't memo the supabase responses in its Data Cache.
+// Without this, Studio / contributor-portal edits stay invisible
+// even on dynamically-rendered routes — the fetch result gets reused
+// across requests until the deploy expires it.
 function anonClient() {
   try {
     const { url, anon } = getSupabasePublicEnv();
     return createClient<Database>(url, anon, {
       auth: { persistSession: false, autoRefreshToken: false },
+      global: {
+        fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+      },
     });
   } catch {
     if (process.env.NODE_ENV !== "production") {
