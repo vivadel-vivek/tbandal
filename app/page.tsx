@@ -22,6 +22,8 @@ import { Stat } from "@/components/ui/Stat";
 import { TeaStain } from "@/components/ui/TeaStain";
 import { AvatarChip } from "@/components/ui/AvatarChip";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { RadarChart } from "@/components/tea/RadarChart";
+import { MouthfeelGrid } from "@/components/tea/MouthfeelGrid";
 import { RecentlyBrewedGrid } from "@/components/home/RecentlyBrewedGrid";
 import type { Post } from "@/lib/types";
 
@@ -155,6 +157,41 @@ export default async function Home() {
         </Container>
       </section>
 
+      {/* ============ TWO CONTRIBUTORS ============ */}
+      <section className="py-14 bg-cream">
+        <Container>
+          <SectionHeader
+            eyebrow="Two palates"
+            title="Different mouths, one cup"
+            link="About us →"
+            href="/about"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+            {[CONTRIBUTORS.james, CONTRIBUTORS.vivek].filter(Boolean).map((c) => (
+              <article
+                key={c.key}
+                className="bg-white rounded-xl p-5 sm:p-7 shadow-card border border-warm-200 flex gap-4 sm:gap-5"
+              >
+                <AvatarChip who={c.key} size={64} />
+                <div>
+                  <h3 className="font-display italic text-burgundy font-medium m-0 mb-1 text-[26px] sm:text-hero-sm">
+                    {c.name}
+                  </h3>
+                  {c.palate && (
+                    <Eyebrow color="var(--warm-600, #6B6560)">{c.palate}</Eyebrow>
+                  )}
+                  {c.bio && (
+                    <p className="text-sm text-warm-700 leading-relaxed mt-2.5 m-0">
+                      {c.bio}
+                    </p>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </Container>
+      </section>
+
       {/* ============ HOW THE RATING WORKS ============ */}
       <section className="py-14">
         <Container>
@@ -164,6 +201,11 @@ export default async function Home() {
               <h2 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 text-[32px] sm:text-hero-lg leading-tight">
                 <span className="italic">How the rating works.</span>
               </h2>
+              <p className="text-warm-700 leading-relaxed mt-3 max-w-[560px]">
+                Every review on the site uses the same shape — a flavor
+                wheel, a mouthfeel point, two scores, and the brewing notes
+                we actually used. Here&apos;s what it looks like.
+              </p>
             </div>
             <Link
               href="/how-we-rate"
@@ -171,6 +213,64 @@ export default async function Home() {
             >
               The full breakdown →
             </Link>
+          </div>
+
+          {/* Live example: composite radar + mouthfeel from a representative
+              young pu'er (Menghai-shaped). Profile + mouthfeel are
+              hardcoded so the home page doesn't depend on a specific tea
+              row staying in the catalog. */}
+          <div className="card-surface p-5 sm:p-7 mb-6 sm:mb-7">
+            <Eyebrow>Sample · Menghai shen pu&apos;er</Eyebrow>
+            <h3 className="font-display italic text-burgundy text-[20px] sm:text-[24px] m-0 mt-1.5 mb-4 sm:mb-5">
+              What every review looks like.
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-[1.5fr_1fr] gap-6 sm:gap-8 items-center">
+              <div className="flex flex-col items-center">
+                <RadarChart
+                  profiles={[
+                    {
+                      values: { floral: 2, fruity: 5, sweet: 7, honey: 7, nutty: 4, roasted: 1, woody: 4, earthy: 6, mineral: 7, marine: 1, vegetal: 1, spicy: 2 },
+                      color: "#722F37",
+                      label: "James",
+                    },
+                    {
+                      values: { floral: 1, fruity: 4, sweet: 6, honey: 8, nutty: 3, roasted: 2, woody: 5, earthy: 7, mineral: 8, marine: 1, vegetal: 1, spicy: 2 },
+                      color: "#8B9A7D",
+                      label: "Vivek",
+                    },
+                    {
+                      values: { floral: 2, fruity: 4, sweet: 6, honey: 7, nutty: 3, roasted: 2, woody: 5, earthy: 6, mineral: 7, marine: 1, vegetal: 1, spicy: 2 },
+                      color: "#A68B3D",
+                      label: "Members",
+                    },
+                  ]}
+                  size={300}
+                  style="fill"
+                />
+                <div className="flex gap-3.5 justify-center mt-2 text-[11px] flex-wrap">
+                  <span className="inline-flex items-center gap-1.5 text-warm-700 font-semibold">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#722F37" }} />
+                    James
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-warm-700 font-semibold">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#8B9A7D" }} />
+                    Vivek
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-warm-700 font-semibold">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#A68B3D" }} />
+                    Members
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <MouthfeelGrid point={{ astringent: 3, bodyFull: 7 }} size={220} />
+                <div className="text-[11px] text-warm-600 mt-2 text-center max-w-[220px]">
+                  Mouthfeel is a single point — astringent vs oily on one
+                  axis, light vs full-bodied on the other.
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-7">
@@ -218,41 +318,6 @@ export default async function Home() {
             <Link href="/discover/teas" className="inline-flex">
               <Button variant="secondary">Rate a tea →</Button>
             </Link>
-          </div>
-        </Container>
-      </section>
-
-      {/* ============ TWO CONTRIBUTORS ============ */}
-      <section className="py-14 bg-cream">
-        <Container>
-          <SectionHeader
-            eyebrow="Two palates"
-            title="Different mouths, one cup"
-            link="About us →"
-            href="/about"
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-            {[CONTRIBUTORS.james, CONTRIBUTORS.vivek].filter(Boolean).map((c) => (
-              <article
-                key={c.key}
-                className="bg-white rounded-xl p-5 sm:p-7 shadow-card border border-warm-200 flex gap-4 sm:gap-5"
-              >
-                <AvatarChip who={c.key} size={64} />
-                <div>
-                  <h3 className="font-display italic text-burgundy font-medium m-0 mb-1 text-[26px] sm:text-hero-sm">
-                    {c.name}
-                  </h3>
-                  {c.palate && (
-                    <Eyebrow color="var(--warm-600, #6B6560)">{c.palate}</Eyebrow>
-                  )}
-                  {c.bio && (
-                    <p className="text-sm text-warm-700 leading-relaxed mt-2.5 m-0">
-                      {c.bio}
-                    </p>
-                  )}
-                </div>
-              </article>
-            ))}
           </div>
         </Container>
       </section>
