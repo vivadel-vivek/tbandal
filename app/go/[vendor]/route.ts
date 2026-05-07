@@ -12,15 +12,15 @@
 // want crawlers indexing /go/[vendor] as a canonical URL anyway.
 
 import { NextResponse, type NextRequest } from "next/server";
-import { vendorBySlug } from "@/lib/data";
+import { getVendorBySlug } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
-export function GET(
+export async function GET(
   _req: NextRequest,
   { params }: { params: { vendor: string } },
 ) {
-  const vendor = vendorBySlug(params.vendor);
+  const vendor = await getVendorBySlug(params.vendor);
   if (!vendor || !vendor.url) {
     // Send unknown vendor to the atlas with a small flag for analytics.
     return NextResponse.redirect(

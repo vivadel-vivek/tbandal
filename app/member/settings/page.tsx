@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MemberSettingsView } from "@/components/member/MemberSettingsView";
+import { getTeas } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function MemberSettingsPage() {
-  return <MemberSettingsView />;
+export default async function MemberSettingsPage() {
+  const teas = await getTeas();
+  return <MemberSettingsView teas={teas} />;
 }

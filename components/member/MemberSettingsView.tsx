@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { TEAS, teaUrl } from "@/lib/data";
-import type { FlavorMode, MemberSettings as Settings } from "@/lib/types";
+import { teaUrl } from "@/lib/tea-helpers";
+import type { FlavorMode, MemberSettings as Settings, Tea } from "@/lib/types";
 import { useMember } from "@/contexts/MemberContext";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -15,7 +15,13 @@ import {
   settingsInput,
 } from "./settingsPrimitives";
 
-export function MemberSettingsView() {
+type Props = {
+  /** Catalog teas, passed from the server parent. Used to resolve the
+   *  member's "tasted" slug list back to display names + URLs. */
+  teas: Tea[];
+};
+
+export function MemberSettingsView({ teas: TEAS }: Props) {
   const { member, setMember, reblind } = useMember();
   const s = member.settings;
 

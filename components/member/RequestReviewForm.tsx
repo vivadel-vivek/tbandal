@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { TEAS, VENDORS, vendorBySlug } from "@/lib/data";
+import type { Tea, Vendor } from "@/lib/types";
 import { useMember } from "@/contexts/MemberContext";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -22,12 +22,16 @@ type Props = {
   /** Pre-selects the reviewer when launched from a tea-detail empty
    *  state (`from=vivek` when Vivek hasn't reviewed it). */
   initialFrom?: string;
+  teas: Tea[];
+  vendors: Vendor[];
 };
 
 export function RequestReviewForm({
   initialTea = "",
   initialVendor = "",
   initialFrom = "",
+  teas: TEAS,
+  vendors: VENDORS,
 }: Props) {
   const { member } = useMember();
 
@@ -35,13 +39,13 @@ export function RequestReviewForm({
   // launching from `/tea/.../empty-state` passes pathSlug + vendor slug.
   const prefill = useMemo(() => {
     const teaByPath = TEAS.find((t) => t.pathSlug === initialTea);
-    const vendorByPath = vendorBySlug(initialVendor);
+    const vendorByPath = VENDORS.find((v) => v.slug === initialVendor);
     return {
       tea: teaByPath ? teaByPath.name : initialTea,
       year: teaByPath ? teaByPath.year : "",
       vendor: vendorByPath ? vendorByPath.name : initialVendor,
     };
-  }, [initialTea, initialVendor]);
+  }, [initialTea, initialVendor, TEAS, VENDORS]);
 
   const initialReviewer: Reviewer =
     initialFrom === "vivek" || initialFrom === "james" ? initialFrom : "either";

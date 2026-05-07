@@ -20,7 +20,7 @@ import {
   rollUpProfile,
 } from "@/lib/flavor";
 import { useMember } from "@/contexts/MemberContext";
-import { vesselTeaware } from "@/lib/data";
+import type { Teaware } from "@/lib/types";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -37,6 +37,10 @@ type Props = {
    *  current member's rating for this tea from MemberContext (so
    *  navigating from "Edit my rating" prefills automatically). */
   initial?: MemberRating;
+  /** Catalog of brewing vessels (gaiwan / teapot / kyusu / pitcher /
+   *  cup) — passed in by the server parent so the editor doesn't
+   *  fetch from Supabase on the client. */
+  vessels: Teaware[];
 };
 
 const ZERO_PROFILE = (): FlavorProfile =>
@@ -44,7 +48,7 @@ const ZERO_PROFILE = (): FlavorProfile =>
 
 const ZERO_MOUTHFEEL = (): Mouthfeel => ({ astringent: 5, bodyFull: 5 });
 
-export function SessionLogEditor({ tea, initial: initialProp }: Props) {
+export function SessionLogEditor({ tea, initial: initialProp, vessels }: Props) {
   const router = useRouter();
   const { upsertRating, member, findUserTeaBySlug, setTeaStatus } = useMember();
   // Fall back to the member's existing rating for this tea — turns this
@@ -261,6 +265,7 @@ export function SessionLogEditor({ tea, initial: initialProp }: Props) {
 
       {/* ---- Brewing meta — session-level ----------------------------- */}
       <SessionMeta
+        vessels={vessels}
         vessel={vessel}
         water={water}
         leafG={leafG}
@@ -532,11 +537,13 @@ const BREW_STYLE_OPTIONS = [
 ];
 
 function SessionMeta({
+  vessels,
   vessel, water, leafG, waterMl,
   waterSource, waterTdsPpm, brewStyleOverride, advancedOpen, defaultStyle,
   onVessel, onWater, onLeafG, onWaterMl,
   onWaterSource, onWaterTdsPpm, onBrewStyleOverride, onToggleAdvanced,
 }: {
+  vessels: Teaware[];
   vessel: string; water: string; leafG: string; waterMl: string;
   waterSource: WaterSource | "";
   waterTdsPpm: string;
@@ -561,7 +568,7 @@ function SessionMeta({
   // the model stays freeform so older ratings still display correctly.
   // Phase B will gain a vessel_id FK; for now string is enough.
   const { member } = useMember();
-  const allCatalog = vesselTeaware();
+  const allCatalog = vessels;
   const libCatalogSlugs = new Set(
     member.library.teaware
       .map((row) => row.teawareSlug)

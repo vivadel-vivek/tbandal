@@ -2,11 +2,8 @@
 
 import Link from "next/link";
 import type { Metadata } from "next";
-import {
-  TEAWARE,
-  TEAWARE_CATEGORY_ORDER,
-  groupTeawareByCategory,
-} from "@/lib/data";
+import { getTeaware, groupTeawareByCategory } from "@/lib/content";
+import { TEAWARE_CATEGORY_ORDER } from "@/lib/tea-helpers";
 import type { Teaware } from "@/lib/types";
 
 import { Container } from "@/components/ui/Container";
@@ -23,15 +20,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "/discover/teaware" },
 };
 
-const grouped = groupTeawareByCategory();
-const categoryRank = (c: string) =>
-  (TEAWARE_CATEGORY_ORDER as readonly string[]).indexOf(c);
-const categories = Object.keys(grouped).sort(
-  (a, b) => categoryRank(a) - categoryRank(b),
-);
-
-export default function TeawareDirectory() {
+export default async function TeawareDirectory() {
+  const [TEAWARE, grouped] = await Promise.all([
+    getTeaware(), groupTeawareByCategory(),
+  ]);
   const total = TEAWARE.length;
+  const categoryRank = (c: string) =>
+    (TEAWARE_CATEGORY_ORDER as readonly string[]).indexOf(c);
+  const categories = Object.keys(grouped).sort(
+    (a, b) => categoryRank(a) - categoryRank(b),
+  );
 
   return (
     <main>

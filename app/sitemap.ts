@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { POSTS, TEAS, TEAWARE, VENDORS, teaUrl } from "@/lib/data";
+import { getPosts, getTeas, getTeaware, getVendors } from "@/lib/content";
+import { teaUrl } from "@/lib/tea-helpers";
 import { getSiteUrl } from "@/lib/site-url";
 
 const BASE = getSiteUrl();
@@ -10,8 +11,14 @@ const BASE = getSiteUrl();
  * so search engines and AI crawlers can reliably re-fetch only what
  * changed.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const [TEAS, VENDORS, POSTS, TEAWARE] = await Promise.all([
+    getTeas(),
+    getVendors(),
+    getPosts(),
+    getTeaware(),
+  ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${BASE}/`,                  lastModified: now, changeFrequency: "weekly",  priority: 1.0 },

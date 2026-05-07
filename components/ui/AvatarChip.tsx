@@ -1,4 +1,4 @@
-import { CONTRIBUTORS } from "@/lib/data";
+import { CONTRIBUTOR_STYLE } from "@/lib/contributor-style";
 import type { ContributorKey } from "@/lib/types";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 };
 
 export function AvatarChip({ who, size = 28, className = "" }: Props) {
-  const c = CONTRIBUTORS[who];
+  const c = CONTRIBUTOR_STYLE[who];
   return (
     <span
       aria-hidden

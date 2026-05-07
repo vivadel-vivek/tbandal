@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import type { CardDensity, Tea } from "@/lib/types";
-import { teaAvg, teaUrl } from "@/lib/data";
+import { teaAvg, teaUrl } from "@/lib/tea-helpers";
 import { TeaTypeTag } from "@/components/ui/TeaTypeTag";
 import { StarRow } from "@/components/ui/StarRow";
 import { Eyebrow } from "@/components/ui/Eyebrow";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { teaAvg } from "@/lib/data";
+import { teaAvg } from "@/lib/tea-helpers";
 import type { Tea, TeaTypeName, Vendor } from "@/lib/types";
 import { useMember } from "@/contexts/MemberContext";
 import { Eyebrow } from "@/components/ui/Eyebrow";

@@ -10,8 +10,7 @@
  */
 
 import type { Tea, Post, Vendor, Teaware } from "@/lib/types";
-import { teaUrl } from "@/lib/data";
-import { teaAvg } from "@/lib/data";
+import { teaUrl, teaAvg } from "@/lib/tea-helpers";
 import { getSiteUrl } from "@/lib/site-url";
 
 const SITE = getSiteUrl();

@@ -1,4 +1,4 @@
-import { teaAvg, TEAS } from "@/lib/data";
+import { teaAvg } from "@/lib/tea-helpers";
 import type { HeroVariant, Tea } from "@/lib/types";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -14,6 +14,10 @@ type Props = {
   hideReviews?: boolean;
   onVisitVendor?: () => void;
   onLogSession?: () => void;
+  /** 1-based catalog position; rendered as "Tea №NNN" in the editorial
+   *  variant. Parents pass it down because computing it requires the
+   *  full catalog, which lives in Supabase now. */
+  catalogIndex?: number;
 };
 
 export function TeaHero({
@@ -22,6 +26,7 @@ export function TeaHero({
   hideReviews = false,
   onVisitVendor,
   onLogSession,
+  catalogIndex,
 }: Props) {
   if (variant === "stain") {
     return (
@@ -40,6 +45,7 @@ export function TeaHero({
         hideReviews={hideReviews}
         onVisitVendor={onVisitVendor}
         onLogSession={onLogSession}
+        catalogIndex={catalogIndex}
       />
     );
   }
@@ -196,10 +202,16 @@ function HeroStain({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
 // EDITORIAL — magazine-style masthead
 // =====================================================================
 
-function HeroEditorial({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props, "variant">) {
+function HeroEditorial({
+  tea, hideReviews, onVisitVendor, onLogSession, catalogIndex,
+}: Omit<Props, "variant">) {
   const avg = teaAvg(tea);
-  const teaIndex = TEAS.findIndex((t) => t.slug === tea.slug);
-  const teaNo = String(teaIndex + 1).padStart(3, "0");
+  // Fall back to a stable slug-based hash when no catalog index was
+  // passed — keeps the editorial variant useful in isolation.
+  const idx = typeof catalogIndex === "number"
+    ? catalogIndex
+    : Math.abs(tea.slug.split("").reduce((a, c) => a + c.charCodeAt(0), 0)) % 999;
+  const teaNo = String(idx + 1).padStart(3, "0");
 
   return (
     <div className="mt-4">

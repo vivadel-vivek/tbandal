@@ -2,20 +2,15 @@
 
 import Link from "next/link";
 import type { Metadata } from "next";
-import {
-  CONTINENT_ORDER,
-  TEAS,
-  VENDORS,
-  groupVendorsByGeography,
-  teaUrl,
-} from "@/lib/data";
+import { getTeas, getVendors, groupVendorsByGeography } from "@/lib/content";
+import { CONTINENT_ORDER, teaUrl } from "@/lib/tea-helpers";
 
 export const revalidate = 3600;
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { StarRow } from "@/components/ui/StarRow";
 import { ItemListJsonLd, vendorListItems } from "@/components/seo/JsonLd";
-import type { Vendor } from "@/lib/types";
+import type { Tea, Vendor } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Vendors",
@@ -24,14 +19,15 @@ export const metadata: Metadata = {
   alternates: { canonical: "/discover/vendors" },
 };
 
-const grouped = groupVendorsByGeography();
-const continentRank = (c: string) =>
-  (CONTINENT_ORDER as readonly string[]).indexOf(c);
-const continents = Object.keys(grouped).sort(
-  (a, b) => continentRank(a) - continentRank(b),
-);
-
-export default function VendorsAtlas() {
+export default async function VendorsAtlas() {
+  const [TEAS, VENDORS, grouped] = await Promise.all([
+    getTeas(), getVendors(), groupVendorsByGeography(),
+  ]);
+  const continentRank = (c: string) =>
+    (CONTINENT_ORDER as readonly string[]).indexOf(c);
+  const continents = Object.keys(grouped).sort(
+    (a, b) => continentRank(a) - continentRank(b),
+  );
 
   return (
     <main>
@@ -100,7 +96,7 @@ export default function VendorsAtlas() {
                   <Eyebrow>{country}</Eyebrow>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mt-3 sm:mt-3.5">
                     {(byCountry[country] ?? []).map((v) => (
-                      <VendorCard key={v.slug} vendor={v} />
+                      <VendorCard key={v.slug} vendor={v} teas={TEAS} />
                     ))}
                   </div>
                 </div>
@@ -120,8 +116,8 @@ export default function VendorsAtlas() {
   );
 }
 
-function VendorCard({ vendor: v }: { vendor: Vendor }) {
-  const teas = TEAS.filter((t) => t.vendor === v.name);
+function VendorCard({ vendor: v, teas: allTeas }: { vendor: Vendor; teas: Tea[] }) {
+  const teas = allTeas.filter((t) => t.vendor === v.name);
   return (
     <article
       className="group bg-[var(--bg-elevated)] rounded-xl border border-warm-200 shadow-card p-5 transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5 flex flex-col gap-4"

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { POSTS, TEAS, postBySlug, teaUrl } from "@/lib/data";
+import { getPosts, getPostBySlug, getTeas } from "@/lib/content";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { AvatarChip } from "@/components/ui/AvatarChip";
@@ -14,7 +14,8 @@ import { ArticleJsonLd } from "@/components/seo/JsonLd";
 export const revalidate = 3600;
 export const dynamicParams = true;
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const POSTS = await getPosts();
   return POSTS.map((p) => ({ slug: p.slug }));
 }
 
@@ -23,7 +24,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const post = postBySlug(params.slug);
+  const post = await getPostBySlug(params.slug);
   if (!post) return { title: "Post not found" };
   const path = `/journal/${params.slug}`;
   return {
@@ -42,16 +43,18 @@ export async function generateMetadata({
   };
 }
 
-export default function JournalPost({
+export default async function JournalPost({
   params,
 }: {
   params: { slug: string };
 }) {
-  const post = postBySlug(params.slug);
+  const [post, allTeas] = await Promise.all([
+    getPostBySlug(params.slug), getTeas(),
+  ]);
   if (!post) notFound();
 
   const related = post.related
-    .map((slug) => TEAS.find((t) => t.slug === slug))
+    .map((slug) => allTeas.find((t) => t.slug === slug))
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
 
   return (

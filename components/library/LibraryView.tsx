@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useMember } from "@/contexts/MemberContext";
-import { TEAS, TEAWARE, vendorSlugForTea } from "@/lib/data";
+import { vendorSlugForTea } from "@/lib/tea-helpers";
 import type {
   Tea,
   Teaware,
@@ -44,7 +44,14 @@ const TEAWARE_STATUSES: { value: AnyStatus; label: string }[] = [
 
 type AddMode = null | "catalog" | "custom";
 
-export function LibraryView() {
+type Props = {
+  /** Catalog teas + teaware passed in from the server parent — the
+   *  client component never reaches into Supabase directly. */
+  teas: Tea[];
+  teaware: Teaware[];
+};
+
+export function LibraryView({ teas: TEAS, teaware: TEAWARE }: Props) {
   const {
     member,
     removeUserTea,
@@ -256,6 +263,8 @@ export function LibraryView() {
                 .filter((s): s is string => Boolean(s)),
             )
           }
+          teas={TEAS}
+          teaware={TEAWARE}
         />
       )}
 
@@ -331,6 +340,8 @@ function CatalogPickerModal({
   onPickTeaware,
   existingTeaSlugs,
   existingTeawareSlugs,
+  teas: TEAS,
+  teaware: TEAWARE,
 }: {
   kind: Tab;
   onClose: () => void;
@@ -338,6 +349,8 @@ function CatalogPickerModal({
   onPickTeaware: (slug: string, status: UserTeawareStatus) => void;
   existingTeaSlugs: Set<string>;
   existingTeawareSlugs: Set<string>;
+  teas: Tea[];
+  teaware: Teaware[];
 }) {
   const [query, setQuery] = useState("");
   const [defaultTeaStatus, setDefaultTeaStatus] = useState<UserTeaStatus>("wishlist");

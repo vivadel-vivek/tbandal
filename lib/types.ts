@@ -121,7 +121,10 @@ export type Tea = {
   price: number;
   /** 1–5 rarity score */
   rarity: number;
+  /** Vendor display name (matches Vendor.name) */
   vendor: string;
+  /** Vendor URL slug — denormalized so URL/route helpers stay pure. */
+  vendorSlug: string;
   /** Card hero gradient (CSS) — placeholder until real photography */
   gradient: string;
   /** Single accent color for the tea */

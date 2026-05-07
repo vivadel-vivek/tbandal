@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { TEAS, vendorSlugForTea } from "@/lib/data";
+import { vendorSlugForTea } from "@/lib/tea-helpers";
 import { useMember } from "@/contexts/MemberContext";
 import type { Tea } from "@/lib/types";
 
@@ -26,7 +26,13 @@ import type { Tea } from "@/lib/types";
 const HIDE_ON_PATHS = ["/login", "/signup", "/account/"];
 const HIDE_ON_LOG = /\/tea\/[^/]+\/[^/]+\/log/;
 
-export function SessionLogLauncher() {
+type Props = {
+  /** Catalog teas — the Shell server component fetches them once and
+   *  threads them through so this client island isn't hitting Supabase. */
+  teas: Tea[];
+};
+
+export function SessionLogLauncher({ teas: TEAS }: Props) {
   const pathname = usePathname() ?? "/";
   const router = useRouter();
   const { member, findUserTeaBySlug } = useMember();

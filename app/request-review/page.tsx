@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { RequestReviewForm } from "@/components/member/RequestReviewForm";
+import { getTeas, getVendors } from "@/lib/content";
 
 // Form state lives client-side; the page itself is dynamic so query
 // params reach the form on first paint without a flash of empty inputs.
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function RequestReviewPage({
+export default async function RequestReviewPage({
   searchParams,
 }: {
   searchParams: Record<string, string | string[] | undefined>;
@@ -24,6 +25,7 @@ export default function RequestReviewPage({
     const v = searchParams[k];
     return typeof v === "string" ? v : "";
   };
+  const [teas, vendors] = await Promise.all([getTeas(), getVendors()]);
 
   return (
     <main>
@@ -45,6 +47,8 @@ export default function RequestReviewPage({
           initialTea={get("tea")}
           initialVendor={get("vendor")}
           initialFrom={get("from")}
+          teas={teas}
+          vendors={vendors}
         />
       </Container>
       <div className="h-16" />

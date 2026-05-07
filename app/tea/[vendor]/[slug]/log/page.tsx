@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { teaByVendorAndSlug } from "@/lib/data";
+import { getTeaByVendorAndPath, vesselTeaware } from "@/lib/content";
 import { SessionLogEditor } from "@/components/session/SessionLogEditor";
 
 // Member-driven; never pre-render. The editor is a client component and
@@ -17,16 +17,19 @@ export const metadata: Metadata = {
 
 type Params = { vendor: string; slug: string };
 
-export default function LogSessionPage({
+export default async function LogSessionPage({
   params,
 }: {
   params: Params;
 }) {
-  const tea = teaByVendorAndSlug(params.vendor, params.slug);
+  const [tea, vessels] = await Promise.all([
+    getTeaByVendorAndPath(params.vendor, params.slug),
+    vesselTeaware(),
+  ]);
   if (!tea) notFound();
   return (
     <main>
-      <SessionLogEditor tea={tea} />
+      <SessionLogEditor tea={tea} vessels={vessels} />
     </main>
   );
 }

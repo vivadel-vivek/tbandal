@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import type { Metadata } from "next";
-import { TEAS, VENDORS } from "@/lib/data";
+import { getTeas, getVendors } from "@/lib/content";
 
 export const revalidate = 3600;
 import { Container } from "@/components/ui/Container";
@@ -18,7 +18,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/discover/teas" },
 };
 
-export default function TeasPage() {
+export default async function TeasPage() {
+  const [TEAS, VENDORS] = await Promise.all([getTeas(), getVendors()]);
   return (
     <main className="relative">
       <ItemListJsonLd

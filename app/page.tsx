@@ -7,14 +7,14 @@ import Link from "next/link";
 
 export const revalidate = 3600;
 import {
-  CONTRIBUTORS,
-  POSTS,
-  TEAS,
-  VENDORS,
+  getContributors,
+  getPosts,
+  getTeas,
+  getVendors,
   featuredTea,
   latestPost,
-  teaUrl,
-} from "@/lib/data";
+} from "@/lib/content";
+import { teaUrl } from "@/lib/tea-helpers";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -25,10 +25,16 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { RecentlyBrewedGrid } from "@/components/home/RecentlyBrewedGrid";
 import type { Post } from "@/lib/types";
 
-export default function Home() {
-  const featured = featuredTea();
+export default async function Home() {
+  const [TEAS, POSTS, VENDORS, CONTRIBUTORS, featured, featuredPost] = await Promise.all([
+    getTeas(),
+    getPosts(),
+    getVendors(),
+    getContributors(),
+    featuredTea(),
+    latestPost(),
+  ]);
   const recent = TEAS.slice(1, 4);
-  const featuredPost = latestPost();
   const morePosts = POSTS.slice(1, 4);
 
   return (

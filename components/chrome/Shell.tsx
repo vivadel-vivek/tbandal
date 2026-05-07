@@ -7,8 +7,13 @@ import { ClientProviders } from "./ClientProviders";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { SessionLogLauncher } from "@/components/session/SessionLogLauncher";
+import { getTeas } from "@/lib/content";
 
-export function Shell({ children }: { children: ReactNode }) {
+export async function Shell({ children }: { children: ReactNode }) {
+  // Catalog teas fed to the floating launcher's picker. React.cache()
+  // dedupes if the page also fetches teas — the SSG payload pays once.
+  const teas = await getTeas();
+
   // Auth state is intentionally NOT read here. If we awaited the
   // Supabase session in this server component, every page that wraps
   // its content in <Shell> would render a build-time snapshot of
@@ -25,7 +30,7 @@ export function Shell({ children }: { children: ReactNode }) {
       </div>
       {/* Floating "Log a session" launcher — pathname-aware contextual
           prefill, gated to members. */}
-      <SessionLogLauncher />
+      <SessionLogLauncher teas={teas} />
     </ClientProviders>
   );
 }

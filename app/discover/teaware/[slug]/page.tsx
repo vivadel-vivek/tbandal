@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { TEAS, TEAWARE, teawareBySlug, vendorByName } from "@/lib/data";
+import { getTeas, getTeaware, getTeawareBySlug, getVendorByName } from "@/lib/content";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -15,7 +15,8 @@ import { LibraryStatusToggle } from "@/components/library/LibraryStatusToggle";
 export const revalidate = 3600;
 export const dynamicParams = true;
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const TEAWARE = await getTeaware();
   return TEAWARE.map((t) => ({ slug: t.slug }));
 }
 
@@ -24,7 +25,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const t = teawareBySlug(params.slug);
+  const t = await getTeawareBySlug(params.slug);
   if (!t) return { title: "Teaware not found" };
   const path = `/discover/teaware/${params.slug}`;
   return {
@@ -40,18 +41,21 @@ export async function generateMetadata({
   };
 }
 
-export default function TeawareDetailPage({
+export default async function TeawareDetailPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const item = teawareBySlug(params.slug);
+  const item = await getTeawareBySlug(params.slug);
   if (!item) notFound();
 
-  const internalVendor = vendorByName(item.vendor);
+  const [internalVendor, allTeas] = await Promise.all([
+    getVendorByName(item.vendor),
+    getTeas(),
+  ]);
   // Pair this item with reviewed teas it actually fits — narrow by the
   // intersection of TeaTypeName so the suggestion list stays honest.
-  const matchingTeas = TEAS.filter((tea) =>
+  const matchingTeas = allTeas.filter((tea) =>
     item.goodFor.includes(tea.type),
   ).slice(0, 6);
 

@@ -11,13 +11,14 @@
 // behaviours live here and dispatch on the data.
 
 import { notFound, permanentRedirect } from "next/navigation";
-import { teaBySlug, teaUrl, vendorBySlug } from "@/lib/data";
+import { getTeaBySlug, getVendorBySlug } from "@/lib/content";
+import { teaUrl } from "@/lib/tea-helpers";
 
 // Default dynamic rendering — `force-static` would zero out searchParams
 // and break the ?blind=1 (and any future) query-string forwarding. The
 // redirect itself is cheap; we just need real searchParams in the handler.
 
-export default function TeaVendorOrLegacySlug({
+export default async function TeaVendorOrLegacySlug({
   params,
   searchParams,
 }: {
@@ -26,7 +27,7 @@ export default function TeaVendorOrLegacySlug({
 }) {
   // Legacy tea slug? Redirect to the canonical /tea/[vendor]/[pathSlug],
   // preserving any inbound query string (e.g. ?blind=1).
-  const legacyTea = teaBySlug(params.vendor);
+  const legacyTea = await getTeaBySlug(params.vendor);
   if (legacyTea) {
     const dest = teaUrl(legacyTea);
     const qs = new URLSearchParams();
@@ -39,7 +40,7 @@ export default function TeaVendorOrLegacySlug({
   }
 
   // Real vendor slug? Send to the vendor profile.
-  const vendor = vendorBySlug(params.vendor);
+  const vendor = await getVendorBySlug(params.vendor);
   if (vendor) {
     permanentRedirect(`/discover/vendors/${vendor.slug}`);
   }

@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import { CONTRIBUTORS, TEAS, teaUrl } from "@/lib/data";
+import { teaUrl } from "@/lib/tea-helpers";
 import { FLAVOR_AXES } from "@/lib/flavor";
-import type { ContributorKey, FlavorProfile } from "@/lib/types";
+import type { Contributor, ContributorKey, FlavorProfile, Tea } from "@/lib/types";
 import { useMember } from "@/contexts/MemberContext";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -18,7 +18,12 @@ import { RadarChart } from "@/components/tea/RadarChart";
  * to settings + recommendations. The radar collapses to a soft "blind
  * mode" placeholder when the user has chosen to hide ratings site-wide.
  */
-export function MemberProfileView() {
+type Props = {
+  teas: Tea[];
+  contributors: Record<ContributorKey, Contributor>;
+};
+
+export function MemberProfileView({ teas: TEAS, contributors: CONTRIBUTORS }: Props) {
   const { member, setMember } = useMember();
 
   const aligned = CONTRIBUTORS[member.aligned];

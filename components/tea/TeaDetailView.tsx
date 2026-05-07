@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import type {
   Tea,
+  Vendor,
+  Contributor,
   ContributorKey,
   FlavorAxis,
   BasicAxis,
@@ -13,7 +15,6 @@ import type {
   MemberRating,
   WaterSource,
 } from "@/lib/types";
-import { CONTRIBUTORS, vendorByName } from "@/lib/data";
 import { BASIC_AXES, FLAVOR_AXES, rollUpProfile, topFlavors } from "@/lib/flavor";
 import { useMember } from "@/contexts/MemberContext";
 import { Container } from "@/components/ui/Container";
@@ -33,6 +34,11 @@ type ReviewTab = ContributorKey | "members" | "you";
 
 type Props = {
   tea: Tea;
+  /** The Vendor row matching tea.vendor — passed in by the page so this
+   *  client component doesn't need to re-fetch from Supabase. */
+  vendor: Vendor | null;
+  /** All contributors keyed by handle. Server parent fetches once. */
+  contributors: Record<ContributorKey, Contributor>;
   similar: { tea: Tea; score: number }[];
   /** Discover-launched blind tasting flow (different from member-blind) */
   blindMode?: boolean;
@@ -50,7 +56,7 @@ function memberRatingToReview(r: MemberRating): ReviewBody {
   };
 }
 
-export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
+export function TeaDetailView({ tea, vendor, contributors, similar, blindMode = false }: Props) {
   const { member, isBlindFor, unblind } = useMember();
   const router = useRouter();
   // Composite-radar overlay (all three palates at once) is now stored
@@ -110,10 +116,10 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
     const raw: RP[] = showComposite
       ? [
           ...(tea.reviews.james
-            ? [{ values: tea.flavor.james, color: CONTRIBUTORS.james.color, label: "James" }]
+            ? [{ values: tea.flavor.james, color: contributors.james.color, label: "James" }]
             : []),
           ...(tea.reviews.vivek
-            ? [{ values: tea.flavor.vivek, color: CONTRIBUTORS.vivek.color, label: "Vivek" }]
+            ? [{ values: tea.flavor.vivek, color: contributors.vivek.color, label: "Vivek" }]
             : []),
           { values: tea.flavor.members, color: "var(--gold-dark, #A68B3D)", label: "Members" },
           ...(mr
@@ -129,7 +135,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                   ? "var(--forest, #2D3A2E)"
                   : safeTab === "members"
                     ? "var(--gold-dark, #A68B3D)"
-                    : CONTRIBUTORS[safeTab].color,
+                    : contributors[safeTab].color,
             },
           ]
         : [];
@@ -144,17 +150,15 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
   // visitor outbound through our /go/[slug] redirect so we can attribute
   // referrals later. Opens in a new tab so people don't lose the article.
   const handleVisitVendor = () => {
-    const v = vendorByName(tea.vendor);
-    if (v) window.open(`/go/${v.slug}`, "_blank", "noopener,noreferrer");
+    if (vendor) window.open(`/go/${vendor.slug}`, "_blank", "noopener,noreferrer");
   };
   // Session-log entry now lives on a dedicated page (was a cramped
   // modal). Vendor info comes from the URL params we're already on.
-  const logHref = `/tea/${vendorByName(tea.vendor)?.slug ?? tea.vendor}/${tea.pathSlug}/log`;
+  const logHref = `/tea/${vendor?.slug ?? tea.vendor}/${tea.pathSlug}/log`;
   const handleLogSession = () => router.push(logHref);
   // Used by the bottom burgundy vendor banner — rendered as an anchor
   // for proper rel="nofollow sponsored" + indexable href semantics.
-  const vendorOutboundHref =
-    vendorByName(tea.vendor) && `/go/${vendorByName(tea.vendor)!.slug}`;
+  const vendorOutboundHref = vendor ? `/go/${vendor.slug}` : null;
 
   return (
     <main>
@@ -247,7 +251,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
               ].map((t) => {
                 const has = !!reviewMap[t.key];
                 const active = safeTab === t.key;
-                const c = t.key === "vivek" || t.key === "james" ? CONTRIBUTORS[t.key] : null;
+                const c = t.key === "vivek" || t.key === "james" ? contributors[t.key] : null;
                 const activeBg =
                   t.key === "you"
                     ? "var(--forest, #2D3A2E)"
@@ -294,8 +298,8 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                 </div>
                 {showComposite && (
                   <div className="flex gap-3 text-[11px] text-warm-600 flex-wrap mb-1">
-                    {tea.reviews.james && <LegendDot color={CONTRIBUTORS.james.color} label="James" />}
-                    {tea.reviews.vivek && <LegendDot color={CONTRIBUTORS.vivek.color} label="Vivek" />}
+                    {tea.reviews.james && <LegendDot color={contributors.james.color} label="James" />}
+                    {tea.reviews.vivek && <LegendDot color={contributors.vivek.color} label="Vivek" />}
                     <LegendDot color="var(--gold-dark, #A68B3D)" label="Members" />
                     {hasMember && <LegendDot color="var(--forest, #2D3A2E)" label="You" />}
                   </div>
@@ -344,7 +348,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                       style={{
                         background:
                           safeTab === "vivek" || safeTab === "james"
-                            ? CONTRIBUTORS[safeTab].color
+                            ? contributors[safeTab].color
                             : "var(--warm-300, #B5B0AA)",
                         opacity: 0.6,
                       }}
@@ -354,7 +358,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                     <Eyebrow>Not yet reviewed</Eyebrow>
                     <h4 className="font-display text-burgundy font-medium m-0 mt-2 mb-2 italic leading-snug text-[28px]">
                       {(safeTab === "vivek" || safeTab === "james")
-                        ? CONTRIBUTORS[safeTab].name
+                        ? contributors[safeTab].name
                         : "We"}
                       {" "}hasn&apos;t tried this one yet.
                     </h4>
@@ -368,13 +372,13 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                         pathname: "/request-review",
                         query: {
                           tea: tea.pathSlug,
-                          vendor: vendorByName(tea.vendor)?.slug ?? "",
+                          vendor: vendor?.slug ?? "",
                           from: safeTab === "vivek" || safeTab === "james" ? safeTab : "",
                         },
                       }}
                     >
                       <Button variant="primary">
-                        Request a review from {(safeTab === "vivek" || safeTab === "james") ? CONTRIBUTORS[safeTab].name : "us"} →
+                        Request a review from {(safeTab === "vivek" || safeTab === "james") ? contributors[safeTab].name : "us"} →
                       </Button>
                     </Link>
                   </div>
@@ -410,7 +414,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                               ? "Member consensus"
                               : safeTab === "you"
                                 ? "Your notes"
-                                : `${CONTRIBUTORS[safeTab].name}'s notes`}
+                                : `${contributors[safeTab].name}'s notes`}
                           </div>
                           <Eyebrow color="var(--warm-600, #6B6560)">
                             {review.date}
@@ -532,7 +536,7 @@ export function TeaDetailView({ tea, similar, blindMode = false }: Props) {
                                 ? "Top notes — member consensus"
                                 : safeTab === "you"
                                   ? "Top notes — your palate"
-                                  : `Top notes — ${CONTRIBUTORS[safeTab].name}'s palate`}
+                                  : `Top notes — ${contributors[safeTab].name}'s palate`}
                             </Eyebrow>
                             <div className="flex flex-wrap gap-2 mt-2.5">
                               {tops.map((ax) => (

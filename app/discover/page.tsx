@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { TEAS, VENDORS, TEAWARE } from "@/lib/data";
+import { getTeas, getVendors, getTeaware } from "@/lib/content";
 
 // Hub page — pure copy. Revalidate weekly so vendor/tea counts refresh.
 export const revalidate = 604800;
@@ -26,10 +26,13 @@ type HubCard = {
   disabled?: boolean;
 };
 
-export default function DiscoverHub() {
-  const teaCount = TEAS.length;
-  const vendorCount = VENDORS.length;
-  const teawareCount = TEAWARE.length;
+export default async function DiscoverHub() {
+  const [teas, vendors, teaware] = await Promise.all([
+    getTeas(), getVendors(), getTeaware(),
+  ]);
+  const teaCount = teas.length;
+  const vendorCount = vendors.length;
+  const teawareCount = teaware.length;
 
   const cards: HubCard[] = [
     {

@@ -6,15 +6,15 @@
 // we use the item's externalUrl directly.
 
 import { NextResponse, type NextRequest } from "next/server";
-import { teawareBySlug, vendorByName } from "@/lib/data";
+import { getTeawareBySlug, getVendorByName } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
-export function GET(
+export async function GET(
   req: NextRequest,
   { params }: { params: { slug: string } },
 ) {
-  const item = teawareBySlug(params.slug);
+  const item = await getTeawareBySlug(params.slug);
   if (!item) {
     return NextResponse.redirect(
       new URL(
@@ -28,7 +28,7 @@ export function GET(
   // Prefer the internal Vendor URL (so we keep one affiliate path) and
   // fall back to the item's externalUrl when the brand is outside the
   // vendor atlas.
-  const internal = vendorByName(item.vendor);
+  const internal = await getVendorByName(item.vendor);
   const dest = internal?.url ?? item.externalUrl;
   if (!dest) {
     return NextResponse.redirect(

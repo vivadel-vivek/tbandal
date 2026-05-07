@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { POSTS } from "@/lib/data";
+import { getPosts } from "@/lib/content";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { AvatarChip } from "@/components/ui/AvatarChip";
@@ -16,7 +16,8 @@ export const metadata: Metadata = {
 
 const CATS = ["All", "Brewing", "Culture", "Origin", "Vendor Spotlight"] as const;
 
-export default function JournalIndex() {
+export default async function JournalIndex() {
+  const POSTS = await getPosts();
   return (
     <main>
       <Container size="article">

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { TEAS, VENDORS, vendorBySlug } from "@/lib/data";
+import { getTeas, getVendors, getVendorBySlug } from "@/lib/content";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -14,8 +14,9 @@ import { TeaCard } from "@/components/tea/TeaCard";
 export const revalidate = 3600;
 export const dynamicParams = true;
 
-export function generateStaticParams() {
-  return VENDORS.map((v) => ({ slug: v.slug }));
+export async function generateStaticParams() {
+  const vendors = await getVendors();
+  return vendors.map((v) => ({ slug: v.slug }));
 }
 
 export async function generateMetadata({
@@ -23,7 +24,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const v = vendorBySlug(params.slug);
+  const v = await getVendorBySlug(params.slug);
   if (!v) return { title: "Vendor not found" };
   const path = `/discover/vendors/${params.slug}`;
   return {
@@ -39,15 +40,18 @@ export async function generateMetadata({
   };
 }
 
-export default function VendorDetailPage({
+export default async function VendorDetailPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const vendor = vendorBySlug(params.slug);
+  const [vendor, allTeas] = await Promise.all([
+    getVendorBySlug(params.slug),
+    getTeas(),
+  ]);
   if (!vendor) notFound();
 
-  const teas = TEAS.filter((t) => t.vendor === vendor.name);
+  const teas = allTeas.filter((t) => t.vendor === vendor.name);
 
   return (
     <main>

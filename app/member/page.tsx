@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MemberProfileView } from "@/components/member/MemberProfileView";
+import { getContributors, getTeas } from "@/lib/content";
 
 // Member profile reads context-backed state — never pre-render.
 export const dynamic = "force-dynamic";
@@ -11,6 +12,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function MemberPage() {
-  return <MemberProfileView />;
+export default async function MemberPage() {
+  const [teas, contributors] = await Promise.all([
+    getTeas(), getContributors(),
+  ]);
+  return <MemberProfileView teas={teas} contributors={contributors} />;
 }

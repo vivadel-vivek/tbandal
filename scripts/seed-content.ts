@@ -1,29 +1,19 @@
 // Seed the editorial catalog (vendors, contributors, teas, teaware,
-// posts) into Supabase from lib/data.ts.
+// posts) into Supabase from scripts/seed-data.json — a frozen snapshot
+// of the original lib/data.ts arrays. After this initial bootstrap,
+// edits flow through Supabase Studio or the contributor portal and the
+// JSON is no longer authoritative.
 //
-// Run via `npm run seed:content` (tsx). Idempotent — every row uses
-// `upsert` keyed on the catalog slug / handle, so re-running picks up
-// edits without dupes. Uses the service-role client to bypass RLS;
-// authenticated contributors will write through the staff RLS path
-// from the contributor portal in Phase D.
-//
-// Defaults to the local Supabase. Pass `--remote` (or set
-// SEED_TARGET=remote) to point at the linked hosted project — the
-// script then expects NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY
-// in `.env.production` (or whatever you've sourced before invoking).
+// Run via `npm run seed:content` (tsx, local) or `seed:content:remote`
+// (hosted dnfejeqvolirzepkuncv). Idempotent — every row uses `upsert`
+// keyed on the catalog slug / handle.
 
 import { createClient } from "@supabase/supabase-js";
 import { config as loadEnv } from "dotenv";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import WS from "ws";
 
-import {
-  TEAS,
-  VENDORS,
-  POSTS,
-  TEAWARE,
-  CONTRIBUTORS,
-  vendorSlugForTea,
-} from "../lib/data";
 import type { Database } from "../lib/supabase/types";
 
 if (!globalThis.WebSocket) {
@@ -50,22 +40,40 @@ const db = createClient<Database>(url, serviceKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
+const seed = JSON.parse(
+  readFileSync(join(process.cwd(), "scripts/seed-data.json"), "utf8"),
+) as {
+  vendors: Array<{
+    slug: string; name: string; city: string; country: string; continent: string;
+    tagline: string; body: string; rating: number; swatch: string;
+    teaCount: number; founded: number; specialties: string[]; url: string;
+  }>;
+  contributors: Array<{
+    key: string; name: string; initials: string; color: string;
+    bio: string; palate: string;
+  }>;
+  teas: Array<Record<string, unknown> & {
+    slug: string; pathSlug: string; vendorSlug: string;
+  }>;
+  teaware: Array<Record<string, unknown> & { slug: string; goodFor: string[] }>;
+  posts: Array<Record<string, unknown> & { slug: string; date: string }>;
+};
+
 console.log(`→ seeding content into ${target} (${url})`);
 
 // ---- contributors -------------------------------------------------
-const contributorRows = Object.values(CONTRIBUTORS).map((c, idx) => ({
+const contributorRows = seed.contributors.map((c, idx) => ({
   handle:       c.key,
   display_name: c.name,
   initials:     c.initials,
   color:        c.color,
   bio:          c.bio,
   palate:       c.palate,
-  // James first per CONTRIBUTORS dict ordering — preserve it.
   sort_order:   idx,
 }));
 
 // ---- vendors ------------------------------------------------------
-const vendorRows = VENDORS.map((v) => ({
+const vendorRows = seed.vendors.map((v) => ({
   slug:        v.slug,
   name:        v.name,
   city:        v.city,
@@ -81,71 +89,69 @@ const vendorRows = VENDORS.map((v) => ({
   url:         v.url,
 }));
 
-// ---- teas (vendor name → vendor slug for FK) ---------------------
-const teaRows = TEAS.map((t) => ({
+// ---- teas ---------------------------------------------------------
+const teaRows = seed.teas.map((t) => ({
   slug:           t.slug,
   path_slug:      t.pathSlug,
-  vendor_slug:    vendorSlugForTea(t),
-  name:           t.name,
-  chinese:        t.chinese ?? null,
-  type:           t.type,
-  region:         t.region,
-  country:        t.country,
-  year:           t.year,
-  harvest:        t.harvest,
-  elev:           t.elev,
-  age:            t.age,
-  price:          t.price,
-  rarity:         t.rarity,
-  gradient:       t.gradient,
-  swatch:         t.swatch,
-  summary:        t.summary,
+  vendor_slug:    t.vendorSlug,
+  name:           t.name as string,
+  chinese:        (t.chinese as string | undefined) ?? null,
+  type:           t.type as string,
+  region:         t.region as string,
+  country:        t.country as string,
+  year:           t.year as string,
+  harvest:        t.harvest as string,
+  elev:           t.elev as number,
+  age:            t.age as string,
+  price:          t.price as number,
+  rarity:         t.rarity as number,
+  gradient:       t.gradient as string,
+  swatch:         t.swatch as string,
+  summary:        t.summary as string,
   brewing:        t.brewing,
   mouthfeel:      t.mouthfeel,
-  finish:         t.finish,
-  sessions_count: t.sessions,
-  peak_steeps:    t.peakSteeps,
+  finish:         t.finish as string[],
+  sessions_count: t.sessions as number,
+  peak_steeps:    t.peakSteeps as number[],
   flavor:         t.flavor,
   reviews:        t.reviews,
 }));
 
 // ---- teaware ------------------------------------------------------
-const teawareRows = TEAWARE.map((w) => ({
+const teawareRows = seed.teaware.map((w) => ({
   slug:         w.slug,
-  name:         w.name,
-  category:     w.category,
-  volume_ml:    w.volumeMl ?? null,
-  material:     w.material,
-  origin:       w.origin ?? null,
-  vendor:       w.vendor,
-  external_url: w.externalUrl ?? null,
-  price:        w.price,
-  gradient:     w.gradient,
-  swatch:       w.swatch,
-  tagline:      w.tagline,
-  body:         w.body,
+  name:         w.name as string,
+  category:     w.category as string,
+  volume_ml:    (w.volumeMl as number | undefined) ?? null,
+  material:     w.material as string,
+  origin:       (w.origin as string | undefined) ?? null,
+  vendor:       w.vendor as string,
+  external_url: (w.externalUrl as string | undefined) ?? null,
+  price:        w.price as number,
+  gradient:     w.gradient as string,
+  swatch:       w.swatch as string,
+  tagline:      w.tagline as string,
+  body:         w.body as string,
   good_for:     w.goodFor,
-  rating:       w.rating,
+  rating:       w.rating as number,
 }));
 
 // ---- posts --------------------------------------------------------
-// Convert the freeform "Mar 14, 2026" date into a published_at
-// timestamp for sorting; preserve the original string for display.
 function parseDisplayDate(s: string): string | null {
   const d = new Date(s);
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
-const postRows = POSTS.map((p) => ({
+const postRows = seed.posts.map((p) => ({
   slug:         p.slug,
-  cat:          p.cat,
-  title:        p.title,
-  excerpt:      p.excerpt,
-  author:       p.author,
+  cat:          p.cat as string,
+  title:        p.title as string,
+  excerpt:      p.excerpt as string,
+  author:       p.author as string,
   date:         p.date,
-  read_time:    p.readTime,
-  grad:         p.grad,
-  related:      p.related,
-  body:         p.body ?? null,
+  read_time:    p.readTime as number,
+  grad:         p.grad as string,
+  related:      p.related as string[],
+  body:         (p.body as string | undefined) ?? null,
   published_at: parseDisplayDate(p.date),
 }));
 
@@ -155,9 +161,6 @@ type CatalogTable = "contributors" | "vendors" | "teas" | "teaware" | "posts";
 async function upsert<T>(label: string, table: CatalogTable, rows: T[], onConflict: string) {
   const { error, count } = await db
     .from(table)
-    // supabase-js can't narrow Insert when both `table` and the row
-    // type are generics; the call is type-checked at the call sites
-    // because each `*Rows` const carries its own structural type.
     .upsert(rows as never, { onConflict, count: "exact" });
   if (error) {
     console.error(`✗ ${label}: ${error.message}`);
@@ -168,7 +171,6 @@ async function upsert<T>(label: string, table: CatalogTable, rows: T[], onConfli
 
 async function main() {
   await upsert("contributors", "contributors", contributorRows, "handle");
-  // Vendors before teas — teas FK on vendor_slug.
   await upsert("vendors",      "vendors",      vendorRows,     "slug");
   await upsert("teas",         "teas",         teaRows,        "slug");
   await upsert("teaware",      "teaware",      teawareRows,    "slug");

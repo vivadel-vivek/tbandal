@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
-  TEAS,
-  teaByVendorAndSlug,
-  vendorSlugForTea,
-} from "@/lib/data";
+  getTeas,
+  getTeaByVendorAndPath,
+  getContributors,
+  getVendorByName,
+} from "@/lib/content";
+import { vendorSlugForTea } from "@/lib/tea-helpers";
 import { compositeProfile, profileOverlap } from "@/lib/flavor";
 import type { Tea } from "@/lib/types";
 import { TeaDetailView } from "@/components/tea/TeaDetailView";
@@ -17,8 +19,9 @@ export const dynamicParams = true;
 
 type Params = { vendor: string; slug: string };
 
-export function generateStaticParams(): Params[] {
-  return TEAS.map((t) => ({
+export async function generateStaticParams(): Promise<Params[]> {
+  const teas = await getTeas();
+  return teas.map((t) => ({
     vendor: vendorSlugForTea(t),
     slug: t.pathSlug,
   }));
@@ -29,7 +32,7 @@ export async function generateMetadata({
 }: {
   params: Params;
 }): Promise<Metadata> {
-  const tea = teaByVendorAndSlug(params.vendor, params.slug);
+  const tea = await getTeaByVendorAndPath(params.vendor, params.slug);
   if (!tea) return { title: "Tea not found" };
   const desc =
     tea.summary.length > 155 ? tea.summary.slice(0, 152) + "…" : tea.summary;
@@ -51,9 +54,9 @@ export async function generateMetadata({
   };
 }
 
-function findSimilar(target: Tea, limit = 3) {
+function findSimilar(target: Tea, allTeas: Tea[], limit = 3) {
   const targetProfile = compositeProfile(target);
-  return TEAS.filter((t) => t.slug !== target.slug)
+  return allTeas.filter((t) => t.slug !== target.slug)
     .map((t) => ({
       tea: t,
       score: profileOverlap(targetProfile, compositeProfile(t)),
@@ -62,22 +65,33 @@ function findSimilar(target: Tea, limit = 3) {
     .slice(0, limit);
 }
 
-export default function TeaDetailPage({
+export default async function TeaDetailPage({
   params,
   searchParams,
 }: {
   params: Params;
   searchParams: { blind?: string };
 }) {
-  const tea = teaByVendorAndSlug(params.vendor, params.slug);
+  const tea = await getTeaByVendorAndPath(params.vendor, params.slug);
   if (!tea) notFound();
 
-  const similar = findSimilar(tea);
+  const [allTeas, contributors, vendor] = await Promise.all([
+    getTeas(),
+    getContributors(),
+    getVendorByName(tea.vendor),
+  ]);
+  const similar = findSimilar(tea, allTeas);
   const blindMode = searchParams.blind === "1";
   return (
     <>
       <ProductReviewJsonLd tea={tea} />
-      <TeaDetailView tea={tea} similar={similar} blindMode={blindMode} />
+      <TeaDetailView
+        tea={tea}
+        vendor={vendor ?? null}
+        contributors={contributors}
+        similar={similar}
+        blindMode={blindMode}
+      />
     </>
   );
 }
