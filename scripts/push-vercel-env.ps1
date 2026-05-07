@@ -19,6 +19,7 @@ $SUPABASE_URL = "https://dnfejeqvolirzepkuncv.supabase.co"
 $SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuZmVqZXF2b2xpcnplcGt1bmN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwOTMwMTIsImV4cCI6MjA5MzY2OTAxMn0.TJowta3fYNO0cP8DtBGdUSrr-IC9v7IBzdtoskQbHJ4"
 $SUPABASE_SERVICE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuZmVqZXF2b2xpcnplcGt1bmN2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODA5MzAxMiwiZXhwIjoyMDkzNjY5MDEyfQ.16tsPPGbdX61H0kjVXsmx71i_SAFoVXzMk6m87stnkg"
 $SITE_URL = "https://two-buds-and-a-leaf.vercel.app"
+$STAGING_SWITCHER = "1"
 
 Write-Host "Linking repo to Vercel project..." -ForegroundColor Cyan
 npx --yes vercel link --yes 2>&1 | Out-String | Write-Host
@@ -33,16 +34,18 @@ function Push-EnvVar {
 }
 
 Write-Host "`nPushing Production..." -ForegroundColor Cyan
-Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_URL"      -Value $SUPABASE_URL     -Environment "production"
-Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_ANON_KEY" -Value $SUPABASE_ANON    -Environment "production"
-Push-EnvVar -Name "SUPABASE_SERVICE_ROLE_KEY"     -Value $SUPABASE_SERVICE -Environment "production"
-Push-EnvVar -Name "NEXT_PUBLIC_SITE_URL"          -Value $SITE_URL         -Environment "production"
+Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_URL"           -Value $SUPABASE_URL      -Environment "production"
+Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_ANON_KEY"      -Value $SUPABASE_ANON     -Environment "production"
+Push-EnvVar -Name "SUPABASE_SERVICE_ROLE_KEY"          -Value $SUPABASE_SERVICE  -Environment "production"
+Push-EnvVar -Name "NEXT_PUBLIC_SITE_URL"               -Value $SITE_URL          -Environment "production"
+Push-EnvVar -Name "NEXT_PUBLIC_STAGING_ROLE_SWITCHER"  -Value $STAGING_SWITCHER  -Environment "production"
 
 Write-Host "`nPushing Preview..." -ForegroundColor Cyan
-Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_URL"      -Value $SUPABASE_URL     -Environment "preview"
-Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_ANON_KEY" -Value $SUPABASE_ANON    -Environment "preview"
-Push-EnvVar -Name "SUPABASE_SERVICE_ROLE_KEY"     -Value $SUPABASE_SERVICE -Environment "preview"
-Push-EnvVar -Name "NEXT_PUBLIC_SITE_URL"          -Value $SITE_URL         -Environment "preview"
+Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_URL"           -Value $SUPABASE_URL      -Environment "preview"
+Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_ANON_KEY"      -Value $SUPABASE_ANON     -Environment "preview"
+Push-EnvVar -Name "SUPABASE_SERVICE_ROLE_KEY"          -Value $SUPABASE_SERVICE  -Environment "preview"
+Push-EnvVar -Name "NEXT_PUBLIC_SITE_URL"               -Value $SITE_URL          -Environment "preview"
+Push-EnvVar -Name "NEXT_PUBLIC_STAGING_ROLE_SWITCHER"  -Value $STAGING_SWITCHER  -Environment "preview"
 
 Write-Host "`nDone. Trigger a redeploy:" -ForegroundColor Green
 Write-Host "  npx vercel --prod"

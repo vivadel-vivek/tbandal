@@ -13,7 +13,19 @@ const inputCls =
 
 const CONTINENTS = ["Asia", "North America", "Europe", "South America", "Africa", "Oceania", "Other"];
 
-export function VendorEditForm({ vendor }: { vendor: VendorRow | null }) {
+type VendorUserOption = {
+  id: string;
+  email: string | null;
+  display_name: string | null;
+};
+
+export function VendorEditForm({
+  vendor,
+  vendorUsers = [],
+}: {
+  vendor: VendorRow | null;
+  vendorUsers?: VendorUserOption[];
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -32,6 +44,7 @@ export function VendorEditForm({ vendor }: { vendor: VendorRow | null }) {
   const [specialties,  setSpecialties]  = useState((vendor?.specialties ?? []).join(", "));
   const [url,          setUrl]          = useState(vendor?.url ?? "");
   const [published,    setPublished]    = useState(vendor?.published ?? false);
+  const [ownerId,      setOwnerId]      = useState(vendor?.owner_id ?? "");
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +58,7 @@ export function VendorEditForm({ vendor }: { vendor: VendorRow | null }) {
         specialties: specialties.split(",").map((s) => s.trim()).filter(Boolean),
         url,
         published,
+        owner_id: ownerId || null,
       });
       if (!result.ok) { setError(result.message); return; }
       router.push("/admin/contributor/vendors");
@@ -119,6 +133,32 @@ export function VendorEditForm({ vendor }: { vendor: VendorRow | null }) {
       <div>
         <label className={labelCls} htmlFor="url">Outbound URL</label>
         <input id="url" type="url" required value={url} onChange={(e) => setUrl(e.target.value)} className={inputCls + " font-mono text-[12px]"} />
+      </div>
+
+      {/* Owner — links the vendor row to a user with role=vendor so
+          they can edit it via /admin/vendor. Only signed-up vendor
+          users appear in the list; once a vendor signs up, refresh
+          this page to see them here. */}
+      <div>
+        <label className={labelCls} htmlFor="ownerId">Vendor owner (optional)</label>
+        <select
+          id="ownerId"
+          value={ownerId}
+          onChange={(e) => setOwnerId(e.target.value)}
+          className={inputCls}
+        >
+          <option value="">— Unclaimed —</option>
+          {vendorUsers.map((u) => (
+            <option key={u.id} value={u.id}>
+              {u.email ?? u.id}{u.display_name ? ` · ${u.display_name}` : ""}
+            </option>
+          ))}
+        </select>
+        <p className="text-[11px] text-warm-600 leading-snug mt-1.5">
+          When set, this user can edit the storefront copy via{" "}
+          <code className="font-mono">/admin/vendor</code>. Only profiles with
+          role=vendor are listed.
+        </p>
       </div>
 
       <label className="inline-flex items-center gap-2 text-[12px] font-bold text-warm-700">

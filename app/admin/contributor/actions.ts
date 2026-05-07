@@ -132,6 +132,7 @@ export async function saveVendor(input: {
   specialties: string[];
   url: string;
   published: boolean;
+  owner_id: string | null;
 }): Promise<SaveResult> {
   await requireStaff();
   const { createSupabaseServerClient } = await import("@/lib/supabase/server");
