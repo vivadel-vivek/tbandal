@@ -250,12 +250,23 @@ export function Header() {
               {member.name || "You"}
             </Link>
           ) : (
-            <Link
-              href="/login"
-              className="ml-3 inline-flex items-center px-3.5 py-2 rounded-pill border border-warm-300 bg-[var(--bg-elevated)] font-sans text-[12px] font-bold text-forest no-underline hover:bg-cream"
-            >
-              Sign in
-            </Link>
+            // Primary CTA is "Join" (signup) — engagement loop favors
+            // new accounts over returning users at this stage. Sign-in
+            // for returning users is the secondary link.
+            <div className="ml-3 inline-flex items-center gap-2">
+              <Link
+                href="/login"
+                className="text-[12px] font-bold text-warm-700 no-underline hover:text-burgundy"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/signup"
+                className="inline-flex items-center px-3.5 py-2 rounded-pill bg-burgundy text-cream font-sans text-[12px] font-bold no-underline hover:bg-burgundy-dark"
+              >
+                Join
+              </Link>
+            </div>
           )}
         </nav>
 
@@ -271,11 +282,11 @@ export function Header() {
             </Link>
           ) : (
             <Link
-              href="/login"
-              className="inline-flex items-center justify-center h-11 px-3 rounded-full border border-warm-300 bg-[var(--bg-elevated)] text-[12px] font-bold text-forest"
-              aria-label="Sign in"
+              href="/signup"
+              className="inline-flex items-center justify-center h-11 px-3.5 rounded-full bg-burgundy text-cream text-[12px] font-bold"
+              aria-label="Join — create an account"
             >
-              Sign in
+              Join
             </Link>
           )}
           <button
@@ -438,23 +449,22 @@ function MobileDrawer({
               </span>
             </Link>
           ) : (
-            <Link
-              href="/login"
-              onClick={onClose}
-              className="flex items-center justify-between gap-3 no-underline"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="text-[10px] tracking-widest uppercase text-warm-600 font-bold">
-                  Member
-                </div>
-                <div className="font-display italic text-burgundy text-[18px] font-medium">
-                  Sign in
-                </div>
-              </div>
-              <span aria-hidden className="text-burgundy text-[18px] font-bold">
-                →
-              </span>
-            </Link>
+            <div className="flex items-stretch gap-2">
+              <Link
+                href="/signup"
+                onClick={onClose}
+                className="flex-1 inline-flex items-center justify-center px-4 py-3 rounded-pill bg-burgundy text-cream font-sans text-[13px] font-bold no-underline"
+              >
+                Join
+              </Link>
+              <Link
+                href="/login"
+                onClick={onClose}
+                className="inline-flex items-center justify-center px-4 py-3 rounded-pill border border-warm-300 text-forest font-sans text-[13px] font-bold no-underline"
+              >
+                Sign in
+              </Link>
+            </div>
           )}
         </div>
       </div>

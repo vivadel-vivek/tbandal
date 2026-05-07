@@ -13,13 +13,20 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function SignupPage() {
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
   try {
     const supabase = await createSupabaseServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (user) redirect("/member");
+    if (user) {
+      const sp = await searchParams;
+      redirect(sp.next ?? "/member");
+    }
   } catch (err) {
     if (!(err instanceof Error) || !err.message.includes("Missing Supabase env")) {
       throw err;

@@ -25,16 +25,26 @@ if (!globalThis.WebSocket) {
   globalThis.WebSocket = WS;
 }
 
-loadEnv({ path: ".env.local" });
+// Pass `--remote` (or set SEED_TARGET=remote) to seed against the
+// hosted Supabase project read from .env.production. Default reads
+// .env.local for the local stack. The credentials file lives at
+// tests/.test-users.json regardless of target — gitignored, rewritten
+// on every run.
+const target = process.argv.includes("--remote") || process.env.SEED_TARGET === "remote"
+  ? "remote" : "local";
+
+loadEnv({ path: target === "remote" ? ".env.production" : ".env.local" });
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!url || !serviceKey) {
   console.error(
-    "Missing Supabase env. Run `npm run supabase:start`, then copy URL + service_role key into .env.local.",
+    `Missing Supabase env for target=${target}. Set NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY in .env.${target === "remote" ? "production" : "local"}.`,
   );
   process.exit(1);
 }
+
+console.log(`→ seeding test users into ${target} (${url})`);
 
 const admin = createClient(url, serviceKey, {
   auth: { autoRefreshToken: false, persistSession: false },

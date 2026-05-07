@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
@@ -20,6 +20,10 @@ const inputCls =
 // signed in immediately and we redirect to /member.
 export function SignupForm() {
   const router = useRouter();
+  const params = useSearchParams();
+  // Honor a `?next=/path` so users land back on the page that prompted
+  // them to sign up (library toggle, log-a-session). Defaults to /member.
+  const next = params.get("next") || "/member";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
@@ -51,7 +55,7 @@ export function SignupForm() {
       }
       if (data.session) {
         // Confirmations off → already signed in.
-        router.push("/member");
+        router.push(next);
         router.refresh();
         return;
       }
@@ -122,7 +126,7 @@ export function SignupForm() {
 
       <div className="flex justify-between items-center mt-2 gap-3 flex-wrap">
         <Link
-          href="/login"
+          href={`/login${params.get("next") ? `?next=${encodeURIComponent(params.get("next")!)}` : ""}`}
           className="text-[12px] text-warm-700 hover:text-burgundy"
         >
           Already have an account? Sign in →

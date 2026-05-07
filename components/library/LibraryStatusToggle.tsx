@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useMember } from "@/contexts/MemberContext";
+import { useSupabaseSession } from "@/lib/supabase/useSession";
 import type {
   UserTeaStatus,
   UserTeawareStatus,
@@ -63,6 +66,9 @@ const LABEL_BY_TEAWARE: Record<UserTeawareStatus, string> = {
 
 export function LibraryStatusToggle(props: Props) {
   const { kind, slug, size = "sm", className = "" } = props;
+  const session = useSupabaseSession();
+  const pathname = usePathname() ?? "/";
+  const isAuthed = session !== null;
   const {
     findUserTeaBySlug,
     findUserTeawareBySlug,
@@ -166,7 +172,9 @@ export function LibraryStatusToggle(props: Props) {
                 a close affordance. Hidden on desktop. */}
             <div className="sm:hidden px-3 py-2.5 flex items-center justify-between border-b border-warm-200 mb-1">
               <span className="text-[10px] tracking-widest uppercase font-bold text-warm-600">
-                {kind === "tea" ? "Add to library" : "Add to teaware"}
+                {!isAuthed
+                  ? "Save your library"
+                  : kind === "tea" ? "Add to library" : "Add to teaware"}
               </span>
               <button
                 type="button"
@@ -177,6 +185,40 @@ export function LibraryStatusToggle(props: Props) {
                 ✕
               </button>
             </div>
+
+            {/* Anonymous-user prompt. Library writes are member-only —
+                without an account the wishlist/owned/tried statuses
+                wouldn't survive a refresh. Funnel to /signup with the
+                current page as next so users land back here after auth. */}
+            {!isAuthed ? (
+              <div className="px-3 py-3 sm:py-2 max-w-[300px]">
+                <div className="font-display italic text-burgundy text-[18px] sm:text-[16px] leading-snug mb-1.5">
+                  Join to keep your library.
+                </div>
+                <p className="text-[12px] text-warm-700 leading-snug mb-3">
+                  Sign up to save teas and teaware across sessions, log
+                  brewing notes, and unlock the full reviewer experience.
+                  Free, takes 30 seconds.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    href={`/signup?next=${encodeURIComponent(pathname)}`}
+                    onClick={() => setOpen(false)}
+                    className="inline-flex items-center px-3 py-1.5 rounded-pill bg-burgundy text-cream text-[11px] font-bold tracking-widest uppercase no-underline"
+                  >
+                    Join free →
+                  </Link>
+                  <Link
+                    href={`/login?next=${encodeURIComponent(pathname)}`}
+                    onClick={() => setOpen(false)}
+                    className="inline-flex items-center px-3 py-1.5 rounded-pill border border-warm-300 text-forest text-[11px] font-bold tracking-widest uppercase no-underline"
+                  >
+                    Sign in
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <>
           {(kind === "tea" ? TEA_STATUS_OPTIONS : TEAWARE_STATUS_OPTIONS).map(
             (opt) => {
               const isActive =
@@ -231,6 +273,8 @@ export function LibraryStatusToggle(props: Props) {
               </button>
             </>
           )}
+              </>
+            )}
           </div>
         </>
       )}

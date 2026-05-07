@@ -77,10 +77,10 @@ export function LoginForm() {
 
       <div className="flex justify-between items-center mt-2 gap-3 flex-wrap">
         <Link
-          href="/signup"
+          href={`/signup${params.get("next") ? `?next=${encodeURIComponent(params.get("next")!)}` : ""}`}
           className="text-[12px] text-warm-700 hover:text-burgundy"
         >
-          Don&apos;t have an account? Sign up →
+          Don&apos;t have an account? Join →
         </Link>
         <Button variant="primary" disabled={pending}>
           {pending ? "Signing in…" : "Sign in"}
