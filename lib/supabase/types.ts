@@ -9,6 +9,93 @@
 export type Database = {
   public: {
     Tables: {
+      contributors: {
+        Row: {
+          bio: string
+          color: string
+          created_at: string
+          display_name: string
+          handle: string
+          initials: string
+          palate: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          bio: string
+          color: string
+          created_at?: string
+          display_name: string
+          handle: string
+          initials: string
+          palate: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          bio?: string
+          color?: string
+          created_at?: string
+          display_name?: string
+          handle?: string
+          initials?: string
+          palate?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          author: string
+          body: string | null
+          cat: Database["public"]["Enums"]["post_category"]
+          created_at: string
+          date: string
+          excerpt: string
+          grad: string
+          published: boolean
+          published_at: string | null
+          read_time: number
+          related: string[]
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author: string
+          body?: string | null
+          cat: Database["public"]["Enums"]["post_category"]
+          created_at?: string
+          date: string
+          excerpt: string
+          grad: string
+          published?: boolean
+          published_at?: string | null
+          read_time: number
+          related?: string[]
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          body?: string | null
+          cat?: Database["public"]["Enums"]["post_category"]
+          created_at?: string
+          date?: string
+          excerpt?: string
+          grad?: string
+          published?: boolean
+          published_at?: string | null
+          read_time?: number
+          related?: string[]
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           aligned: string
@@ -70,6 +157,8 @@ export type Database = {
           profile: Json | null
           rating: number | null
           scale: string
+          share_enabled: boolean
+          share_token: string | null
           steeps: Json | null
           user_id: string
           user_tea_id: string
@@ -92,6 +181,8 @@ export type Database = {
           profile?: Json | null
           rating?: number | null
           scale?: string
+          share_enabled?: boolean
+          share_token?: string | null
           steeps?: Json | null
           user_id: string
           user_tea_id: string
@@ -114,6 +205,8 @@ export type Database = {
           profile?: Json | null
           rating?: number | null
           scale?: string
+          share_enabled?: boolean
+          share_token?: string | null
           steeps?: Json | null
           user_id?: string
           user_tea_id?: string
@@ -154,6 +247,167 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      teas: {
+        Row: {
+          age: string
+          brewing: Json
+          chinese: string | null
+          country: string
+          created_at: string
+          elev: number
+          finish: string[]
+          flavor: Json
+          gradient: string
+          harvest: string
+          mouthfeel: Json
+          name: string
+          path_slug: string
+          peak_steeps: number[]
+          price: number
+          published: boolean
+          rarity: number
+          region: string
+          reviews: Json
+          sessions_count: number
+          slug: string
+          summary: string
+          swatch: string
+          type: Database["public"]["Enums"]["tea_type"]
+          updated_at: string
+          vendor_slug: string
+          year: string
+        }
+        Insert: {
+          age: string
+          brewing: Json
+          chinese?: string | null
+          country: string
+          created_at?: string
+          elev: number
+          finish?: string[]
+          flavor: Json
+          gradient: string
+          harvest: string
+          mouthfeel: Json
+          name: string
+          path_slug: string
+          peak_steeps?: number[]
+          price: number
+          published?: boolean
+          rarity: number
+          region: string
+          reviews: Json
+          sessions_count?: number
+          slug: string
+          summary: string
+          swatch: string
+          type: Database["public"]["Enums"]["tea_type"]
+          updated_at?: string
+          vendor_slug: string
+          year: string
+        }
+        Update: {
+          age?: string
+          brewing?: Json
+          chinese?: string | null
+          country?: string
+          created_at?: string
+          elev?: number
+          finish?: string[]
+          flavor?: Json
+          gradient?: string
+          harvest?: string
+          mouthfeel?: Json
+          name?: string
+          path_slug?: string
+          peak_steeps?: number[]
+          price?: number
+          published?: boolean
+          rarity?: number
+          region?: string
+          reviews?: Json
+          sessions_count?: number
+          slug?: string
+          summary?: string
+          swatch?: string
+          type?: Database["public"]["Enums"]["tea_type"]
+          updated_at?: string
+          vendor_slug?: string
+          year?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teas_vendor_slug_fkey"
+            columns: ["vendor_slug"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      teaware: {
+        Row: {
+          body: string
+          category: Database["public"]["Enums"]["teaware_category"]
+          created_at: string
+          external_url: string | null
+          good_for: string[]
+          gradient: string
+          material: string
+          name: string
+          origin: string | null
+          price: number
+          published: boolean
+          rating: number
+          slug: string
+          swatch: string
+          tagline: string
+          updated_at: string
+          vendor: string
+          volume_ml: number | null
+        }
+        Insert: {
+          body: string
+          category: Database["public"]["Enums"]["teaware_category"]
+          created_at?: string
+          external_url?: string | null
+          good_for?: string[]
+          gradient: string
+          material: string
+          name: string
+          origin?: string | null
+          price: number
+          published?: boolean
+          rating: number
+          slug: string
+          swatch: string
+          tagline: string
+          updated_at?: string
+          vendor: string
+          volume_ml?: number | null
+        }
+        Update: {
+          body?: string
+          category?: Database["public"]["Enums"]["teaware_category"]
+          created_at?: string
+          external_url?: string | null
+          good_for?: string[]
+          gradient?: string
+          material?: string
+          name?: string
+          origin?: string | null
+          price?: number
+          published?: boolean
+          rating?: number
+          slug?: string
+          swatch?: string
+          tagline?: string
+          updated_at?: string
+          vendor?: string
+          volume_ml?: number | null
+        }
+        Relationships: []
       }
       user_teas: {
         Row: {
@@ -260,6 +514,81 @@ export type Database = {
           },
         ]
       }
+      vendors: {
+        Row: {
+          body: string
+          city: string
+          continent: string
+          country: string
+          created_at: string
+          founded: number
+          name: string
+          owner_id: string | null
+          published: boolean
+          rating: number
+          slug: string
+          specialties: string[]
+          swatch: string
+          tagline: string
+          tea_count: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          body: string
+          city: string
+          continent: string
+          country: string
+          created_at?: string
+          founded: number
+          name: string
+          owner_id?: string | null
+          published?: boolean
+          rating: number
+          slug: string
+          specialties?: string[]
+          swatch: string
+          tagline: string
+          tea_count?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          body?: string
+          city?: string
+          continent?: string
+          country?: string
+          created_at?: string
+          founded?: number
+          name?: string
+          owner_id?: string | null
+          published?: boolean
+          rating?: number
+          slug?: string
+          specialties?: string[]
+          swatch?: string
+          tagline?: string
+          tea_count?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendors_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "contributor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendors_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       contributor_profiles: {
@@ -289,8 +618,28 @@ export type Database = {
     }
     Functions: {
       is_admin: { Args: { user_id: string }; Returns: boolean }
+      is_staff: { Args: { uid: string }; Returns: boolean }
     }
     Enums: {
+      post_category: "Brewing" | "Culture" | "Origin" | "Vendor Spotlight"
+      tea_type:
+        | "Green"
+        | "White"
+        | "Yellow"
+        | "Oolong"
+        | "Black"
+        | "Pu'er"
+        | "Herbal"
+      teaware_category:
+        | "Gaiwan"
+        | "Teapot"
+        | "Kyusu"
+        | "Pitcher"
+        | "Cup"
+        | "Kettle"
+        | "Scale"
+        | "Strainer"
+        | "Other"
       user_role: "admin" | "contributor" | "vendor" | "member" | "user"
       user_tea_status: "wishlist" | "owned" | "tried" | "retired"
       user_teaware_status: "wishlist" | "owned"
@@ -966,6 +1315,27 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      post_category: ["Brewing", "Culture", "Origin", "Vendor Spotlight"],
+      tea_type: [
+        "Green",
+        "White",
+        "Yellow",
+        "Oolong",
+        "Black",
+        "Pu'er",
+        "Herbal",
+      ],
+      teaware_category: [
+        "Gaiwan",
+        "Teapot",
+        "Kyusu",
+        "Pitcher",
+        "Cup",
+        "Kettle",
+        "Scale",
+        "Strainer",
+        "Other",
+      ],
       user_role: ["admin", "contributor", "vendor", "member", "user"],
       user_tea_status: ["wishlist", "owned", "tried", "retired"],
       user_teaware_status: ["wishlist", "owned"],
@@ -978,8 +1348,14 @@ export const Constants = {
   },
 } as const
 
-
-
+// =====================================================================
+// Convenience aliases — keep importers stable across `gen types` runs.
+// =====================================================================
 export type UserRole = Database["public"]["Enums"]["user_role"];
 export type UserTeaStatus = Database["public"]["Enums"]["user_tea_status"];
 export type UserTeawareStatus = Database["public"]["Enums"]["user_teaware_status"];
+export type TeaTypeEnum = Database["public"]["Enums"]["tea_type"];
+export type TeawareCategoryEnum = Database["public"]["Enums"]["teaware_category"];
+export type PostCategoryEnum = Database["public"]["Enums"]["post_category"];
+
+
