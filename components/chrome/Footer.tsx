@@ -17,10 +17,11 @@ const COLS: { title: string; items: Item[] }[] = [
   {
     title: "The Site",
     items: [
-      { label: "About",        href: "/about" },
-      { label: "Contributors", href: "/about" },
-      { label: "Methodology",  href: "/about" },
-      { label: "For vendors",  href: "/for-vendors" },
+      { label: "About",         href: "/about" },
+      { label: "How we rate",   href: "/how-we-rate" },
+      { label: "For vendors",   href: "/for-vendors" },
+      { label: "Privacy",       href: "/privacy" },
+      { label: "Terms of use",  href: "/terms" },
     ],
   },
   {
@@ -102,13 +103,17 @@ export function Footer() {
 
       <div className="max-w-site mx-auto mt-8 pt-6 border-t border-warm-200 flex flex-col sm:flex-row gap-2 sm:gap-0 justify-between text-[11px] text-warm-600 tracking-wide">
         <span>© 2026 Two Buds and a Leaf · Brewed with care.</span>
-        <span>
+        <span className="flex flex-wrap gap-x-3 gap-y-1">
           <Link href="/about#affiliate-disclosure" className="text-warm-600 hover:text-burgundy no-underline">
             Affiliate disclosure
           </Link>
-          {" · "}
-          <Link href="/about" className="text-warm-600 hover:text-burgundy no-underline">
+          <span aria-hidden>·</span>
+          <Link href="/privacy" className="text-warm-600 hover:text-burgundy no-underline">
             Privacy
+          </Link>
+          <span aria-hidden>·</span>
+          <Link href="/terms" className="text-warm-600 hover:text-burgundy no-underline">
+            Terms of use
           </Link>
         </span>
       </div>

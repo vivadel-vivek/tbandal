@@ -147,11 +147,78 @@ export default async function Home() {
         <Container>
           <SectionHeader
             eyebrow="Recently brewed"
-            title="What's been in the gaiwan"
+            title="What we've been drinking"
             link="See all →"
             href="/discover/teas"
           />
           <RecentlyBrewedGrid teas={recent} />
+        </Container>
+      </section>
+
+      {/* ============ HOW THE RATING WORKS ============ */}
+      <section className="py-14">
+        <Container>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-6 sm:gap-10 items-end mb-7 sm:mb-9">
+            <div>
+              <Eyebrow>The method</Eyebrow>
+              <h2 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 text-[32px] sm:text-hero-lg leading-tight">
+                <span className="italic">How the rating works.</span>
+              </h2>
+            </div>
+            <Link
+              href="/how-we-rate"
+              className="text-burgundy text-[13px] font-bold no-underline hover:underline"
+            >
+              The full breakdown →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mb-7">
+            <article className="card-surface p-5">
+              <Eyebrow>The flavor wheel</Eyebrow>
+              <h3 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-2.5 text-[22px]">
+                Six axes, or twelve.
+              </h3>
+              <p className="text-[14px] text-warm-700 leading-relaxed m-0">
+                Basic mode shows six everyday categories — floral, sweet,
+                roasted, earthy, mineral, herbal. Advanced gives you twelve
+                for finer comparisons. Toggle on any tea page; same data,
+                different resolution.
+              </p>
+            </article>
+            <article className="card-surface p-5">
+              <Eyebrow>Two opinions</Eyebrow>
+              <h3 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-2.5 text-[22px]">
+                James and Vivek, then you.
+              </h3>
+              <p className="text-[14px] text-warm-700 leading-relaxed m-0">
+                Both of us rate every tea independently. Members add their
+                ratings on top, and the radar overlays all three so the
+                shape of the cup is honest — even when the scores
+                disagree.
+              </p>
+            </article>
+            <article className="card-surface p-5">
+              <Eyebrow>Members</Eyebrow>
+              <h3 className="font-display text-burgundy font-medium tracking-tight m-0 mt-2 mb-2.5 text-[22px]">
+                Log your own session.
+              </h3>
+              <p className="text-[14px] text-warm-700 leading-relaxed m-0">
+                Sign up to save ratings to your library, log a quick score
+                or a per-steep walkthrough, and feed the recommendations
+                engine that finds teas you&apos;d like next.
+              </p>
+            </article>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Link href="/how-we-rate" className="inline-flex">
+              <Button variant="primary">Learn more →</Button>
+            </Link>
+            <Link href="/discover/teas" className="inline-flex">
+              <Button variant="secondary">Rate a tea →</Button>
+            </Link>
+          </div>
         </Container>
       </section>
 
