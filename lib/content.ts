@@ -32,11 +32,26 @@ import type { Database } from "./supabase/types";
 // Stateless anon client — no cookies, no session. Build-time and
 // runtime page renders both share this. RLS lets anonymous read
 // published rows of every catalog table.
+//
+// Returns null when Supabase env vars are missing rather than
+// throwing. The getters below treat null as "no catalog yet" and
+// return empty arrays so a missing-env deploy succeeds with empty
+// pages instead of breaking the entire build. Once the env is
+// configured, the same code path fetches normally.
 function anonClient() {
-  const { url, anon } = getSupabasePublicEnv();
-  return createClient<Database>(url, anon, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
+  try {
+    const { url, anon } = getSupabasePublicEnv();
+    return createClient<Database>(url, anon, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+  } catch {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        "[lib/content] Supabase env missing — catalog reads return empty.",
+      );
+    }
+    return null;
+  }
 }
 
 // =====================================================================
@@ -154,6 +169,7 @@ function contributorFromRow(r: ContributorRow): Contributor {
 
 export const getVendors = cache(async (): Promise<Vendor[]> => {
   const sb = anonClient();
+  if (!sb) return [];
   const { data, error } = await sb
     .from("vendors")
     .select("*")
@@ -174,6 +190,7 @@ export async function getVendorByName(name: string): Promise<Vendor | undefined>
 
 export const getTeas = cache(async (): Promise<Tea[]> => {
   const sb = anonClient();
+  if (!sb) return [];
   const { data, error } = await sb
     .from("teas")
     .select("*, vendor:vendors!teas_vendor_slug_fkey(slug, name)")
@@ -203,6 +220,7 @@ export async function getTeaByVendorAndPath(
 
 export const getTeaware = cache(async (): Promise<Teaware[]> => {
   const sb = anonClient();
+  if (!sb) return [];
   const { data, error } = await sb
     .from("teaware")
     .select("*")
@@ -218,6 +236,7 @@ export async function getTeawareBySlug(slug: string): Promise<Teaware | undefine
 
 export const getPosts = cache(async (): Promise<Post[]> => {
   const sb = anonClient();
+  if (!sb) return [];
   const { data, error } = await sb
     .from("posts")
     .select("*")
@@ -231,8 +250,18 @@ export async function getPostBySlug(slug: string): Promise<Post | undefined> {
   return all.find((p) => p.slug === slug);
 }
 
+// Built-in design defaults so AvatarChip-style consumers always get a
+// reasonable name/initials/color even when the contributors table is
+// empty (initial deploy, missing env). The bio + palate strings are
+// blank so an empty-DB site doesn't display invented copy.
+const FALLBACK_CONTRIBUTORS: Record<ContributorKey, Contributor> = {
+  james: { key: "james", name: "James", initials: "J", color: "#722F37", bio: "", palate: "" },
+  vivek: { key: "vivek", name: "Vivek", initials: "V", color: "#8B9A7D", bio: "", palate: "" },
+};
+
 export const getContributors = cache(async (): Promise<Record<ContributorKey, Contributor>> => {
   const sb = anonClient();
+  if (!sb) return FALLBACK_CONTRIBUTORS;
   const { data, error } = await sb
     .from("contributors")
     .select("*")
@@ -242,22 +271,26 @@ export const getContributors = cache(async (): Promise<Record<ContributorKey, Co
   for (const row of data ?? []) {
     out[row.handle as ContributorKey] = contributorFromRow(row);
   }
+  // Backfill any missing contributor with fallback styling so the
+  // call sites can index without runtime undefined errors.
+  for (const k of Object.keys(FALLBACK_CONTRIBUTORS) as ContributorKey[]) {
+    if (!out[k]) out[k] = FALLBACK_CONTRIBUTORS[k];
+  }
   return out;
 });
 
 // ---- featured / latest ------------------------------------------
-export async function featuredTea(): Promise<Tea> {
+// Both can return null when the catalog is empty (typical on first
+// deploy before the seed runs). Pages render an empty state instead
+// of erroring out the entire build.
+export async function featuredTea(): Promise<Tea | null> {
   const teas = await getTeas();
-  const t = teas[0];
-  if (!t) throw new Error("featuredTea: no teas in catalog");
-  return t;
+  return teas[0] ?? null;
 }
 
-export async function latestPost(): Promise<Post> {
+export async function latestPost(): Promise<Post | null> {
   const posts = await getPosts();
-  const p = posts[0];
-  if (!p) throw new Error("latestPost: no posts in catalog");
-  return p;
+  return posts[0] ?? null;
 }
 
 // ---- group / filter helpers (now async) ------------------------

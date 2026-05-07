@@ -92,36 +92,48 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Featured tea card — "today's pour" */}
-            <div className="relative">
-              <Link
-                href={teaUrl(featured)}
-                className="block no-underline relative rounded-2xl shadow-elevated overflow-hidden aspect-[4/5]"
-                style={{ background: featured.gradient }}
+            {/* Featured tea card — "today's pour". Renders an empty
+                placeholder when the catalog hasn't been seeded yet
+                (typical on first deploy before env is wired). */}
+            {featured ? (
+              <div className="relative">
+                <Link
+                  href={teaUrl(featured)}
+                  className="block no-underline relative rounded-2xl shadow-elevated overflow-hidden aspect-[4/5]"
+                  style={{ background: featured.gradient }}
+                >
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.45) 100%)",
+                    }}
+                  />
+                  <div className="absolute left-5 right-5 sm:left-7 sm:right-7 bottom-5 sm:bottom-6 text-cream">
+                    <Eyebrow color="rgba(250,247,242,0.8)">
+                      Today&apos;s pour · {featured.region}
+                    </Eyebrow>
+                    <h2 className="font-display italic text-cream font-medium leading-tight tracking-tight my-1.5 text-[28px] sm:text-hero-md">
+                      {featured.name}
+                    </h2>
+                    <p className="text-[13px] m-0" style={{ color: "rgba(250,247,242,0.85)" }}>
+                      {featured.year} · {featured.elev}m
+                    </p>
+                  </div>
+                  <span className="absolute top-4 sm:top-5 right-4 sm:right-5 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-pill font-sans text-[11px] sm:text-xs font-bold text-burgundy bg-cream-glass-strong">
+                    Read review →
+                  </span>
+                </Link>
+              </div>
+            ) : (
+              <div
+                className="relative rounded-2xl shadow-elevated overflow-hidden aspect-[4/5] flex items-center justify-center bg-cream border border-dashed border-warm-300"
               >
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background:
-                      "linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.45) 100%)",
-                  }}
-                />
-                <div className="absolute left-5 right-5 sm:left-7 sm:right-7 bottom-5 sm:bottom-6 text-cream">
-                  <Eyebrow color="rgba(250,247,242,0.8)">
-                    Today&apos;s pour · {featured.region}
-                  </Eyebrow>
-                  <h2 className="font-display italic text-cream font-medium leading-tight tracking-tight my-1.5 text-[28px] sm:text-hero-md">
-                    {featured.name}
-                  </h2>
-                  <p className="text-[13px] m-0" style={{ color: "rgba(250,247,242,0.85)" }}>
-                    {featured.year} · {featured.elev}m
-                  </p>
-                </div>
-                <span className="absolute top-4 sm:top-5 right-4 sm:right-5 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-pill font-sans text-[11px] sm:text-xs font-bold text-burgundy bg-cream-glass-strong">
-                  Read review →
+                <span className="text-warm-600 text-[12px] tracking-widest uppercase font-bold">
+                  Catalog loading
                 </span>
-              </Link>
-            </div>
+              </div>
+            )}
           </div>
         </Container>
       </section>
@@ -149,7 +161,7 @@ export default async function Home() {
             href="/about"
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-            {[CONTRIBUTORS.james, CONTRIBUTORS.vivek].map((c) => (
+            {[CONTRIBUTORS.james, CONTRIBUTORS.vivek].filter(Boolean).map((c) => (
               <article
                 key={c.key}
                 className="bg-white rounded-xl p-5 sm:p-7 shadow-card border border-warm-200 flex gap-4 sm:gap-5"
@@ -159,10 +171,14 @@ export default async function Home() {
                   <h3 className="font-display italic text-burgundy font-medium m-0 mb-1 text-[26px] sm:text-hero-sm">
                     {c.name}
                   </h3>
-                  <Eyebrow color="var(--warm-600, #6B6560)">{c.palate}</Eyebrow>
-                  <p className="text-sm text-warm-700 leading-relaxed mt-2.5 m-0">
-                    {c.bio}
-                  </p>
+                  {c.palate && (
+                    <Eyebrow color="var(--warm-600, #6B6560)">{c.palate}</Eyebrow>
+                  )}
+                  {c.bio && (
+                    <p className="text-sm text-warm-700 leading-relaxed mt-2.5 m-0">
+                      {c.bio}
+                    </p>
+                  )}
                 </div>
               </article>
             ))}
@@ -179,14 +195,20 @@ export default async function Home() {
             link="All posts →"
             href="/journal"
           />
-          <div className="grid grid-cols-1 sm:grid-cols-[1.4fr_1fr] gap-5 sm:gap-6">
-            <FeaturedPost post={featuredPost} />
-            <div className="flex flex-col gap-4">
-              {morePosts.map((p) => (
-                <PostMini key={p.slug} post={p} />
-              ))}
+          {featuredPost ? (
+            <div className="grid grid-cols-1 sm:grid-cols-[1.4fr_1fr] gap-5 sm:gap-6">
+              <FeaturedPost post={featuredPost} />
+              <div className="flex flex-col gap-4">
+                {morePosts.map((p) => (
+                  <PostMini key={p.slug} post={p} />
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <p className="text-warm-700 italic">
+              No journal entries yet. Check back soon.
+            </p>
+          )}
         </Container>
       </section>
     </main>
