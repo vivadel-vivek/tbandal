@@ -23,17 +23,19 @@ export default async function ContributorLayout({
   return (
     <main>
       <Container size="article">
-        <div className="pt-8 pb-4 flex items-baseline justify-between gap-4 border-b border-warm-200">
-          <div>
+        <div className="pt-8 pb-4 border-b border-warm-200 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
+          <div className="min-w-0">
             <Eyebrow>Admin · Contributor portal</Eyebrow>
-            <div className="font-display italic text-burgundy text-[20px] mt-1">
+            <div className="font-display italic text-burgundy text-[18px] sm:text-[20px] mt-1 truncate">
               {email}
               <span className="ml-3 text-[12px] uppercase tracking-widest font-bold text-warm-600 not-italic">
                 {role}
               </span>
             </div>
           </div>
-          <nav className="flex gap-4 text-[13px] font-bold">
+          {/* Nav wraps to a second row on narrow viewports — overflow-x
+              on the parent would clip the active-link border-bottom. */}
+          <nav className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] font-bold">
             <Link href="/admin/contributor" className="text-burgundy">
               Overview
             </Link>

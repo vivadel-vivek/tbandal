@@ -139,13 +139,44 @@ export function LibraryStatusToggle(props: Props) {
       </button>
 
       {open && (
-        <div
-          role="menu"
-          // Stop click bubbling so card-wrapping <Link> elements don't
-          // navigate when the user picks a status from inside a card.
-          onClick={(e) => e.stopPropagation()}
-          className="absolute z-30 right-0 top-[calc(100%+6px)] min-w-[220px] bg-[var(--bg-elevated)] border border-warm-200 rounded-lg shadow-elevated p-1.5"
-        >
+        <>
+          {/* Mobile-only scrim. The menu is a bottom sheet on small
+              viewports so it never overflows off-screen — the previous
+              `absolute right-0` dropdown extended leftward and clipped
+              when the trigger sat near the left edge of a card. */}
+          <div
+            className="sm:hidden fixed inset-0 z-30 bg-burgundy/30 backdrop-blur-[1px]"
+            onClick={() => setOpen(false)}
+            aria-hidden
+          />
+          <div
+            role="menu"
+            // Stop click bubbling so card-wrapping <Link> elements don't
+            // navigate when the user picks a status from inside a card.
+            onClick={(e) => e.stopPropagation()}
+            className={[
+              // Mobile: full-width bottom sheet, safe-area-aware.
+              "fixed left-0 right-0 bottom-0 z-40 rounded-t-2xl pb-[calc(env(safe-area-inset-bottom,0px)+8px)]",
+              // Desktop: anchored dropdown to the right of the trigger.
+              "sm:absolute sm:left-auto sm:right-0 sm:bottom-auto sm:top-[calc(100%+6px)] sm:rounded-lg sm:pb-1.5 sm:min-w-[220px]",
+              "bg-[var(--bg-elevated)] border border-warm-200 shadow-elevated p-1.5",
+            ].join(" ")}
+          >
+            {/* Mobile sheet header — gives the picker a clear title and
+                a close affordance. Hidden on desktop. */}
+            <div className="sm:hidden px-3 py-2.5 flex items-center justify-between border-b border-warm-200 mb-1">
+              <span className="text-[10px] tracking-widest uppercase font-bold text-warm-600">
+                {kind === "tea" ? "Add to library" : "Add to teaware"}
+              </span>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="text-warm-600 text-[14px] font-bold cursor-pointer"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
           {(kind === "tea" ? TEA_STATUS_OPTIONS : TEAWARE_STATUS_OPTIONS).map(
             (opt) => {
               const isActive =
@@ -200,7 +231,8 @@ export function LibraryStatusToggle(props: Props) {
               </button>
             </>
           )}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

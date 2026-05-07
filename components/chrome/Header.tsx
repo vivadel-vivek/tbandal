@@ -22,13 +22,17 @@ const DISCOVER_ITEMS = [
 
 // Top-level mobile drawer items — flat list rather than nested dropdown,
 // since the drawer has the room for everything to live at one tier.
+// Mobile nav order is editorial-first: Home → Journal (the editorial
+// frontline) → Teas (the catalog) → the rest of Discover → About.
+// Promoting Journal close to the top is intentional — it's the most
+// frequently-updated surface and the strongest hook for return visits.
 const MOBILE_NAV_ITEMS = [
   { href: "/",                   label: "Home",      desc: "Recently brewed & featured" },
+  { href: "/journal",            label: "Journal",   desc: "Essays, sessions & thoughts" },
   { href: "/discover/teas",      label: "Teas",      desc: "Browse the full library" },
   { href: "/discover/vendors",   label: "Vendors",   desc: "Atlas of shops we trust" },
   { href: "/discover/teaware",   label: "Teaware",   desc: "Vessels and instruments" },
   { href: "/discover/glossary",  label: "Glossary",  desc: "Terms, types & techniques" },
-  { href: "/journal",            label: "Journal",   desc: "Essays, sessions & thoughts" },
   { href: "/about",              label: "About",     desc: "Who we are, how we rate" },
 ] as const;
 
