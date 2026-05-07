@@ -28,6 +28,7 @@ import { TeaCard } from "@/components/tea/TeaCard";
 import { TeaHero } from "@/components/tea/TeaHero";
 import { RadarChart } from "@/components/tea/RadarChart";
 import { MouthfeelGrid } from "@/components/tea/MouthfeelGrid";
+import { SessionShareButton } from "@/components/session/SessionShareButton";
 import { Glossarized } from "@/components/glossary/Glossarized";
 
 type ReviewTab = ContributorKey | "members" | "you";
@@ -559,14 +560,17 @@ export function TeaDetailView({ tea, vendor, contributors, similar, blindMode = 
                     )}
 
                     {safeTab === "you" && (
-                      <div className="pt-4 border-t border-warm-200 flex justify-between items-center text-[13px] text-warm-700">
+                      <div className="pt-4 border-t border-warm-200 flex justify-between items-center text-[13px] text-warm-700 gap-3 flex-wrap">
                         <span>Saved to your profile · refines recommendations</span>
-                        <Link
-                          href={logHref}
-                          className="bg-transparent border-0 text-burgundy font-bold cursor-pointer text-[13px] no-underline"
-                        >
-                          Edit →
-                        </Link>
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <SessionShareButton teaSlug={tea.slug} />
+                          <Link
+                            href={logHref}
+                            className="bg-transparent border-0 text-burgundy font-bold cursor-pointer text-[13px] no-underline"
+                          >
+                            Edit →
+                          </Link>
+                        </div>
                       </div>
                     )}
                   </div>

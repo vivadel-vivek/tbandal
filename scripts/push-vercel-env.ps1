@@ -38,13 +38,18 @@ Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_URL"           -Value $SUPABASE_URL     
 Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_ANON_KEY"      -Value $SUPABASE_ANON     -Environment "production"
 Push-EnvVar -Name "SUPABASE_SERVICE_ROLE_KEY"          -Value $SUPABASE_SERVICE  -Environment "production"
 Push-EnvVar -Name "NEXT_PUBLIC_SITE_URL"               -Value $SITE_URL          -Environment "production"
-Push-EnvVar -Name "NEXT_PUBLIC_STAGING_ROLE_SWITCHER"  -Value $STAGING_SWITCHER  -Environment "production"
+# DELIBERATELY not pushing NEXT_PUBLIC_STAGING_ROLE_SWITCHER to
+# production. The switcher exposes test-user sign-in via the admin
+# SDK; it must never ship in real prod. Add it manually via the
+# Vercel dashboard if a specific production deploy needs it for QA,
+# and remove before the next promotion.
 
 Write-Host "`nPushing Preview..." -ForegroundColor Cyan
 Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_URL"           -Value $SUPABASE_URL      -Environment "preview"
 Push-EnvVar -Name "NEXT_PUBLIC_SUPABASE_ANON_KEY"      -Value $SUPABASE_ANON     -Environment "preview"
 Push-EnvVar -Name "SUPABASE_SERVICE_ROLE_KEY"          -Value $SUPABASE_SERVICE  -Environment "preview"
 Push-EnvVar -Name "NEXT_PUBLIC_SITE_URL"               -Value $SITE_URL          -Environment "preview"
+# Preview deploys ARE staging — switcher enabled.
 Push-EnvVar -Name "NEXT_PUBLIC_STAGING_ROLE_SWITCHER"  -Value $STAGING_SWITCHER  -Environment "preview"
 
 Write-Host "`nDone. Trigger a redeploy:" -ForegroundColor Green
