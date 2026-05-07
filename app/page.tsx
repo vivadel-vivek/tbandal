@@ -62,16 +62,20 @@ export default async function Home() {
                 <br /> a leaf, and a long
                 <br /> afternoon to brew it.
               </h1>
-              {/* Plain-language tagline — flagged by the lay-user audit:
-                  the poetic H1 lands second; readers need a one-line
-                  value prop FIRST so newcomers don't bounce. */}
+              {/* Plain-language hero copy — second lay-user audit pass:
+                  the earlier "no jargon required" line was self-
+                  contradicting (followed immediately by "single-origin",
+                  "flavor axes"). Hero copy now stays in everyday English;
+                  technical vocabulary lives in detail text below the
+                  fold, where the Glossarized popovers carry the load. */}
               <p className="text-warm-700 italic font-display text-[18px] sm:text-[22px] leading-snug mb-4 sm:mb-5">
-                Honest tea reviews from two friends — a flavor map of every cup, no jargon required.
+                Two friends, a kettle, and an honest review of every cup.
               </p>
               <p className="text-base sm:text-lg text-warm-700 max-w-[540px] leading-relaxed mb-6 sm:mb-7">
-                James and Vivek review tea — single-origin, vendor-sourced, and
-                everything between. Twelve flavor axes, dual ratings, and
-                brewing parameters that actually got the cup we describe.
+                James and Vivek brew tea at home and write up what we taste —
+                from the everyday cup to the unusual ones. Each review comes
+                with a flavor wheel you can read at a glance, two opinions
+                side by side, and the brew recipe we actually used.
               </p>
               <div className="flex gap-3 flex-wrap">
                 <Link href="/discover/teas">

@@ -38,8 +38,8 @@ export default async function TeasPage() {
             <span className="italic">Every leaf,</span> recorded.
           </h1>
           <p className="max-w-[560px] text-warm-700 text-base mb-8">
-            A working catalogue of {TEAS.length}+ teas we&apos;ve brewed, with
-            notes from gongfu sessions, vendor pointers, and the occasional
+            Every tea we&apos;ve brewed and written up — {TEAS.length} so far,
+            with the brew recipe we used, where to buy it, and the occasional
             confession of a bad pour.
           </p>
         </div>

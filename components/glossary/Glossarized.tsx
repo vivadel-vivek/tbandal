@@ -80,15 +80,55 @@ export function Glossarized({ children }: { children: string }) {
     if (idx > lastIndex) parts.push(children.slice(lastIndex, idx));
 
     if (entry) {
+      // Hover/focus reveals a styled popover with the lay-language
+      // definition; click navigates to the full glossary entry. The
+      // popover is pure CSS (group-hover / group-focus-within) so it
+      // ships in the static HTML — no client island per term.
       parts.push(
-        <Link
+        <span
           key={`${idx}-${entry.slug}`}
-          href={`/discover/glossary#${entry.slug}`}
-          title={entry.lay}
-          className="text-inherit underline decoration-dotted decoration-warm-300 underline-offset-2 hover:decoration-burgundy hover:text-burgundy"
+          className="group/glossary relative inline-block"
         >
-          {matched}
-        </Link>,
+          <Link
+            href={`/discover/glossary#${entry.slug}`}
+            aria-describedby={`gloss-${entry.slug}-${idx}`}
+            className="text-inherit underline decoration-dotted decoration-warm-300 underline-offset-2 hover:decoration-burgundy hover:text-burgundy focus:outline-none focus:decoration-burgundy focus:text-burgundy"
+          >
+            {matched}
+          </Link>
+          <span
+            role="tooltip"
+            id={`gloss-${entry.slug}-${idx}`}
+            className={[
+              // Position above the term, centered. min-w lets it expand
+              // for long definitions; max-w caps at viewport-2rem so it
+              // never overflows on mobile.
+              "pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+8px)]",
+              "w-[min(280px,calc(100vw-2rem))] z-50",
+              // Hidden by default; visible on group hover/focus.
+              "invisible opacity-0 transition-opacity duration-150",
+              "group-hover/glossary:visible group-hover/glossary:opacity-100",
+              "group-focus-within/glossary:visible group-focus-within/glossary:opacity-100",
+              // Visual chrome — keeps the editorial palette.
+              "rounded-lg bg-[var(--bg-elevated)] border border-warm-200 shadow-elevated",
+              "px-3 py-2 text-left",
+              // Reset inherited italic/serif from prose contexts.
+              "not-italic font-sans text-[12px] leading-snug text-warm-700",
+              "whitespace-normal",
+            ].join(" ")}
+          >
+            <span className="block font-bold text-burgundy text-[11px] tracking-wide mb-0.5">
+              {matched}
+            </span>
+            {entry.lay}
+            <span
+              aria-hidden
+              className="block mt-1.5 text-[10px] tracking-widest uppercase font-bold text-warm-600"
+            >
+              Tap for full entry →
+            </span>
+          </span>
+        </span>,
       );
     } else {
       parts.push(matched);

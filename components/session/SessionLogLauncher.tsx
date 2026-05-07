@@ -116,11 +116,14 @@ export function SessionLogLauncher({ teas: TEAS }: Props) {
   // On a tea-detail page the launcher is a direct deep link, no picker.
   if (contextTea) {
     const userTea = findUserTeaBySlug(contextTea.slug);
+    // No aria-label here on purpose — the visible label "Log a
+    // session / {tea}" IS the accessible name. WCAG 2.5.3 wants the
+    // accessible name to start with the visible text; the simplest way
+    // to satisfy that is to let the rendered text speak for itself.
     return (
       <button
         type="button"
         onClick={() => goToLog(contextTea)}
-        aria-label={`Log a session for ${contextTea.name}`}
         className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2.5 h-12 pl-4 pr-5 rounded-pill bg-burgundy text-cream shadow-elevated hover:bg-burgundy-dark transition-colors font-sans font-bold text-[13px] cursor-pointer"
       >
         <span aria-hidden className="text-[16px]">⏱</span>
