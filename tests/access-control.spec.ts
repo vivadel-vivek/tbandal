@@ -54,10 +54,9 @@ const ROUTES: RouteCase[] = [
   { path: "/member/library",                                            allow: "any-authed" },
   { path: "/member/settings",                                           allow: "any-authed" },
 
-  // Phase D/E — future role-gated portals. Marked notImplemented;
-  // the test file stays in lockstep so when those land, the gates
-  // are immediately enforced.
-  { path: "/admin/contributor",                                         allow: "contributor", notImplemented: true },
+  // Phase D — contributor portal, gated by requireStaff (admin or
+  // contributor). Phase E vendor portal still pending.
+  { path: "/admin/contributor",                                         allow: "contributor" },
   { path: "/admin/vendor",                                              allow: "vendor",      notImplemented: true },
 ];
 
