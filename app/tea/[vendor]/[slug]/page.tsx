@@ -12,9 +12,15 @@ import type { Tea } from "@/lib/types";
 import { TeaDetailView } from "@/components/tea/TeaDetailView";
 import { ProductReviewJsonLd } from "@/components/seo/JsonLd";
 
-// ISR: pre-render every (vendor, slug) pair at build, revalidate hourly,
-// dynamicParams: true so newly-added teas ISR on first request.
-export const revalidate = 3600;
+// Render fresh on every request. Was previously ISR with revalidate:
+// 3600, but Vercel preserves the ISR cache across deploys, so DB
+// edits applied via Studio / the contributor portal weren't visible
+// until the cache TTL expired even after a clean rebuild. Until the
+// route is split into a server-rendered description shell + client
+// interactive subtree (audit item #5), force-dynamic is the simplest
+// way to keep the catalog editor's revalidatePath calls from being
+// silently bypassed by stale cache.
+export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 
 type Params = { vendor: string; slug: string };
