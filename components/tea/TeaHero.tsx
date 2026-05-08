@@ -1,3 +1,10 @@
+// Server-renderable. The previous version took onClick callbacks for
+// the "Log a session" / "Buy from {vendor}" buttons, which forced any
+// parent into a "use client" boundary; lifting them to plain hrefs
+// lets the entire hero (and its tasting paragraph — the LCP element
+// on tea-detail pages) render in static HTML. Audit item #5.
+
+import Link from "next/link";
 import { teaAvg } from "@/lib/tea-helpers";
 import type { HeroVariant, Tea } from "@/lib/types";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -12,8 +19,13 @@ type Props = {
   tea: Tea;
   variant: HeroVariant;
   hideReviews?: boolean;
-  onVisitVendor?: () => void;
-  onLogSession?: () => void;
+  /** Internal route to the session-log page. Made a prop so this
+   *  component stays server-renderable (no router.push call sites). */
+  logHref: string;
+  /** Outbound /go/ redirect for the vendor's shop. Anchor with
+   *  target="_blank" + rel="nofollow sponsored" — direct navigation,
+   *  no client-side window.open. */
+  vendorOutboundHref: string | null;
   /** 1-based catalog position; rendered as "Tea №NNN" in the editorial
    *  variant. Parents pass it down because computing it requires the
    *  full catalog, which lives in Supabase now. */
@@ -24,8 +36,8 @@ export function TeaHero({
   tea,
   variant,
   hideReviews = false,
-  onVisitVendor,
-  onLogSession,
+  logHref,
+  vendorOutboundHref,
   catalogIndex,
 }: Props) {
   if (variant === "stain") {
@@ -33,8 +45,8 @@ export function TeaHero({
       <HeroStain
         tea={tea}
         hideReviews={hideReviews}
-        onVisitVendor={onVisitVendor}
-        onLogSession={onLogSession}
+        logHref={logHref}
+        vendorOutboundHref={vendorOutboundHref}
       />
     );
   }
@@ -43,8 +55,8 @@ export function TeaHero({
       <HeroEditorial
         tea={tea}
         hideReviews={hideReviews}
-        onVisitVendor={onVisitVendor}
-        onLogSession={onLogSession}
+        logHref={logHref}
+        vendorOutboundHref={vendorOutboundHref}
         catalogIndex={catalogIndex}
       />
     );
@@ -53,9 +65,39 @@ export function TeaHero({
     <HeroSplit
       tea={tea}
       hideReviews={hideReviews}
-      onVisitVendor={onVisitVendor}
-      onLogSession={onLogSession}
+      logHref={logHref}
+      vendorOutboundHref={vendorOutboundHref}
     />
+  );
+}
+
+// Helper — render the action-row buttons consistently across variants.
+function HeroActions({
+  tea,
+  logHref,
+  vendorOutboundHref,
+}: {
+  tea: Tea;
+  logHref: string;
+  vendorOutboundHref: string | null;
+}) {
+  return (
+    <>
+      <Link href={logHref} className="inline-flex">
+        <Button variant="primary">Log a session</Button>
+      </Link>
+      {vendorOutboundHref && (
+        <a
+          href={vendorOutboundHref}
+          target="_blank"
+          rel="noopener nofollow sponsored"
+          className="inline-flex no-underline"
+        >
+          <Button variant="secondary">Buy from {tea.vendor} ↗</Button>
+        </a>
+      )}
+      <LibraryStatusToggle kind="tea" slug={tea.slug} size="md" />
+    </>
   );
 }
 
@@ -63,7 +105,7 @@ export function TeaHero({
 // SPLIT — image left + meta right (default)
 // =====================================================================
 
-function HeroSplit({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props, "variant">) {
+function HeroSplit({ tea, hideReviews, logHref, vendorOutboundHref }: Omit<Props, "variant">) {
   const avg = teaAvg(tea);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-[1.1fr_1fr] gap-6 sm:gap-10 mt-4">
@@ -110,13 +152,7 @@ function HeroSplit({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
           <Glossarized>{tea.summary}</Glossarized>
         </p>
         <div className="flex gap-2.5 flex-wrap items-center">
-          <Button variant="primary" onClick={onLogSession}>
-            Log a session
-          </Button>
-          <Button variant="secondary" onClick={onVisitVendor}>
-            Buy from {tea.vendor} ↗
-          </Button>
-          <LibraryStatusToggle kind="tea" slug={tea.slug} size="md" />
+          <HeroActions tea={tea} logHref={logHref} vendorOutboundHref={vendorOutboundHref} />
         </div>
       </div>
     </div>
@@ -127,7 +163,7 @@ function HeroSplit({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
 // STAIN — centered editorial w/ tea-stain accent
 // =====================================================================
 
-function HeroStain({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props, "variant">) {
+function HeroStain({ tea, hideReviews, logHref, vendorOutboundHref }: Omit<Props, "variant">) {
   const avg = teaAvg(tea);
   return (
     <div className="relative pt-12 pb-10">
@@ -181,13 +217,7 @@ function HeroStain({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
           &ldquo;<Glossarized>{tea.summary}</Glossarized>&rdquo;
         </p>
         <div className="inline-flex gap-2.5 flex-wrap items-center justify-center">
-          <Button variant="primary" size="lg" onClick={onLogSession}>
-            Log a session
-          </Button>
-          <Button variant="secondary" size="lg" onClick={onVisitVendor}>
-            Buy from {tea.vendor} ↗
-          </Button>
-          <LibraryStatusToggle kind="tea" slug={tea.slug} size="md" />
+          <HeroActions tea={tea} logHref={logHref} vendorOutboundHref={vendorOutboundHref} />
         </div>
         <div
           className="mt-10 rounded-2xl shadow-elevated"
@@ -203,7 +233,7 @@ function HeroStain({ tea, hideReviews, onVisitVendor, onLogSession }: Omit<Props
 // =====================================================================
 
 function HeroEditorial({
-  tea, hideReviews, onVisitVendor, onLogSession, catalogIndex,
+  tea, hideReviews, logHref, vendorOutboundHref, catalogIndex,
 }: Omit<Props, "variant">) {
   const avg = teaAvg(tea);
   // Fall back to a stable slug-based hash when no catalog index was
@@ -270,13 +300,7 @@ function HeroEditorial({
             <Glossarized>{tea.summary.slice(1)}</Glossarized>
           </p>
           <div className="flex gap-2.5 flex-wrap items-center">
-            <Button variant="primary" onClick={onLogSession}>
-              Log a session
-            </Button>
-            <LibraryStatusToggle kind="tea" slug={tea.slug} size="md" />
-            <Button variant="secondary" onClick={onVisitVendor}>
-              Buy from {tea.vendor} ↗
-            </Button>
+            <HeroActions tea={tea} logHref={logHref} vendorOutboundHref={vendorOutboundHref} />
           </div>
         </div>
         <aside

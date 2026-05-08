@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
@@ -10,17 +11,16 @@ import { vendorSlugForTea } from "@/lib/tea-helpers";
 import { compositeProfile, profileOverlap } from "@/lib/flavor";
 import type { Tea } from "@/lib/types";
 import { TeaDetailView } from "@/components/tea/TeaDetailView";
+import { TeaHero } from "@/components/tea/TeaHero";
 import { ProductReviewJsonLd } from "@/components/seo/JsonLd";
+import { Container } from "@/components/ui/Container";
 
-// Render fresh on every request. Was previously ISR with revalidate:
-// 3600, but Vercel preserves the ISR cache across deploys, so DB
-// edits applied via Studio / the contributor portal weren't visible
-// until the cache TTL expired even after a clean rebuild. Until the
-// route is split into a server-rendered description shell + client
-// interactive subtree (audit item #5), force-dynamic is the simplest
-// way to keep the catalog editor's revalidatePath calls from being
-// silently bypassed by stale cache.
-export const dynamic = "force-dynamic";
+// Audit item #5: hero + tasting-paragraph (the LCP element) now
+// render server-side, while interactive parts (review tabs, radar
+// mode toggle, blind banners) stay in the TeaDetailView client
+// component below. Cache freshness is handled at the Supabase
+// fetcher layer (revalidate: 60), not by force-dynamic — this lets
+// the route statically prerender from build with 60-second ISR.
 export const dynamicParams = true;
 
 type Params = { vendor: string; slug: string };
@@ -88,16 +88,43 @@ export default async function TeaDetailPage({
   ]);
   const similar = findSimilar(tea, allTeas);
   const blindMode = searchParams.blind === "1";
+  const logHref = `/tea/${vendor?.slug ?? tea.vendor}/${tea.pathSlug}/log`;
+  const vendorOutboundHref = vendor ? `/go/${vendor.slug}` : null;
   return (
     <>
       <ProductReviewJsonLd tea={tea} />
-      <TeaDetailView
-        tea={tea}
-        vendor={vendor ?? null}
-        contributors={contributors}
-        similar={similar}
-        blindMode={blindMode}
-      />
+      <main>
+        <Container>
+          <Link
+            href="/discover/teas"
+            className="inline-flex items-center gap-1.5 text-warm-600 text-[13px] font-sans no-underline mt-6 mb-2"
+          >
+            ← Back to teas
+          </Link>
+
+          {/* Server-rendered hero. Contains the LCP tasting paragraph;
+              ships in static HTML, hydrates on its own subtree only
+              for the LibraryStatusToggle popover. */}
+          <TeaHero
+            tea={tea}
+            variant="split"
+            hideReviews={blindMode}
+            logHref={logHref}
+            vendorOutboundHref={vendorOutboundHref}
+          />
+
+          {/* Everything below the hero — blind banners, review tabs,
+              radar, brewing card, vendor banner, similar teas — runs
+              client-side. */}
+          <TeaDetailView
+            tea={tea}
+            vendor={vendor ?? null}
+            contributors={contributors}
+            similar={similar}
+            blindMode={blindMode}
+          />
+        </Container>
+      </main>
     </>
   );
 }

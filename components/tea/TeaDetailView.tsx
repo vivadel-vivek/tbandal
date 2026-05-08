@@ -17,7 +17,6 @@ import type {
 } from "@/lib/types";
 import { BASIC_AXES, FLAVOR_AXES, rollUpProfile, topFlavors } from "@/lib/flavor";
 import { useMember } from "@/contexts/MemberContext";
-import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
 import { RatingScore } from "@/components/ui/RatingScore";
@@ -25,7 +24,6 @@ import { AvatarChip } from "@/components/ui/AvatarChip";
 import { FlavorBadge } from "@/components/ui/FlavorBadge";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { TeaCard } from "@/components/tea/TeaCard";
-import { TeaHero } from "@/components/tea/TeaHero";
 import { RadarChart } from "@/components/tea/RadarChart";
 import { MouthfeelGrid } from "@/components/tea/MouthfeelGrid";
 import { SessionShareButton } from "@/components/session/SessionShareButton";
@@ -147,38 +145,20 @@ export function TeaDetailView({ tea, vendor, contributors, similar, blindMode = 
   const toRadarValues = (vals: Record<string, number>) =>
     isBasic ? rollUpProfile(vals as FlavorProfile) : vals;
 
-  // "Visit shop" / "Buy from {vendor}" buttons in the hero send the
-  // visitor outbound through our /go/[slug] redirect so we can attribute
-  // referrals later. Opens in a new tab so people don't lose the article.
-  const handleVisitVendor = () => {
-    if (vendor) window.open(`/go/${vendor.slug}`, "_blank", "noopener,noreferrer");
-  };
-  // Session-log entry now lives on a dedicated page (was a cramped
-  // modal). Vendor info comes from the URL params we're already on.
+  // Session-log entry lives on a dedicated page. Both the bottom
+  // burgundy vendor banner and the "Edit your rating" link below
+  // need these.
   const logHref = `/tea/${vendor?.slug ?? tea.vendor}/${tea.pathSlug}/log`;
-  const handleLogSession = () => router.push(logHref);
-  // Used by the bottom burgundy vendor banner — rendered as an anchor
-  // for proper rel="nofollow sponsored" + indexable href semantics.
+  // /go/[slug] redirect — anchor with rel="nofollow sponsored" gives
+  // search engines correct semantics on the outbound link.
   const vendorOutboundHref = vendor ? `/go/${vendor.slug}` : null;
 
+  // Hero + back-link now render server-side in page.tsx (audit #5
+   // — the LCP element was the tasting paragraph, which couldn't be
+   // statically prerendered while it lived inside this client view).
+   // This component starts at the blind banners + reviews section.
   return (
-    <main>
-      <Container>
-        <Link
-          href="/discover/teas"
-          className="inline-flex items-center gap-1.5 text-warm-600 text-[13px] font-sans no-underline mt-6 mb-2"
-        >
-          ← Back to teas
-        </Link>
-
-        <TeaHero
-          tea={tea}
-          variant="split"
-          hideReviews={isBlinded}
-          onVisitVendor={handleVisitVendor}
-          onLogSession={handleLogSession}
-        />
-
+    <>
         {/* DISCOVER-LAUNCHED BLIND TASTING BANNER */}
         {blindMode && (
           <div className="mt-8 mb-2 px-7 py-5 bg-burgundy text-cream rounded-xl flex justify-between items-center gap-4 flex-wrap">
@@ -677,11 +657,7 @@ export function TeaDetailView({ tea, vendor, contributors, similar, blindMode = 
                   Visit {tea.vendor} ↗
                 </Button>
               </a>
-            ) : (
-              <Button variant="gold" size="lg" onClick={handleVisitVendor}>
-                Visit {tea.vendor} ↗
-              </Button>
-            )}
+            ) : null}
             <Link href={logHref}>
               <Button
                 variant="secondary"
@@ -723,9 +699,8 @@ export function TeaDetailView({ tea, vendor, contributors, similar, blindMode = 
             </div>
           </section>
         )}
-      </Container>
       <div className="h-16" />
-    </main>
+    </>
   );
 }
 
