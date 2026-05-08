@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
 import { savePost } from "@/app/admin/contributor/actions";
 import { MarkdownHint } from "@/components/admin/MarkdownHint";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 type PostRow = Database["public"]["Tables"]["posts"]["Row"];
 
@@ -32,6 +33,7 @@ export function PostEditForm({ post }: { post: PostRow | null }) {
   );
   const [related,     setRelated]     = useState((post?.related ?? []).join(", "));
   const [body,        setBody]        = useState(post?.body ?? "");
+  const [imageUrl,    setImageUrl]    = useState<string | null>(post?.image_url ?? null);
   const [published,   setPublished]   = useState(post?.published ?? false);
   const [publishedAt, setPublishedAt] = useState(
     post?.published_at ? post.published_at.slice(0, 10) : ""
@@ -53,6 +55,7 @@ export function PostEditForm({ post }: { post: PostRow | null }) {
         grad,
         related:    related.split(",").map((s) => s.trim()).filter(Boolean),
         body:       body || null,
+        image_url:  imageUrl,
         published,
         published_at: publishedAt ? new Date(publishedAt).toISOString() : null,
       });
@@ -159,7 +162,24 @@ export function PostEditForm({ post }: { post: PostRow | null }) {
       </div>
 
       <div>
-        <label className={labelCls} htmlFor="grad">Hero gradient (CSS)</label>
+        <ImageUpload
+          label="Hero photo"
+          value={imageUrl}
+          onChange={setImageUrl}
+          kind="post"
+          slug={slug || "untitled"}
+          aspectRatio="16/7"
+          alt={`${title || "Post"} hero image`}
+        />
+        <p className="text-[11px] text-warm-600 leading-snug mt-1.5">
+          16:7 aspect — appears on the journal index card and on the post
+          detail page above the byline. Falls back to the gradient below
+          when blank.
+        </p>
+      </div>
+
+      <div>
+        <label className={labelCls} htmlFor="grad">Hero gradient (CSS — fallback)</label>
         <input id="grad" required value={grad} onChange={(e) => setGrad(e.target.value)} className={inputCls + " font-mono text-[12px]"} />
       </div>
 

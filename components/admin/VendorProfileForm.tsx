@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
 import { saveVendorProfile } from "@/app/admin/vendor/actions";
 import { MarkdownHint } from "@/components/admin/MarkdownHint";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 type VendorRow = Database["public"]["Tables"]["vendors"]["Row"];
 
@@ -28,6 +29,7 @@ export function VendorProfileForm({ vendor }: { vendor: VendorRow }) {
   const [founded,     setFounded]     = useState<number>(vendor.founded);
   const [specialties, setSpecialties] = useState((vendor.specialties ?? []).join(", "));
   const [url,         setUrl]         = useState(vendor.url);
+  const [imageUrl,    setImageUrl]    = useState<string | null>(vendor.image_url ?? null);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +39,7 @@ export function VendorProfileForm({ vendor }: { vendor: VendorRow }) {
         slug: vendor.slug, city, country, continent, tagline, body, swatch, founded,
         specialties: specialties.split(",").map((s) => s.trim()).filter(Boolean),
         url,
+        image_url: imageUrl,
       });
       if (!result.ok) {
         setStatus({ ok: false, message: result.message });
@@ -91,6 +94,21 @@ export function VendorProfileForm({ vendor }: { vendor: VendorRow }) {
         <label className={labelCls} htmlFor="body">Body (1–2 paragraphs)</label>
         <textarea id="body" rows={6} required value={body} onChange={(e) => setBody(e.target.value)} className={inputCls + " font-serif text-[15px] leading-relaxed"} />
         <MarkdownHint />
+      </div>
+
+      <div>
+        <ImageUpload
+          label="Storefront photo"
+          value={imageUrl}
+          onChange={setImageUrl}
+          kind="vendor"
+          slug={vendor.slug}
+          aspectRatio="1/1"
+          alt={`${vendor.name} hero image`}
+        />
+        <p className="text-[11px] text-warm-600 leading-snug mt-1.5">
+          Square aspect — replaces the colored tile on your detail page.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

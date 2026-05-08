@@ -14,14 +14,18 @@ import {
   SettingsToggle,
   settingsInput,
 } from "./settingsPrimitives";
+import { ImageUpload } from "@/components/admin/ImageUpload";
+import { useState } from "react";
 
 type Props = {
   /** Catalog teas, passed from the server parent. Used to resolve the
    *  member's "tasted" slug list back to display names + URLs. */
   teas: Tea[];
+  /** Current avatar URL from the profiles row (server-loaded). */
+  avatarUrl: string | null;
 };
 
-export function MemberSettingsView({ teas: TEAS }: Props) {
+export function MemberSettingsView({ teas: TEAS, avatarUrl }: Props) {
   const { member, setMember, reblind } = useMember();
   const s = member.settings;
 
@@ -62,6 +66,12 @@ export function MemberSettingsView({ teas: TEAS }: Props) {
 
         {/* IDENTITY */}
         <SettingsCard title="Identity" eyebrow="Who you are">
+          <SettingsField
+            label="Profile photo"
+            hint="A square photo, ideally face-forward. Replaces the colored letter chip in the header and on your reviews."
+          >
+            <AvatarPickerField initial={avatarUrl} />
+          </SettingsField>
           <SettingsField
             label="Display name"
             hint="Shown next to your reviews and journal entries."
@@ -247,5 +257,26 @@ export function MemberSettingsView({ teas: TEAS }: Props) {
         </div>
       </Container>
     </main>
+  );
+}
+
+// Wrapper that holds the avatar URL in local state so the preview
+// updates immediately after a successful upload — the server action
+// also writes to the profiles row + revalidates, so a hard refresh
+// shows the same photo. We don't render anything if the user is a
+// guest (avatarUrl=null AND can't upload because no auth).
+function AvatarPickerField({ initial }: { initial: string | null }) {
+  const [url, setUrl] = useState<string | null>(initial);
+  return (
+    <div className="max-w-[280px]">
+      <ImageUpload
+        value={url}
+        onChange={setUrl}
+        kind="avatar"
+        avatarTarget="self"
+        aspectRatio="1/1"
+        alt="Your profile photo"
+      />
+    </div>
   );
 }

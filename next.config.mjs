@@ -8,6 +8,8 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "v5.airtableusercontent.com" },
       { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+      // Supabase Storage public URLs: https://<project>.supabase.co/storage/v1/object/public/<bucket>/...
+      { protocol: "https", hostname: "*.supabase.co" },
     ],
   },
   // Once /tea/[vendor]/[slug] lands, add 301 redirects from the legacy

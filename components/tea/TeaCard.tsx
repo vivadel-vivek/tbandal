@@ -8,6 +8,7 @@ import { teaAvg, teaUrl, teaSubtitle } from "@/lib/tea-helpers";
 import { TeaTypeTag } from "@/components/ui/TeaTypeTag";
 import { StarRow } from "@/components/ui/StarRow";
 import { Eyebrow } from "@/components/ui/Eyebrow";
+import { EditorialImage } from "@/components/ui/EditorialImage";
 
 type Props = {
   tea: Tea;
@@ -25,13 +26,14 @@ export function TeaCard({ tea, density = "cozy", hideReviews = false }: Props) {
       href={teaUrl(tea)}
       className="block no-underline group card-surface card-surface-hover overflow-hidden"
     >
-      <div
-        className="relative"
-        style={{
-          aspectRatio: compact ? "16/8" : "16/10",
-          background: tea.gradient,
-        }}
-      >
+      <div className="relative">
+        <EditorialImage
+          src={tea.imageUrl}
+          alt={`${tea.name} — ${tea.vendor}`}
+          gradient={tea.gradient}
+          aspectRatio={compact ? "16/8" : "16/10"}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
         <div className="absolute top-3 left-3">
           <TeaTypeTag type={tea.type} small={compact} />
         </div>

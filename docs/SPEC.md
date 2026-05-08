@@ -310,6 +310,7 @@ the DB, edits flow through the contributor portal or Studio.
 
 Most recent first.
 
+- **Image upload pipeline** — Supabase Storage with two public buckets (editorial + avatars), RLS gating writes to staff/vendor for editorial and self-only for avatars. Server actions `uploadEditorialImage` + `uploadAvatarImage` validate auth, mime (jpeg/png/webp), and 5 MB cap. `<ImageUpload>` admin widget supports drag-drop + click, preview thumbnail, replace, remove. `<EditorialImage>` display component wraps `next/image` with gradient fallback when no `image_url` is set, lazy-loads by default, supports `priority` for LCP heroes. Wired into 5 admin forms (Tea / Vendor / VendorProfile / Post / Teaware) and the member-settings avatar picker. Display surfaces updated: TeaCard, TeaHero, VendorCard, vendor detail, journal index, post detail, teaware index + detail. IdentityAvatar in the header now renders the user's photo when uploaded, falling back to the letter-on-colour treatment.
 - **Tea taxonomy refactor** — `tea_type` enum split: `Pu'er` becomes `Sheng Pu'er` + `Shou Pu'er`; new `Dark` value covers heicha (Anhua, Liu Bao, Fu Zhuan). Adds `subtype` (free text — Yancha, Longjing, Anhua, Bingdao) and `aged` boolean columns. TeaTypeTag, TeaBrowser, GuidedBrew, LibraryView, admin form, seed data all updated. Glossary gains 14 new entries (red-tea, dark-tea, longjing/dragonwell, tieguanyin/iron-goddess, yancha, dancong, anhua, liubao, fu-zhuan, silver-needle, aged-white, aged-sheng) for cross-referencing the East/West naming pairs. Recommendation engine now applies a soft type boundary (40% haircut on unseen types) and an aged-status nudge (15%).
 - **Auth flow fixes** — `/auth/reset` page handles all three Supabase recovery URL variants (PKCE code, OTP token_hash, implicit hash fragment). Site URL fix in supabase config (was localhost). Identity avatar in header derives initial from user's name, not palate alignment.
 - **Markdown everywhere in editorial copy** — `lib/markdown.tsx` server-renders `**bold** *italic* \`code\` [link](url) ## h2 ### h3 > quote - list` for journal post body, tea hero summary, tea review body, vendor body, teaware body. `<Glossarized>` accepts `ReactNode` so term tooltips wrap each rendered paragraph. Editors get a `MarkdownHint` line under each body/summary textarea — preview is the existing `?preview=1` link in the top bar.
@@ -349,7 +350,7 @@ Most recent first.
 ### Engineering
 - Drop legacy-JS polyfills (~11KiB, audit #13) — bump browserslist
 - Vendor invite-link flow (admin-emailed magic link with pre-attached `owner_id`)
-- Image upload pipeline (replace CSS gradient placeholders)
+- In-body markdown image insertion (cursor-aware modal in PostEditForm — phase 2 of the image pipeline)
 
 ### Operational
 - Create Vercel deploy hook → set `VERCEL_DEPLOY_HOOK_URL` env var

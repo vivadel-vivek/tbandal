@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Stat } from "@/components/ui/Stat";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { TeaCard } from "@/components/tea/TeaCard";
+import { EditorialImage } from "@/components/ui/EditorialImage";
 
 // ISR: pre-render all vendors at build, revalidate hourly,
 // dynamicParams: true so newly-published vendors render on first hit.
@@ -95,20 +96,32 @@ export default async function VendorDetailPage({
               <Stat n={`${vendor.rating}.0`} label="Our rating" />
             </div>
           </div>
-          <div
-            className="rounded-2xl shadow-elevated relative overflow-hidden flex items-center justify-center"
-            style={{ aspectRatio: "1/1", background: vendor.swatch }}
-          >
-            <span
-              aria-hidden
-              className="font-display italic font-medium"
-              style={{
-                fontSize: 120,
-                color: "rgba(250,247,242,0.85)",
-              }}
-            >
-              {vendor.name[0]}
-            </span>
+          <div className="rounded-2xl shadow-elevated overflow-hidden relative">
+            {vendor.imageUrl ? (
+              <EditorialImage
+                src={vendor.imageUrl}
+                alt={`${vendor.name} hero`}
+                aspectRatio="1/1"
+                priority
+                sizes="(max-width: 640px) 100vw, 480px"
+              />
+            ) : (
+              <div
+                className="flex items-center justify-center"
+                style={{ aspectRatio: "1/1", background: vendor.swatch }}
+              >
+                <span
+                  aria-hidden
+                  className="font-display italic font-medium"
+                  style={{
+                    fontSize: 120,
+                    color: "rgba(250,247,242,0.85)",
+                  }}
+                >
+                  {vendor.name[0]}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

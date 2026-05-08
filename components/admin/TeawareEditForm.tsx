@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
 import { saveTeaware } from "@/app/admin/contributor/actions";
 import { MarkdownHint } from "@/components/admin/MarkdownHint";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 type TeawareRow = Database["public"]["Tables"]["teaware"]["Row"];
 
@@ -47,6 +48,7 @@ export function TeawareEditForm({ item }: { item: TeawareRow | null }) {
   const [body,        setBody]        = useState(item?.body ?? "");
   const [goodFor,     setGoodFor]     = useState<string[]>(item?.good_for ?? []);
   const [rating,      setRating]      = useState<number>(item?.rating ?? 4);
+  const [imageUrl,    setImageUrl]    = useState<string | null>(item?.image_url ?? null);
   const [published,   setPublished]   = useState(item?.published ?? false);
 
   const toggleGoodFor = (t: string) =>
@@ -66,7 +68,9 @@ export function TeawareEditForm({ item }: { item: TeawareRow | null }) {
         external_url: externalUrl || null,
         price, gradient, swatch, tagline, body,
         good_for: goodFor,
-        rating, published,
+        rating,
+        image_url: imageUrl,
+        published,
       });
       if (!result.ok) { setError(result.message); return; }
       router.push("/admin/contributor/teaware");
@@ -141,9 +145,21 @@ export function TeawareEditForm({ item }: { item: TeawareRow | null }) {
         <MarkdownHint />
       </div>
 
+      <div>
+        <ImageUpload
+          label="Hero photo"
+          value={imageUrl}
+          onChange={setImageUrl}
+          kind="teaware"
+          slug={slug || "untitled"}
+          aspectRatio="4/3"
+          alt={`${name || "Teaware"} hero image`}
+        />
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className={labelCls} htmlFor="gradient">Gradient (CSS)</label>
+          <label className={labelCls} htmlFor="gradient">Gradient (CSS — fallback)</label>
           <input id="gradient" required value={gradient} onChange={(e) => setGradient(e.target.value)} className={inputCls + " font-mono text-[12px]"} />
         </div>
         <div>

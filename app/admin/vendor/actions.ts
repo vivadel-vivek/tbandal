@@ -26,6 +26,7 @@ export async function saveVendorProfile(input: {
   founded: number;
   specialties: string[];
   url: string;
+  image_url: string | null;
 }): Promise<SaveResult> {
   const { userId, role } = await requireVendorOrAdmin();
   const sb = await createSupabaseServerClient();

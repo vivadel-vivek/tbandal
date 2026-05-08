@@ -13,6 +13,7 @@ import { TeaCard } from "@/components/tea/TeaCard";
 import { renderMarkdown } from "@/lib/markdown";
 import { ArticleJsonLd } from "@/components/seo/JsonLd";
 import { PreviewBanner } from "@/components/admin/PreviewBanner";
+import { EditorialImage } from "@/components/ui/EditorialImage";
 
 // ISR: pre-render every post slug, dynamicParams: true so new posts ISR
 // on first hit once Airtable lands.
@@ -112,10 +113,16 @@ export default async function JournalPost({
       </Container>
 
       <Container size="article">
-        <div
-          className="aspect-[16/7] rounded-2xl shadow-elevated mb-10"
-          style={{ background: post.grad }}
-        />
+        <div className="rounded-2xl shadow-elevated overflow-hidden mb-10">
+          <EditorialImage
+            src={post.imageUrl}
+            alt={post.title}
+            gradient={post.grad}
+            aspectRatio="16/7"
+            priority
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 720px, 920px"
+          />
+        </div>
       </Container>
 
       <Container size="prose">

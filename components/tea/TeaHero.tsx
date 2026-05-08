@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { TeaTypeTag } from "@/components/ui/TeaTypeTag";
 import { RatingScore } from "@/components/ui/RatingScore";
 import { TeaStain } from "@/components/ui/TeaStain";
+import { EditorialImage } from "@/components/ui/EditorialImage";
 import { Glossarized } from "@/components/glossary/Glossarized";
 import { renderInlineMarkdown } from "@/lib/markdown";
 import { LibraryStatusToggle } from "@/components/library/LibraryStatusToggle";
@@ -112,8 +113,15 @@ function HeroSplit({ tea, hideReviews, logHref, vendorOutboundHref }: Omit<Props
     <div className="grid grid-cols-1 sm:grid-cols-[1.1fr_1fr] gap-6 sm:gap-10 mt-4">
       <div
         className="rounded-2xl shadow-elevated relative overflow-hidden"
-        style={{ aspectRatio: "1/1", background: tea.gradient }}
       >
+        <EditorialImage
+          src={tea.imageUrl}
+          alt={`${tea.name} — ${tea.vendor}`}
+          gradient={tea.gradient}
+          aspectRatio="1/1"
+          priority
+          sizes="(max-width: 640px) 100vw, 600px"
+        />
         <div className="absolute top-5 left-5 right-5 flex justify-between">
           <TeaTypeTag type={tea.type} />
           <span className="px-3 py-1 rounded-pill bg-[rgba(250,247,242,0.92)] text-burgundy text-[11px] font-bold tracking-wide uppercase">
@@ -220,10 +228,15 @@ function HeroStain({ tea, hideReviews, logHref, vendorOutboundHref }: Omit<Props
         <div className="inline-flex gap-2.5 flex-wrap items-center justify-center">
           <HeroActions tea={tea} logHref={logHref} vendorOutboundHref={vendorOutboundHref} />
         </div>
-        <div
-          className="mt-10 rounded-2xl shadow-elevated"
-          style={{ aspectRatio: "16/8", background: tea.gradient }}
-        />
+        <div className="mt-10 rounded-2xl shadow-elevated overflow-hidden">
+          <EditorialImage
+            src={tea.imageUrl}
+            alt={`${tea.name} — ${tea.vendor}`}
+            gradient={tea.gradient}
+            aspectRatio="16/8"
+            sizes="(max-width: 640px) 100vw, 800px"
+          />
+        </div>
       </div>
     </div>
   );

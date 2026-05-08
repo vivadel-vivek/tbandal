@@ -63,6 +63,7 @@ function teaFromRow(r: TeaRowJoined): Tea {
     peakSteeps: r.peak_steeps,
     flavor:     r.flavor as TeaFlavorBundle,
     reviews:    r.reviews as TeaReviews,
+    imageUrl:   r.image_url ?? null,
   };
 }
 
@@ -103,6 +104,7 @@ export async function getPreviewPostBySlug(slug: string): Promise<Post | undefin
     grad:     data.grad,
     related:  data.related,
     body:     data.body ?? undefined,
+    imageUrl: data.image_url ?? null,
   };
 }
 
@@ -131,6 +133,7 @@ export async function getPreviewVendorBySlug(slug: string): Promise<Vendor | und
     founded:     data.founded,
     specialties: data.specialties,
     url:         data.url,
+    imageUrl:    data.image_url ?? null,
   };
 }
 
@@ -160,5 +163,6 @@ export async function getPreviewTeawareBySlug(slug: string): Promise<Teaware | u
     body:        data.body,
     goodFor:     data.good_for as Teaware["goodFor"],
     rating:      data.rating,
+    imageUrl:    data.image_url ?? null,
   };
 }

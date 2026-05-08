@@ -53,6 +53,7 @@ const DEFAULT_MEMBER: Member = {
   // James is the tea lead — newcomers default to his palate alignment;
   // they can flip to Vivek's in /member/settings.
   aligned: "james",
+  avatarUrl: null,
   ratings: [],
   library: EMPTY_LIBRARY,
   settings: {
@@ -141,6 +142,7 @@ function safeParseMember(raw: string): Partial<Member> | null {
     return {
       name: asString(o.name, DEFAULT_MEMBER.name),
       aligned: isOneOf(ALIGNS, o.aligned) ? o.aligned : DEFAULT_MEMBER.aligned,
+      avatarUrl: typeof o.avatarUrl === "string" ? o.avatarUrl : null,
       ratings: Array.isArray(o.ratings) ? (o.ratings as MemberRating[]) : [],
       library: safeParseLibrary(o.library),
       settings: {
@@ -241,6 +243,7 @@ export function MemberProvider({ children }: { children: ReactNode }) {
           ...prev,
           name: remote.name ?? prev.name,
           aligned: remote.aligned ?? prev.aligned,
+          avatarUrl: remote.avatarUrl ?? prev.avatarUrl,
           settings: { ...prev.settings, ...(remote.settings ?? {}) },
         }));
       } catch {

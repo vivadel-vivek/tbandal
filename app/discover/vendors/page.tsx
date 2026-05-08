@@ -10,6 +10,7 @@ import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { StarRow } from "@/components/ui/StarRow";
 import { ItemListJsonLd, vendorListItems } from "@/components/seo/JsonLd";
+import { EditorialImage } from "@/components/ui/EditorialImage";
 import type { Tea, Vendor } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -123,13 +124,24 @@ function VendorCard({ vendor: v, teas: allTeas }: { vendor: Vendor; teas: Tea[] 
       className="group bg-[var(--bg-elevated)] rounded-xl border border-warm-200 shadow-card p-5 transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5 flex flex-col gap-4"
     >
       <div className="flex gap-3.5 items-center">
-        <div
-          className="w-16 h-16 rounded-md shrink-0 flex items-center justify-center font-display italic text-cream font-medium text-[30px]"
-          style={{ background: v.swatch }}
-          aria-hidden
-        >
-          {v.name[0]}
-        </div>
+        {v.imageUrl ? (
+          <div className="w-16 h-16 rounded-md shrink-0 overflow-hidden">
+            <EditorialImage
+              src={v.imageUrl}
+              alt={`${v.name} hero`}
+              aspectRatio="1/1"
+              sizes="64px"
+            />
+          </div>
+        ) : (
+          <div
+            className="w-16 h-16 rounded-md shrink-0 flex items-center justify-center font-display italic text-cream font-medium text-[30px]"
+            style={{ background: v.swatch }}
+            aria-hidden
+          >
+            {v.name[0]}
+          </div>
+        )}
         <div className="flex-1 min-w-0">
           <h3 className="font-display text-burgundy font-medium tracking-tight m-0 mb-1 text-2xl">
             {v.name}

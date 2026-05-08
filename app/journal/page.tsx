@@ -4,6 +4,7 @@ import { getPosts } from "@/lib/content";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { AvatarChip } from "@/components/ui/AvatarChip";
+import { EditorialImage } from "@/components/ui/EditorialImage";
 
 export const revalidate = 3600;
 
@@ -63,9 +64,13 @@ export default async function JournalIndex() {
                 i === 0 ? "sm:col-span-2" : "col-span-1",
               ].join(" ")}
             >
-              <div
-                className={i === 0 ? "aspect-[16/9] sm:aspect-[16/6]" : "aspect-[16/9]"}
-                style={{ background: p.grad }}
+              <EditorialImage
+                src={p.imageUrl}
+                alt={p.title}
+                gradient={p.grad}
+                aspectRatio={i === 0 ? "16/6" : "16/9"}
+                priority={i === 0}
+                sizes={i === 0 ? "(max-width: 640px) 100vw, 920px" : "(max-width: 640px) 100vw, 460px"}
               />
               <div className="px-5 sm:px-6 pt-5 pb-5 sm:pb-6">
                 <Eyebrow color="var(--sage-text, #556649)">

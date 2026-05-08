@@ -251,6 +251,7 @@ export function Header() {
               <IdentityAvatar
                 name={member.name}
                 email={session?.email}
+                imageUrl={member.avatarUrl}
                 tone={member.aligned}
                 size={26}
               />
@@ -288,6 +289,7 @@ export function Header() {
               <IdentityAvatar
                 name={member.name}
                 email={session?.email}
+                imageUrl={member.avatarUrl}
                 tone={member.aligned}
                 size={26}
               />
@@ -322,6 +324,7 @@ export function Header() {
         pathname={pathname}
         memberName={member.name || "You"}
         memberEmail={session?.email ?? null}
+        memberAvatarUrl={member.avatarUrl}
         memberKey={member.aligned}
         isAuthed={isAuthed}
       />
@@ -335,6 +338,7 @@ function MobileDrawer({
   pathname,
   memberName,
   memberEmail,
+  memberAvatarUrl,
   memberKey,
   isAuthed,
 }: {
@@ -344,6 +348,7 @@ function MobileDrawer({
   isAuthed: boolean;
   memberName: string;
   memberEmail: string | null;
+  memberAvatarUrl: string | null;
   memberKey: "vivek" | "james";
 }) {
   return (
@@ -453,6 +458,7 @@ function MobileDrawer({
               <IdentityAvatar
                 name={memberName === "You" ? null : memberName}
                 email={memberEmail}
+                imageUrl={memberAvatarUrl}
                 tone={memberKey}
                 size={36}
               />

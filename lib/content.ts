@@ -88,6 +88,7 @@ function vendorFromRow(r: VendorRow): Vendor {
     founded:     r.founded,
     specialties: r.specialties,
     url:         r.url,
+    imageUrl:    r.image_url ?? null,
   };
 }
 
@@ -127,6 +128,7 @@ function teaFromRow(r: TeaRowJoined): Tea {
     peakSteeps: r.peak_steeps,
     flavor:     r.flavor as TeaFlavorBundle,
     reviews:    r.reviews as TeaReviews,
+    imageUrl:   r.image_url ?? null,
   };
 }
 
@@ -148,6 +150,7 @@ function teawareFromRow(r: TeawareRow): Teaware {
     body:        r.body,
     goodFor:     r.good_for as Teaware["goodFor"],
     rating:      r.rating,
+    imageUrl:    r.image_url ?? null,
   };
 }
 
@@ -164,6 +167,7 @@ function postFromRow(r: PostRow): Post {
     grad:     r.grad,
     related:  r.related,
     body:     r.body ?? undefined,
+    imageUrl: r.image_url ?? null,
   };
 }
 

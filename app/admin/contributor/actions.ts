@@ -77,6 +77,7 @@ export async function savePost(input: {
   grad: string;
   related: string[];
   body: string | null;
+  image_url: string | null;
   published: boolean;
   published_at: string | null;
 }): Promise<SaveResult> {
@@ -99,6 +100,7 @@ export async function savePost(input: {
     grad:         input.grad,
     related:      input.related,
     body:         input.body,
+    image_url:    input.image_url,
     published:    input.published,
     published_at: input.published_at,
   };
@@ -131,6 +133,7 @@ export async function saveVendor(input: {
   founded: number;
   specialties: string[];
   url: string;
+  image_url: string | null;
   published: boolean;
   owner_id: string | null;
 }): Promise<SaveResult> {
@@ -173,6 +176,7 @@ export async function saveTeaware(input: {
   body: string;
   good_for: string[];
   rating: number;
+  image_url: string | null;
   published: boolean;
 }): Promise<SaveResult> {
   await requireStaff();
@@ -221,6 +225,7 @@ export async function saveTea(input: {
   subtitle: string | null;
   subtype: string | null;
   aged: boolean;
+  image_url: string | null;
   summary: string;
   brewing: unknown;
   mouthfeel: unknown;

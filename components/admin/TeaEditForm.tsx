@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
 import { saveTea } from "@/app/admin/contributor/actions";
 import { MarkdownHint } from "@/components/admin/MarkdownHint";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 type TeaRow = Database["public"]["Tables"]["teas"]["Row"];
 
@@ -108,6 +109,7 @@ export function TeaEditForm({
     tea?.gradient ?? "linear-gradient(135deg,#8B7355 0%,#5C4033 100%)"
   );
   const [swatch,      setSwatch]      = useState(tea?.swatch ?? "#5C4033");
+  const [imageUrl,    setImageUrl]    = useState<string | null>(tea?.image_url ?? null);
   const [subtitle,    setSubtitle]    = useState(tea?.subtitle ?? "");
   const [summary,     setSummary]     = useState(tea?.summary ?? "");
   const [finish,      setFinish]      = useState((tea?.finish ?? []).join(", "));
@@ -168,6 +170,7 @@ export function TeaEditForm({
         type,
         region, country, year, harvest, elev, age, price, rarity,
         gradient, swatch,
+        image_url: imageUrl,
         subtitle: subtitle.trim() || null,
         subtype:  subtype.trim() || null,
         aged,
@@ -376,9 +379,26 @@ export function TeaEditForm({
         <MarkdownHint />
       </div>
 
+      <div>
+        <ImageUpload
+          label="Hero photo"
+          value={imageUrl}
+          onChange={setImageUrl}
+          kind="tea"
+          slug={slug || "untitled"}
+          aspectRatio="16/10"
+          alt={`${name || "Tea"} hero image`}
+        />
+        <p className="text-[11px] text-warm-600 leading-snug mt-1.5">
+          Optional. When set, replaces the gradient on the tea card and detail
+          page. JPEG/PNG/WebP, up to 5 MB. Aim for a 1600×1000 source so it
+          stays sharp on retina displays.
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className={labelCls} htmlFor="gradient">Gradient (CSS)</label>
+          <label className={labelCls} htmlFor="gradient">Gradient (CSS — fallback)</label>
           <input id="gradient" required value={gradient} onChange={(e) => setGradient(e.target.value)} className={inputCls + " font-mono text-[12px]"} />
         </div>
         <div>

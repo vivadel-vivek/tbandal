@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       contributors: {
         Row: {
+          avatar_url: string | null
           bio: string
           color: string
           created_at: string
@@ -22,6 +23,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
           bio: string
           color: string
           created_at?: string
@@ -33,6 +35,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
           bio?: string
           color?: string
           created_at?: string
@@ -54,6 +57,7 @@ export type Database = {
           date: string
           excerpt: string
           grad: string
+          image_url: string | null
           published: boolean
           published_at: string | null
           read_time: number
@@ -70,6 +74,7 @@ export type Database = {
           date: string
           excerpt: string
           grad: string
+          image_url?: string | null
           published?: boolean
           published_at?: string | null
           read_time: number
@@ -86,6 +91,7 @@ export type Database = {
           date?: string
           excerpt?: string
           grad?: string
+          image_url?: string | null
           published?: boolean
           published_at?: string | null
           read_time?: number
@@ -99,6 +105,7 @@ export type Database = {
       profiles: {
         Row: {
           aligned: string
+          avatar_url: string | null
           composite: boolean
           contributor_handle: string | null
           created_at: string
@@ -114,6 +121,7 @@ export type Database = {
         }
         Insert: {
           aligned?: string
+          avatar_url?: string | null
           composite?: boolean
           contributor_handle?: string | null
           created_at?: string
@@ -129,6 +137,7 @@ export type Database = {
         }
         Update: {
           aligned?: string
+          avatar_url?: string | null
           composite?: boolean
           contributor_handle?: string | null
           created_at?: string
@@ -261,6 +270,7 @@ export type Database = {
           flavor: Json
           gradient: string
           harvest: string
+          image_url: string | null
           mouthfeel: Json
           name: string
           path_slug: string
@@ -293,6 +303,7 @@ export type Database = {
           flavor: Json
           gradient: string
           harvest: string
+          image_url?: string | null
           mouthfeel: Json
           name: string
           path_slug: string
@@ -325,6 +336,7 @@ export type Database = {
           flavor?: Json
           gradient?: string
           harvest?: string
+          image_url?: string | null
           mouthfeel?: Json
           name?: string
           path_slug?: string
@@ -363,6 +375,7 @@ export type Database = {
           external_url: string | null
           good_for: string[]
           gradient: string
+          image_url: string | null
           material: string
           name: string
           origin: string | null
@@ -383,6 +396,7 @@ export type Database = {
           external_url?: string | null
           good_for?: string[]
           gradient: string
+          image_url?: string | null
           material: string
           name: string
           origin?: string | null
@@ -403,6 +417,7 @@ export type Database = {
           external_url?: string | null
           good_for?: string[]
           gradient?: string
+          image_url?: string | null
           material?: string
           name?: string
           origin?: string | null
@@ -531,6 +546,7 @@ export type Database = {
           country: string
           created_at: string
           founded: number
+          image_url: string | null
           name: string
           owner_id: string | null
           published: boolean
@@ -550,6 +566,7 @@ export type Database = {
           country: string
           created_at?: string
           founded: number
+          image_url?: string | null
           name: string
           owner_id?: string | null
           published?: boolean
@@ -569,6 +586,7 @@ export type Database = {
           country?: string
           created_at?: string
           founded?: number
+          image_url?: string | null
           name?: string
           owner_id?: string | null
           published?: boolean

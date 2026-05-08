@@ -24,6 +24,7 @@ type ProfileRow = {
   email: string | null;
   display_name: string | null;
   contributor_handle: string | null;
+  avatar_url: string | null;
   flavor_mode: string;
   composite: boolean;
   theme: string;
@@ -47,7 +48,7 @@ export async function loadMemberProfile(
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "email, display_name, contributor_handle, flavor_mode, composite, theme, aligned, notifications, tasted_teas",
+      "email, display_name, contributor_handle, avatar_url, flavor_mode, composite, theme, aligned, notifications, tasted_teas",
     )
     .eq("id", userId)
     .maybeSingle();
@@ -59,6 +60,7 @@ function profileToMember(row: ProfileRow): Partial<Member> {
   return {
     name: row.display_name ?? "You",
     aligned: normaliseAligned(row.aligned),
+    avatarUrl: row.avatar_url,
     settings: {
       email: row.email ?? "",
       displayName: row.display_name ?? "",

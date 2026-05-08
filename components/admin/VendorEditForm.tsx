@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
 import { saveVendor } from "@/app/admin/contributor/actions";
 import { MarkdownHint } from "@/components/admin/MarkdownHint";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 type VendorRow = Database["public"]["Tables"]["vendors"]["Row"];
 
@@ -46,6 +47,7 @@ export function VendorEditForm({
   const [url,          setUrl]          = useState(vendor?.url ?? "");
   const [published,    setPublished]    = useState(vendor?.published ?? false);
   const [ownerId,      setOwnerId]      = useState(vendor?.owner_id ?? "");
+  const [imageUrl,     setImageUrl]     = useState<string | null>(vendor?.image_url ?? null);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +60,7 @@ export function VendorEditForm({
         founded,
         specialties: specialties.split(",").map((s) => s.trim()).filter(Boolean),
         url,
+        image_url: imageUrl,
         published,
         owner_id: ownerId || null,
       });
@@ -106,6 +109,21 @@ export function VendorEditForm({
         <label className={labelCls} htmlFor="body">Body (1–2 paragraphs)</label>
         <textarea id="body" rows={6} required value={body} onChange={(e) => setBody(e.target.value)} className={inputCls + " font-serif text-[15px] leading-relaxed"} />
         <MarkdownHint />
+      </div>
+
+      <div>
+        <ImageUpload
+          label="Hero photo"
+          value={imageUrl}
+          onChange={setImageUrl}
+          kind="vendor"
+          slug={slug || "untitled"}
+          aspectRatio="1/1"
+          alt={`${name || "Vendor"} hero image`}
+        />
+        <p className="text-[11px] text-warm-600 leading-snug mt-1.5">
+          Square aspect — replaces the swatch tile on the vendor detail page.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">

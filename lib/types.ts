@@ -167,6 +167,8 @@ export type Tea = {
   peakSteeps: number[];
   flavor: TeaFlavorBundle;
   reviews: TeaReviews;
+  /** Hero photo URL (Supabase Storage). Falls back to gradient. */
+  imageUrl?: string | null;
 };
 
 export type Vendor = {
@@ -188,6 +190,9 @@ export type Vendor = {
   specialties: string[];
   /** Vendor's outbound website URL — clicked through /go/[slug] for tracking. */
   url: string;
+  /** Hero photo URL (Supabase Storage public URL). When null, the
+   *  swatch + name initial render as a fallback. */
+  imageUrl?: string | null;
 };
 
 export type TeawareCategory =
@@ -224,6 +229,8 @@ export type Teaware = {
   goodFor: TeaTypeName[];
   /** Our 1-5 rating. */
   rating: number;
+  /** Hero photo URL (Supabase Storage). Falls back to gradient. */
+  imageUrl?: string | null;
 };
 
 export type PostCategory =
@@ -243,6 +250,8 @@ export type Post = {
   related: string[];
   /** Long-form Markdown body. Optional during the type's transition. */
   body?: string;
+  /** Hero photo URL (Supabase Storage). Falls back to grad. */
+  imageUrl?: string | null;
 };
 
 // =====================================================================
@@ -362,6 +371,9 @@ export type Member = {
   name: string;
   /** Which contributor's palate the member started aligned with */
   aligned: ContributorKey;
+  /** Profile photo URL from Supabase Storage. Null = render the
+   *  letter-on-colour fallback in IdentityAvatar. */
+  avatarUrl: string | null;
   ratings: MemberRating[];
   settings: MemberSettings;
   /** User's saved tea collection — links to catalog teas or holds

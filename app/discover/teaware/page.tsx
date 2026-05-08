@@ -10,6 +10,7 @@ import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { StarRow } from "@/components/ui/StarRow";
 import { ItemListJsonLd, teawareListItems } from "@/components/seo/JsonLd";
+import { EditorialImage } from "@/components/ui/EditorialImage";
 
 export const revalidate = 3600;
 
@@ -108,10 +109,14 @@ export default async function TeawareDirectory() {
 function TeawareCard({ item: t }: { item: Teaware }) {
   return (
     <article className="group bg-[var(--bg-elevated)] rounded-xl border border-warm-200 shadow-card overflow-hidden flex flex-col transition-all duration-200 ease-smooth hover:shadow-elevated hover:-translate-y-0.5">
-      <div
-        className="relative flex items-center justify-center"
-        style={{ aspectRatio: "5/3", background: t.gradient }}
-      >
+      <div className="relative">
+        <EditorialImage
+          src={t.imageUrl}
+          alt={`${t.name} — ${t.category}`}
+          gradient={t.gradient}
+          aspectRatio="5/3"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
         <span
           aria-hidden
           className="absolute inset-0"

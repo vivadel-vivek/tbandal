@@ -10,6 +10,7 @@ import { StarRow } from "@/components/ui/StarRow";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { TeaCard } from "@/components/tea/TeaCard";
 import { LibraryStatusToggle } from "@/components/library/LibraryStatusToggle";
+import { EditorialImage } from "@/components/ui/EditorialImage";
 
 // ISR: pre-render all teaware at build, revalidate hourly,
 // dynamicParams: true so newly-listed items render on first hit.
@@ -138,29 +139,38 @@ export default async function TeawareDetailPage({
             </div>
           </div>
 
-          <div
-            className="rounded-2xl shadow-elevated relative overflow-hidden flex items-center justify-center"
-            style={{ aspectRatio: "1/1", background: item.gradient }}
-          >
-            <span
-              aria-hidden
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.22) 100%)",
-              }}
+          <div className="rounded-2xl shadow-elevated relative overflow-hidden">
+            <EditorialImage
+              src={item.imageUrl}
+              alt={`${item.name} — ${item.category}`}
+              gradient={item.gradient}
+              aspectRatio="1/1"
+              priority
+              sizes="(max-width: 640px) 100vw, 480px"
             />
-            <span
-              aria-hidden
-              className="relative font-display italic font-medium"
-              style={{
-                fontSize: 96,
-                color: "rgba(250,247,242,0.92)",
-                textShadow: "0 4px 24px rgba(0,0,0,0.18)",
-              }}
-            >
-              {item.category}
-            </span>
+            {!item.imageUrl && (
+              <>
+                <span
+                  aria-hidden
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.22) 100%)",
+                  }}
+                />
+                <span
+                  aria-hidden
+                  className="absolute inset-0 flex items-center justify-center font-display italic font-medium"
+                  style={{
+                    fontSize: 96,
+                    color: "rgba(250,247,242,0.92)",
+                    textShadow: "0 4px 24px rgba(0,0,0,0.18)",
+                  }}
+                >
+                  {item.category}
+                </span>
+              </>
+            )}
             {item.volumeMl && (
               <span
                 className="absolute bottom-4 right-4 px-3 py-1 rounded-pill text-[12px] font-bold font-mono"
