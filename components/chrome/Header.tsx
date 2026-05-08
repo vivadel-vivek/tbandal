@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useMember } from "@/contexts/MemberContext";
 import { useSupabaseSession } from "@/lib/supabase/useSession";
-import { AvatarChip } from "@/components/ui/AvatarChip";
+import { AvatarChip, IdentityAvatar } from "@/components/ui/AvatarChip";
 
 const DISCOVER_ITEMS = [
   { href: "/discover/teas",     label: "Teas",      desc: "Browse the full library" },
@@ -248,7 +248,12 @@ export function Header() {
               className="ml-3 inline-flex items-center gap-2 pl-1.5 pr-3 py-1 border border-warm-300 rounded-pill bg-[var(--bg-elevated)] font-sans text-xs font-semibold text-forest no-underline"
               title={session?.email ?? undefined}
             >
-              <AvatarChip who={member.aligned} size={26} />
+              <IdentityAvatar
+                name={member.name}
+                email={session?.email}
+                tone={member.aligned}
+                size={26}
+              />
               {member.name || "You"}
             </Link>
           ) : (
@@ -280,7 +285,12 @@ export function Header() {
               className="inline-flex items-center justify-center w-11 h-11 rounded-full border border-warm-300 bg-[var(--bg-elevated)]"
               aria-label="Member profile"
             >
-              <AvatarChip who={member.aligned} size={26} />
+              <IdentityAvatar
+                name={member.name}
+                email={session?.email}
+                tone={member.aligned}
+                size={26}
+              />
             </Link>
           ) : (
             <Link
@@ -311,6 +321,7 @@ export function Header() {
         onClose={() => setDrawerOpen(false)}
         pathname={pathname}
         memberName={member.name || "You"}
+        memberEmail={session?.email ?? null}
         memberKey={member.aligned}
         isAuthed={isAuthed}
       />
@@ -323,6 +334,7 @@ function MobileDrawer({
   onClose,
   pathname,
   memberName,
+  memberEmail,
   memberKey,
   isAuthed,
 }: {
@@ -331,6 +343,7 @@ function MobileDrawer({
   pathname: string;
   isAuthed: boolean;
   memberName: string;
+  memberEmail: string | null;
   memberKey: "vivek" | "james";
 }) {
   return (
@@ -437,7 +450,12 @@ function MobileDrawer({
               onClick={onClose}
               className="flex items-center gap-3 no-underline"
             >
-              <AvatarChip who={memberKey} size={36} />
+              <IdentityAvatar
+                name={memberName === "You" ? null : memberName}
+                email={memberEmail}
+                tone={memberKey}
+                size={36}
+              />
               <div className="flex-1 min-w-0">
                 <div className="text-[10px] tracking-widest uppercase text-warm-600 font-bold">
                   Your profile
