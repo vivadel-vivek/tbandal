@@ -39,8 +39,18 @@ export function TeaCard({ tea, density = "cozy", hideReviews = false, priority =
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           priority={priority}
         />
-        <div className="absolute top-3 left-3">
+        <div className="absolute top-3 left-3 flex items-center gap-1.5">
           <TeaTypeTag type={tea.type} small={compact} />
+          {tea.subtype && (
+            <span
+              className={[
+                "rounded-pill font-mono font-bold tracking-wide bg-cream-glass backdrop-blur-[2px] text-forest",
+                compact ? "px-2 py-0.5 text-[9px]" : "px-2.5 py-0.5 text-[10px]",
+              ].join(" ")}
+            >
+              {tea.subtype}
+            </span>
+          )}
         </div>
         {!hideReviews && (
           <div

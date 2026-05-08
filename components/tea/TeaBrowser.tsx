@@ -21,6 +21,22 @@ const TYPE_OPTIONS: TypeFilter[] = [
   "Shou Pu'er",
   "Dark",
 ];
+
+// One-liner shown in the filter-chip `title` (native tooltip) so a
+// newcomer doesn't bounce when they see "Sheng Pu'er" and don't know
+// which one to click. Lay-user audit flagged this as a top blocker.
+const TYPE_HINTS: Record<TypeFilter, string> = {
+  "All":         "Every tea in the catalog",
+  "Green":       "Unoxidized — bright, grassy, vegetal. Sencha, Longjing, matcha.",
+  "White":       "Minimally processed — soft, honeyed. Silver Needle, Bai Mu Dan.",
+  "Yellow":      "Rare, gentler-than-green. Junshan Yinzhen.",
+  "Oolong":      "Partially oxidized — orchid-cream to roasted-fruit. Tieguanyin, Yancha.",
+  "Black":       "Fully oxidized — malty, sweet. Same as Chinese 红茶 / hong cha.",
+  "Sheng Pu'er": "Raw pu'er — bright, fruity, ages over years. Pressed cakes from Yunnan.",
+  "Shou Pu'er":  "Ripe pu'er — wet-pile fermented, earthy, drinks young.",
+  "Dark":        "Heicha (黑茶) — Anhua, Liu Bao, Fu Zhuan. Post-fermented, mellow, ages well.",
+  "Herbal":      "Not actually tea — chamomile, rooibos, mint. No caffeine.",
+};
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: "rating", label: "Highest rated" },
   { key: "price", label: "Price" },
@@ -129,6 +145,7 @@ export function TeaBrowser({ teas, vendors }: Props) {
             options={TYPE_OPTIONS}
             value={type}
             onChange={(v) => setType(v as TypeFilter)}
+            hints={TYPE_HINTS}
           />
         ) : (
           // Beginner buckets render as wider buttons with a hint line —
@@ -255,11 +272,16 @@ function FilterGroup({
   options,
   value,
   onChange,
+  hints,
 }: {
   label: string;
   options: string[];
   value: string;
   onChange: (v: string) => void;
+  /** Optional per-option tooltip — newcomer-friendly definitions
+   *  shown on hover/long-press so unfamiliar terms (Sheng Pu'er,
+   *  Yancha) aren't a dead-end. */
+  hints?: Record<string, string>;
 }) {
   return (
     <div className="mb-4">
@@ -271,6 +293,8 @@ function FilterGroup({
             <button
               key={o}
               onClick={() => onChange(o)}
+              title={hints?.[o]}
+              aria-label={hints?.[o] ? `${o} — ${hints[o]}` : o}
               className={[
                 "px-2.5 py-1 rounded-pill font-sans text-[11px] font-semibold cursor-pointer",
                 active

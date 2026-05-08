@@ -45,10 +45,11 @@ const MAPPINGS = [
   { table: "vendors", slug: "ippodo",          unsplash: "1601831753677-01f960be19eb" },
 
   // ---- teas ------------------------------------------------------
-  { table: "teas", slug: "gaba-shen",  unsplash: "1567922045116-2a00fae2ed03" },
-  { table: "teas", slug: "dianhong",   unsplash: "1558160074-4d7d8bdf4256" },
-  { table: "teas", slug: "tieguanyin", unsplash: "1531970227416-f0cddeb1f748" },
-  { table: "teas", slug: "gyokuro",    unsplash: "1704079698754-5e621edb610b" },
+  { table: "teas", slug: "gaba-shen",        unsplash: "1567922045116-2a00fae2ed03" },
+  { table: "teas", slug: "dianhong",         unsplash: "1558160074-4d7d8bdf4256" },
+  { table: "teas", slug: "tieguanyin",       unsplash: "1531970227416-f0cddeb1f748" },
+  { table: "teas", slug: "gyokuro",          unsplash: "1704079698754-5e621edb610b" },
+  { table: "teas", slug: "liubao-aged-15",   unsplash: "1577016029703-cc22a7c0c28c" },
 
   // ---- teaware ---------------------------------------------------
   { table: "teaware", slug: "jingdezhen-100ml-gaiwan",     unsplash: "1531969179221-3946e6b5a5e7" },

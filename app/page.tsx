@@ -82,7 +82,7 @@ export default async function Home() {
               <div className="flex gap-3 flex-wrap">
                 <Link href="/discover/teas">
                   <Button variant="primary" size="lg">
-                    Browse the library
+                    See what we&apos;ve been drinking
                   </Button>
                 </Link>
                 <Link href="/recommendations">

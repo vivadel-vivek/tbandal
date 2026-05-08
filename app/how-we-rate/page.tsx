@@ -252,11 +252,33 @@ export default function HowWeRatePage() {
               starts replacing theirs.
             </Glossarized>
           </p>
-          <p className="text-[15px] text-warm-700 leading-relaxed max-w-[680px] m-0">
+          <p className="text-[15px] text-warm-700 leading-relaxed max-w-[680px] mb-4">
             There&apos;s also a &ldquo;Try something different&rdquo; mode
             that does the inverse — finds teas <em>furthest</em> from your
             current target. Useful when you want to widen the map instead
             of going deeper.
+          </p>
+          <h3 className="font-display text-burgundy font-medium tracking-tight m-0 mt-7 mb-3 text-[20px]">
+            Type boundaries we respect
+          </h3>
+          <p className="text-[15px] text-warm-700 leading-relaxed max-w-[680px] mb-4">
+            Cosine overlap on flavor axes alone would happily recommend a
+            shou pu&apos;er to someone who&apos;s only rated raw sheng —
+            both end up earthy on the wheel, but they drink nothing alike.
+            So the engine applies a soft type boundary: teas of types
+            you&apos;ve rated stay near full score; types you&apos;ve never
+            rated take a 40% haircut. As you rate across more categories
+            the haircut fades naturally. The &ldquo;Try something
+            different&rdquo; mode reverses the same list, so unseen-type
+            teas surface there instead.
+          </p>
+          <p className="text-[15px] text-warm-700 leading-relaxed max-w-[680px] m-0">
+            A second softer nudge runs on the <strong>aged</strong> flag:
+            once your rating history leans more than 70% toward one side,
+            opposite-aged candidates take a 15% haircut. An aged-white
+            drinker gets aged-white-ish recommendations, not young
+            silver-needle. You can override either at any time by rating
+            something on the other side of the line.
           </p>
         </section>
 
