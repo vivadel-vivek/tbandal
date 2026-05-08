@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
 import { saveTea } from "@/app/admin/contributor/actions";
+import { MarkdownHint } from "@/components/admin/MarkdownHint";
 
 type TeaRow = Database["public"]["Tables"]["teas"]["Row"];
 
@@ -321,6 +322,7 @@ export function TeaEditForm({
       <div>
         <label className={labelCls} htmlFor="summary">Summary (1–2 paragraphs)</label>
         <textarea id="summary" rows={4} required value={summary} onChange={(e) => setSummary(e.target.value)} className={inputCls + " font-serif text-[15px] leading-relaxed"} />
+        <MarkdownHint />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -497,6 +499,7 @@ function ReviewPanelEditor({
               className={inputCls + " font-serif text-[14px] leading-relaxed"}
               placeholder="What did you taste? How did it brew? Would you buy it again?"
             />
+            <MarkdownHint />
           </div>
 
           <div className="grid grid-cols-2 gap-3">

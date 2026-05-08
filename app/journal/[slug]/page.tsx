@@ -10,7 +10,7 @@ import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { AvatarChip } from "@/components/ui/AvatarChip";
 import { TeaCard } from "@/components/tea/TeaCard";
-import { Glossarized } from "@/components/glossary/Glossarized";
+import { renderMarkdown } from "@/lib/markdown";
 import { ArticleJsonLd } from "@/components/seo/JsonLd";
 import { PreviewBanner } from "@/components/admin/PreviewBanner";
 
@@ -146,12 +146,8 @@ export default async function JournalPost({
   );
 }
 
-/**
- * Lightweight Markdown-ish renderer. The bodies in lib/data.ts use
- * `\n\n` paragraph breaks and `## ` for H2 subheads — enough for the
- * editorial shape we need without pulling in a full Markdown lib. Will
- * be replaced by MDX in Phase 6 once Airtable is the source.
- */
+/** Empty-state for posts without a body yet (rare, but possible
+ *  when a draft is created with title + metadata first). */
 function PostBody({ body }: { body: string | undefined }) {
   if (!body) {
     return (
@@ -161,28 +157,5 @@ function PostBody({ body }: { body: string | undefined }) {
       </p>
     );
   }
-
-  const blocks = body.split(/\n\n+/).map((b) => b.trim()).filter(Boolean);
-
-  return (
-    <>
-      {blocks.map((block, i) => {
-        if (block.startsWith("## ")) {
-          return (
-            <h2
-              key={i}
-              className="font-display text-burgundy font-medium tracking-tight m-0 mt-9 mb-4 text-hero-md"
-            >
-              {block.slice(3).trim()}
-            </h2>
-          );
-        }
-        return (
-          <p key={i} className="mb-5">
-            <Glossarized>{block}</Glossarized>
-          </p>
-        );
-      })}
-    </>
-  );
+  return <>{renderMarkdown(body)}</>;
 }

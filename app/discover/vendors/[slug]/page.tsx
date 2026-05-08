@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTeas, getVendors, getVendorBySlug } from "@/lib/content";
+import { renderMarkdown } from "@/lib/markdown";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -74,9 +75,9 @@ export default async function VendorDetailPage({
             <p className="text-lg text-warm-700 leading-relaxed mb-4">
               {vendor.tagline}
             </p>
-            <p className="text-[15px] text-warm-700 leading-relaxed mb-6">
-              {vendor.body}
-            </p>
+            <div className="text-[15px] text-warm-700 leading-relaxed mb-6 [&>p]:mb-3 last:[&>p]:mb-0">
+              {renderMarkdown(vendor.body)}
+            </div>
             <div className="flex gap-3">
               <a
                 href={`/go/${vendor.slug}`}

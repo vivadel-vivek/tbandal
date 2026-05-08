@@ -52,10 +52,15 @@ file_size_limit = "50MiB"
 
 [auth]
 enabled = true
-site_url = "http://localhost:3000"
+# Production site URL — this is what Supabase substitutes into auth
+# emails (invite, password reset, magic link). Localhost is added to
+# the allow-list below so dev still works.
+site_url = "https://two-buds-and-a-leaf.vercel.app"
 additional_redirect_urls = [
-  "http://localhost:3000",
   "https://two-buds-and-a-leaf.vercel.app",
+  "https://two-buds-and-a-leaf.vercel.app/**",
+  "http://localhost:3000",
+  "http://localhost:3000/**",
 ]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true

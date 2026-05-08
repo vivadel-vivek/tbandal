@@ -28,6 +28,7 @@ import { RadarChart } from "@/components/tea/RadarChart";
 import { MouthfeelGrid } from "@/components/tea/MouthfeelGrid";
 import { SessionShareButton } from "@/components/session/SessionShareButton";
 import { Glossarized } from "@/components/glossary/Glossarized";
+import { renderMarkdown } from "@/lib/markdown";
 
 type ReviewTab = ContributorKey | "members" | "you";
 
@@ -417,8 +418,8 @@ export function TeaDetailView({ tea, vendor, contributors, similar, blindMode = 
                       </div>
                     </div>
 
-                    <p
-                      className="font-serif italic text-forest leading-relaxed mb-5 pl-4 text-[18px]"
+                    <div
+                      className="font-serif italic text-forest leading-relaxed mb-5 pl-4 text-[18px] [&>p]:mb-3 last:[&>p]:mb-0"
                       style={{
                         borderLeft: `2px solid ${
                           safeTab === "you"
@@ -427,8 +428,8 @@ export function TeaDetailView({ tea, vendor, contributors, similar, blindMode = 
                         }`,
                       }}
                     >
-                      &ldquo;<Glossarized>{review.body}</Glossarized>&rdquo;
-                    </p>
+                      {renderMarkdown(review.body)}
+                    </div>
 
                     {review.session && (
                       <div className="bg-cream px-4 py-3 rounded-md mb-4 text-xs text-warm-700 font-mono break-words">

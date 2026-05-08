@@ -310,6 +310,8 @@ the DB, edits flow through the contributor portal or Studio.
 
 Most recent first.
 
+- **Markdown everywhere in editorial copy** — `lib/markdown.tsx` server-renders `**bold** *italic* \`code\` [link](url) ## h2 ### h3 > quote - list` for journal post body, tea hero summary, tea review body, vendor body, teaware body. `<Glossarized>` accepts `ReactNode` so term tooltips wrap each rendered paragraph. Editors get a `MarkdownHint` line under each body/summary textarea — preview is the existing `?preview=1` link in the top bar.
+- **Hosted Supabase Site URL fix** — invite/reset emails now point to `two-buds-and-a-leaf.vercel.app`, not localhost (`supabase config push`)
 - **Tea-detail client/server split** — hero now SSR (audit item #5)
 - **Tea-card subtitles** — auto-derived plain-English tags
 - **Beginner-mode toggle** on `/discover/teas`

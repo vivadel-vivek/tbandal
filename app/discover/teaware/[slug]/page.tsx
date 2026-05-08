@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTeas, getTeaware, getTeawareBySlug, getVendorByName } from "@/lib/content";
+import { renderMarkdown } from "@/lib/markdown";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
@@ -87,14 +88,9 @@ export default async function TeawareDetailPage({
             <p className="text-lg text-warm-700 leading-relaxed mb-4">
               {item.tagline}
             </p>
-            {item.body.split("\n\n").map((para, i) => (
-              <p
-                key={i}
-                className="text-[15px] text-warm-700 leading-relaxed mb-4"
-              >
-                {para}
-              </p>
-            ))}
+            <div className="text-[15px] text-warm-700 leading-relaxed mb-4 [&>p]:mb-4 last:[&>p]:mb-0">
+              {renderMarkdown(item.body)}
+            </div>
 
             <div className="flex gap-3 mt-6 flex-wrap items-center">
               <a

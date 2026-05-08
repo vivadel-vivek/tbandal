@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import { GLOSSARY } from "@/lib/glossary";
 
@@ -55,21 +56,40 @@ function findEntry(matched: string): TermHit | undefined {
 
 /**
  * Wrap any glossary term that appears in `children` with a subtle
- * dotted-underline link to its glossary entry. The native `title`
- * attribute gives every browser a hover tooltip with the lay
- * description, which is exactly what the newcomer audit asked for.
+ * dotted-underline link to its glossary entry. Hover/focus reveals
+ * a styled popover with the lay-language definition; click navigates
+ * to the full glossary entry.
  *
- * Use this on natural-language prose only (review bodies, tea summaries,
- * finish chips). Don't wrap headlines or chrome — the linkifying noise
- * is meant for body text where readers will pause on a word.
+ * Accepts either a plain string OR a ReactNode tree. When passed a
+ * tree, only string children are walked for term matches — already-
+ * rendered elements (links, bold, italic from the Markdown renderer)
+ * pass through untouched. This lets renderMarkdown emit React nodes
+ * with inline formatting and still get free term tooltips.
  */
-export function Glossarized({ children }: { children: string }) {
-  if (!PATTERN || !children) return <>{children}</>;
+export function Glossarized({ children }: { children: React.ReactNode }) {
+  if (!PATTERN || children === null || children === undefined) {
+    return <>{children}</>;
+  }
+  return <>{glossarizeNodes(children)}</>;
+}
 
+function glossarizeNodes(nodes: React.ReactNode): React.ReactNode {
+  if (typeof nodes === "string") return glossarizeString(nodes);
+  if (Array.isArray(nodes)) {
+    return nodes.map((n, i) => (
+      <React.Fragment key={i}>{glossarizeNodes(n)}</React.Fragment>
+    ));
+  }
+  // Already-rendered React elements (Markdown <strong>, <a>, etc.)
+  // pass through. We deliberately don't recurse into their children —
+  // glossary terms inside an <a href> would create nested anchors.
+  return nodes;
+}
+
+function glossarizeString(children: string): React.ReactNode {
+  if (!PATTERN || !children) return children;
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
-  // matchAll returns an iterator; collect into an array via Array.from
-  // so the loop doesn't depend on for-of-over-iterator semantics.
   const matches = Array.from(children.matchAll(PATTERN));
 
   for (const match of matches) {

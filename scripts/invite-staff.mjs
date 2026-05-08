@@ -60,7 +60,7 @@ for (const s of STAFF) {
   if (!user) {
     // No account → invite (creates user + emails setup link).
     const { data, error } = await admin.auth.admin.inviteUserByEmail(s.email, {
-      redirectTo: `${SITE_URL}/auth/callback?next=/admin/contributor`,
+      redirectTo: `${SITE_URL}/auth/callback?next=/admin`,
     });
     if (error) {
       console.error(`✗ invite failed: ${error.message}`);
@@ -71,7 +71,7 @@ for (const s of STAFF) {
   } else {
     // Exists → send a recovery email so they can pick a new password.
     const { error } = await admin.auth.resetPasswordForEmail(s.email, {
-      redirectTo: `${SITE_URL}/auth/callback?next=/admin/contributor`,
+      redirectTo: `${SITE_URL}/auth/callback?next=/admin`,
     });
     if (error) {
       console.error(`✗ password-reset failed: ${error.message}`);

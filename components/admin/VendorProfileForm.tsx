@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
 import { saveVendorProfile } from "@/app/admin/vendor/actions";
+import { MarkdownHint } from "@/components/admin/MarkdownHint";
 
 type VendorRow = Database["public"]["Tables"]["vendors"]["Row"];
 
@@ -89,6 +90,7 @@ export function VendorProfileForm({ vendor }: { vendor: VendorRow }) {
       <div>
         <label className={labelCls} htmlFor="body">Body (1–2 paragraphs)</label>
         <textarea id="body" rows={6} required value={body} onChange={(e) => setBody(e.target.value)} className={inputCls + " font-serif text-[15px] leading-relaxed"} />
+        <MarkdownHint />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

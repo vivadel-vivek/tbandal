@@ -13,6 +13,7 @@ import { TeaTypeTag } from "@/components/ui/TeaTypeTag";
 import { RatingScore } from "@/components/ui/RatingScore";
 import { TeaStain } from "@/components/ui/TeaStain";
 import { Glossarized } from "@/components/glossary/Glossarized";
+import { renderInlineMarkdown } from "@/lib/markdown";
 import { LibraryStatusToggle } from "@/components/library/LibraryStatusToggle";
 
 type Props = {
@@ -149,7 +150,7 @@ function HeroSplit({ tea, hideReviews, logHref, vendorOutboundHref }: Omit<Props
           </div>
         )}
         <p className="text-[17px] text-warm-700 leading-relaxed mb-5">
-          <Glossarized>{tea.summary}</Glossarized>
+          <Glossarized>{renderInlineMarkdown(tea.summary)}</Glossarized>
         </p>
         <div className="flex gap-2.5 flex-wrap items-center">
           <HeroActions tea={tea} logHref={logHref} vendorOutboundHref={vendorOutboundHref} />
@@ -214,7 +215,7 @@ function HeroStain({ tea, hideReviews, logHref, vendorOutboundHref }: Omit<Props
           className="font-serif italic text-warm-700 leading-relaxed max-w-[600px] mx-auto mb-7 text-[19px]"
           style={{ textWrap: "balance" }}
         >
-          &ldquo;<Glossarized>{tea.summary}</Glossarized>&rdquo;
+          &ldquo;<Glossarized>{renderInlineMarkdown(tea.summary)}</Glossarized>&rdquo;
         </p>
         <div className="inline-flex gap-2.5 flex-wrap items-center justify-center">
           <HeroActions tea={tea} logHref={logHref} vendorOutboundHref={vendorOutboundHref} />
@@ -297,7 +298,7 @@ function HeroEditorial({
             >
               {tea.summary[0]}
             </span>
-            <Glossarized>{tea.summary.slice(1)}</Glossarized>
+            <Glossarized>{renderInlineMarkdown(tea.summary.slice(1))}</Glossarized>
           </p>
           <div className="flex gap-2.5 flex-wrap items-center">
             <HeroActions tea={tea} logHref={logHref} vendorOutboundHref={vendorOutboundHref} />

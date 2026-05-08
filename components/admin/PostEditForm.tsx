@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
 import { savePost } from "@/app/admin/contributor/actions";
+import { MarkdownHint } from "@/components/admin/MarkdownHint";
 
 type PostRow = Database["public"]["Tables"]["posts"]["Row"];
 
@@ -168,8 +169,9 @@ export function PostEditForm({ post }: { post: PostRow | null }) {
       </div>
 
       <div>
-        <label className={labelCls} htmlFor="body">Body (Markdown — `## ` for H2)</label>
+        <label className={labelCls} htmlFor="body">Body</label>
         <textarea id="body" rows={20} value={body} onChange={(e) => setBody(e.target.value)} className={inputCls + " font-serif text-[15px] leading-relaxed"} />
+        <MarkdownHint />
       </div>
 
       {/* Published toggle moved into the top action bar. */}

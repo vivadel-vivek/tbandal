@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { Database } from "@/lib/supabase/types";
 import { saveTeaware } from "@/app/admin/contributor/actions";
+import { MarkdownHint } from "@/components/admin/MarkdownHint";
 
 type TeawareRow = Database["public"]["Tables"]["teaware"]["Row"];
 
@@ -127,6 +128,7 @@ export function TeawareEditForm({ item }: { item: TeawareRow | null }) {
       <div>
         <label className={labelCls} htmlFor="body">Body</label>
         <textarea id="body" rows={6} required value={body} onChange={(e) => setBody(e.target.value)} className={inputCls + " font-serif text-[15px] leading-relaxed"} />
+        <MarkdownHint />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
