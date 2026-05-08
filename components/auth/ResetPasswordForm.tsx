@@ -13,9 +13,12 @@ const inputCls =
 //   - OTP hash: /auth/reset?token_hash=…&type=… (older email templates)
 //   - Implicit: /auth/reset#access_token=…&type=recovery
 //
-// supabase-js's browser client picks up `code` and the URL hash on its
-// own and fires `PASSWORD_RECOVERY` / `SIGNED_IN`. For `token_hash` we
-// invoke verifyOtp manually since that branch isn't auto-handled.
+// Each branch is finalized differently:
+//   - `code`        → exchangeCodeForSession (must be called explicitly;
+//                     supabase-js does NOT auto-exchange URL `?code=`)
+//   - `token_hash`  → verifyOtp({ token_hash, type })
+//   - hash fragment → supabase-js parses on init and fires
+//                     PASSWORD_RECOVERY / SIGNED_IN automatically
 //
 // Once a session is established, the user can submit a new password.
 // If the link is invalid/expired, we surface a clear message + a link
@@ -45,54 +48,89 @@ export function ResetPasswordForm() {
       if (!ok && msg) setError(msg);
     };
 
-    const verifyTokenHashIfPresent = async () => {
-      const tokenHash = searchParams.get("token_hash");
-      const type = searchParams.get("type");
-      if (!tokenHash || !type) return null;
-      const { error: verifyErr } = await supabase.auth.verifyOtp({
-        type: type as "recovery" | "invite" | "email" | "signup" | "magiclink",
-        token_hash: tokenHash,
-      });
-      return verifyErr;
-    };
+    // Listen first so any auth event during exchange/verify is caught.
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY" || (session && event === "SIGNED_IN")) {
+        settle(true);
+      }
+    });
+
+    let timer: ReturnType<typeof setTimeout> | null = null;
 
     (async () => {
-      // 1. token_hash flow (older email template)
-      const verifyErr = await verifyTokenHashIfPresent();
-      if (verifyErr) {
-        return settle(false, verifyErr.message);
+      const code = searchParams.get("code");
+      const tokenHash = searchParams.get("token_hash");
+      const type = searchParams.get("type");
+
+      // 1. Implicit flow — hash fragment. The admin SDK (service-role
+      // resetPasswordForEmail) uses this by default, so the email link
+      // ends with `#access_token=…&refresh_token=…&type=recovery`.
+      // @supabase/ssr's browser client defaults to PKCE and does NOT
+      // auto-parse the hash, so we parse + setSession explicitly.
+      if (typeof window !== "undefined" && window.location.hash) {
+        const hashParams = new URLSearchParams(
+          window.location.hash.replace(/^#/, ""),
+        );
+        const accessToken = hashParams.get("access_token");
+        const refreshToken = hashParams.get("refresh_token");
+        if (accessToken && refreshToken) {
+          const { error: setErr } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (setErr) {
+            return settle(false, setErr.message);
+          }
+          // Strip the hash so a refresh doesn't re-process stale tokens.
+          history.replaceState(null, "", window.location.pathname + window.location.search);
+          return settle(true);
+        }
       }
 
-      // 2. Listen for the implicit-hash + PKCE flows. supabase-js parses
-      // both automatically and fires PASSWORD_RECOVERY / SIGNED_IN.
-      const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-        if (event === "PASSWORD_RECOVERY" || (session && event === "SIGNED_IN")) {
-          settle(true);
+      // 2. PKCE — exchange the `?code=` for a session. Required for
+      // projects on the new flow.
+      if (code) {
+        const { error: exchangeErr } =
+          await supabase.auth.exchangeCodeForSession(code);
+        if (exchangeErr) {
+          return settle(false, exchangeErr.message);
         }
-      });
+        return settle(true);
+      }
 
-      // 3. If a session is already in place (token_hash branch above,
-      // or returning visit), short-circuit.
+      // 3. token_hash flow (older email template).
+      if (tokenHash && type) {
+        const { error: verifyErr } = await supabase.auth.verifyOtp({
+          type: type as "recovery" | "invite" | "email" | "signup" | "magiclink",
+          token_hash: tokenHash,
+        });
+        if (verifyErr) {
+          return settle(false, verifyErr.message);
+        }
+        return settle(true);
+      }
+
+      // 4. If a session is already in place (returning visit),
+      // short-circuit so they can change password.
       const { data } = await supabase.auth.getSession();
-      if (data.session) settle(true);
+      if (data.session) {
+        settle(true);
+        return;
+      }
 
-      // 4. After a beat with no signal, mark invalid so the user gets
-      // a clear "this link is no good" instead of a hung spinner.
-      const timer = setTimeout(() => {
+      // 5. Nothing usable in the URL — fail fast.
+      timer = setTimeout(() => {
         if (!cancelled) {
           setStatus((prev) => (prev === "checking" ? "invalid" : prev));
           setError((prev) => prev ?? "This link is invalid or has expired.");
         }
-      }, 4000);
-
-      return () => {
-        sub.subscription.unsubscribe();
-        clearTimeout(timer);
-      };
+      }, 1500);
     })();
 
     return () => {
       cancelled = true;
+      sub.subscription.unsubscribe();
+      if (timer) clearTimeout(timer);
     };
   }, [searchParams]);
 
