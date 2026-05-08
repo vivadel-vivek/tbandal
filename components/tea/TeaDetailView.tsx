@@ -606,6 +606,9 @@ export function TeaDetailView({ tea, vendor, contributors, similar, blindMode = 
               <BrewingStat k="Ratio" v={tea.brewing.ratio} icon="⚖️" />
               <BrewingStat k="Temp" v={tea.brewing.temp} icon="🌡️" />
               <BrewingStat k="First steep" v={tea.brewing.first} icon="⏱️" />
+              {tea.brewing.rinse && (
+                <BrewingStat k="Rinse" v={tea.brewing.rinse} icon="💦" />
+              )}
             </div>
             <div className="mt-5 pt-4 border-t border-warm-200 text-[13px] text-warm-700 leading-snug">
               <strong className="text-forest">{tea.sessions} sessions logged.</strong>{" "}

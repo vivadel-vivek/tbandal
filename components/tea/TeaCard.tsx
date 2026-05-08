@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import type { CardDensity, Tea } from "@/lib/types";
-import { teaAvg, teaUrl, teaSubtitle } from "@/lib/tea-helpers";
+import { teaAvg, teaUrl, teaSubtitle, teaIsRated } from "@/lib/tea-helpers";
 import { TeaTypeTag } from "@/components/ui/TeaTypeTag";
 import { StarRow } from "@/components/ui/StarRow";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -24,6 +24,7 @@ type Props = {
 export function TeaCard({ tea, density = "cozy", hideReviews = false, priority = false }: Props) {
   const compact = density === "compact";
   const avg = teaAvg(tea);
+  const rated = teaIsRated(tea);
 
   return (
     <Link
@@ -36,7 +37,10 @@ export function TeaCard({ tea, density = "cozy", hideReviews = false, priority =
           alt={`${tea.name} — ${tea.vendor}`}
           gradient={tea.gradient}
           aspectRatio={compact ? "16/8" : "16/10"}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          // Card grids are 1col mobile, 2col sm/md, max-width ~520px
+          // per card on lg+. Tightened from "33vw" so next/image
+          // serves the right resolution.
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 520px"
           priority={priority}
         />
         <div className="absolute top-3 left-3 flex items-center gap-1.5">
@@ -52,24 +56,33 @@ export function TeaCard({ tea, density = "cozy", hideReviews = false, priority =
             </span>
           )}
         </div>
-        {!hideReviews && (
+        {!hideReviews && rated && (
           <div
             className="absolute top-3 right-3 px-2.5 py-1 rounded-pill font-display font-semibold text-burgundy bg-cream-glass backdrop-blur-[2px] text-sm"
           >
             {avg.toFixed(1)}
           </div>
         )}
+        {!hideReviews && !rated && (
+          <div className="absolute top-3 right-3 px-2.5 py-1 rounded-pill text-warm-700 bg-cream-glass backdrop-blur-[2px] text-[10px] font-bold tracking-widest uppercase">
+            New · tasting
+          </div>
+        )}
       </div>
       <div className={compact ? "px-3.5 pt-3 pb-3.5" : "px-4 pt-4 pb-4"}>
         <Eyebrow>{tea.region}</Eyebrow>
-        <h3
+        {/* h2 (not h3): every card is the primary content unit on the
+            grid pages, and Lighthouse heading-order enforces no-skip
+            from h1. The visual size is unchanged. Same pattern used
+            on the journal index. */}
+        <h2
           className={[
             "font-display text-burgundy font-medium leading-tight tracking-tight m-0 mt-1",
             compact ? "text-[19px]" : "text-2xl",
           ].join(" ")}
         >
           {tea.name}
-        </h3>
+        </h2>
         {/* Plain-English subtitle — newcomer-friendly tag like
             "3-year pu'er, mineral & honeyed". Editor-overridable via
             tea.subtitle; falls back to teaSubtitle() derivation. */}
@@ -90,7 +103,7 @@ export function TeaCard({ tea, density = "cozy", hideReviews = false, priority =
             compact ? "mt-2" : "mt-3",
           ].join(" ")}
         >
-          {!hideReviews ? (
+          {!hideReviews && rated ? (
             <StarRow value={Math.round(avg / 2)} />
           ) : (
             <span /> /* placeholder so $/g stays right-aligned */

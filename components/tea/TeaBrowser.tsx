@@ -209,10 +209,12 @@ export function TeaBrowser({ teas, vendors }: Props) {
           <Eyebrow color="var(--warm-600, #6B6560)">Elevation</Eyebrow>
           <div className="mt-3">
             <input
+              id="elevation-max"
               type="range"
               min={0}
               max={3000}
               defaultValue={3000}
+              aria-label="Maximum elevation in metres"
               className="w-full accent-burgundy"
             />
             <div className="flex justify-between text-[11px] text-warm-600 mt-1">

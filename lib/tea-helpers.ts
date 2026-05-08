@@ -10,16 +10,37 @@ import type { Tea } from "./types";
 /**
  * Average of available critic ratings (Vivek + James), null-safe.
  * Falls back to the members rating if neither critic has reviewed.
+ * Treats a 0 rating as "no rating" — newly-seeded teas have
+ * rating: 0 placeholders that should not contribute to the average.
  */
 export function teaAvg(tea: Tea): number {
   const r = tea.reviews;
   const vals: number[] = [];
-  if (r.vivek && typeof r.vivek.rating === "number") vals.push(r.vivek.rating);
-  if (r.james && typeof r.james.rating === "number") vals.push(r.james.rating);
-  if (vals.length === 0 && r.members && typeof r.members.rating === "number") {
+  if (r.vivek && typeof r.vivek.rating === "number" && r.vivek.rating > 0) {
+    vals.push(r.vivek.rating);
+  }
+  if (r.james && typeof r.james.rating === "number" && r.james.rating > 0) {
+    vals.push(r.james.rating);
+  }
+  if (
+    vals.length === 0 &&
+    r.members &&
+    typeof r.members.rating === "number" &&
+    r.members.rating > 0 &&
+    (r.members.count ?? 0) > 0
+  ) {
     vals.push(r.members.rating);
   }
   return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+}
+
+/**
+ * True when no critic and no members rating exists — used to decide
+ * whether to render "Not yet rated" placeholders instead of a "0.0/10"
+ * which reads as a verdict to newcomers (lay-user audit blocker).
+ */
+export function teaIsRated(tea: Tea): boolean {
+  return teaAvg(tea) > 0;
 }
 
 /** Vendor URL slug for a tea — read from the denormalized field. */

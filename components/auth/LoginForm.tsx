@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
+import { safeNext } from "@/lib/auth/safe-next";
 
 const inputCls =
   "w-full px-3 py-2.5 rounded-md border border-warm-300 bg-cream text-[14px] focus:outline-none focus:border-burgundy";
@@ -15,7 +16,10 @@ const inputCls =
 export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") || "/member";
+  // safeNext rejects external/protocol-relative URLs so a phishing
+  // link like /login?next=https://evil.com can't bounce a freshly-
+  // signed-in visitor off-site.
+  const next = safeNext(params.get("next"));
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

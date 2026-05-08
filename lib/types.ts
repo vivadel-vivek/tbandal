@@ -61,6 +61,10 @@ export type BrewingParams = {
   ratio: string;     // "5g/100ml"
   temp: string;      // "95°C"
   first: string;     // "10s"
+  /** Optional rinse instruction — "1x flash", "2x flash", "skip".
+   *  Surface for shou pu'er, dark teas, and aged sheng where the
+   *  rinse is part of the recipe, not optional. */
+  rinse?: string;
 };
 
 export type ReviewBody = {

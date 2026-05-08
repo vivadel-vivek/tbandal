@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { POLICY_VERSIONS } from "@/lib/policy";
+import { safeNext } from "@/lib/auth/safe-next";
 
 const inputCls =
   "w-full px-3 py-2.5 rounded-md border border-warm-300 bg-cream text-[14px] focus:outline-none focus:border-burgundy";
@@ -24,7 +25,8 @@ export function SignupForm() {
   const params = useSearchParams();
   // Honor a `?next=/path` so users land back on the page that prompted
   // them to sign up (library toggle, log-a-session). Defaults to /member.
-  const next = params.get("next") || "/member";
+  // safeNext blocks open-redirect via /signup?next=https://evil.com.
+  const next = safeNext(params.get("next"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
