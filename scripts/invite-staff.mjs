@@ -8,8 +8,8 @@
 //    "recovery"}) returns a password-reset URL we send via the
 //    same-name resetPasswordForEmail (which produces a real email).
 //
-// Either way the user clicks an email link, lands on /auth/callback,
-// chooses a password, and the role is already set on their profile.
+// Either way the user clicks an email link, lands on /auth/reset to
+// pick a password, and the role is already set on their profile.
 
 import { createClient } from "@supabase/supabase-js";
 import { config as loadEnv } from "dotenv";
@@ -60,7 +60,7 @@ for (const s of STAFF) {
   if (!user) {
     // No account → invite (creates user + emails setup link).
     const { data, error } = await admin.auth.admin.inviteUserByEmail(s.email, {
-      redirectTo: `${SITE_URL}/auth/callback?next=/admin`,
+      redirectTo: `${SITE_URL}/auth/reset?next=/admin`,
     });
     if (error) {
       console.error(`✗ invite failed: ${error.message}`);
@@ -71,7 +71,7 @@ for (const s of STAFF) {
   } else {
     // Exists → send a recovery email so they can pick a new password.
     const { error } = await admin.auth.resetPasswordForEmail(s.email, {
-      redirectTo: `${SITE_URL}/auth/callback?next=/admin`,
+      redirectTo: `${SITE_URL}/auth/reset?next=/admin`,
     });
     if (error) {
       console.error(`✗ password-reset failed: ${error.message}`);
