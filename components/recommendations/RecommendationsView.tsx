@@ -127,12 +127,21 @@ export function RecommendationsView({
           <h1 className="font-display text-burgundy font-medium tracking-tight leading-[1.05] mt-2 mb-4 text-[40px] sm:text-[64px]">
             <span className="italic">What should</span> we brew next?
           </h1>
-          <p className="max-w-[600px] text-warm-700 text-base mb-6 leading-relaxed">
+          <p className="max-w-[640px] text-warm-700 text-base mb-2 leading-relaxed">
             Aligned with{" "}
             <strong style={{ color: aligned.color }}>{aligned.name}&apos;s</strong>{" "}
             palate, then refined by your {member.ratings.length} ratings. Pick a
             mode below.
           </p>
+          {member.ratings.length === 0 && (
+            <p className="max-w-[640px] text-[13px] text-warm-600 leading-snug mb-6">
+              {aligned.name === "James"
+                ? "James is the tea lead — sheng pu'er and the aged corner of the cabinet. Go to /member/settings to align with Vivek instead."
+                : "Vivek leans subtle — aged whites, malty notes, the nutty register. Go to /member/settings to align with James instead."}{" "}
+              Once you&apos;ve rated three or four teas, your own palate
+              starts replacing the aligned signal.
+            </p>
+          )}
         </div>
 
         {/* Mode tabs */}

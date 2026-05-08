@@ -7,6 +7,7 @@
 
 export type GlossarySectionKey =
   | "tea-types"
+  | "brewing-basics"
   | "brewing-methods"
   | "brewing-vessels"
   | "flavor-terms"
@@ -198,6 +199,69 @@ const TEA_TYPES: GlossarySection = {
 // =====================================================================
 // SECTION 2 — BREWING METHODS
 // =====================================================================
+
+const BREWING_BASICS: GlossarySection = {
+  key: "brewing-basics",
+  title: "Brewing basics",
+  intro:
+    "The vocabulary you need before any specific method makes sense. These are the words newcomers actually trip on — what a steep is, what a ratio means, why some teas pucker your mouth and others don't.",
+  entries: [
+    {
+      slug: "steep",
+      term: "Steep",
+      aliases: ["steeps", "steeping", "infusion"],
+      lay: "One round of soaking the leaves in hot water. Fill, wait, pour out, drink — that's a steep. A single tea session usually has several.",
+      technical:
+        "A steep (or infusion) is one extraction cycle: water hits the leaf, soluble compounds dissolve out, and the liquid is poured off. Western brewing usually does one long steep (3–5 min) and discards the leaf; gongfu does many short ones (5–60s) from the same charge, with each steep tasting noticeably different from the last as soluble compounds release at different rates. The first steep tends to give aromatics and surface notes; middle steeps deepen as deeper compounds release; later steeps thin out as the leaf gives up.",
+      related: ["flash-pour", "extraction", "gongfu", "western"],
+    },
+    {
+      slug: "flash-pour",
+      term: "Flash pour",
+      aliases: ["flash steep", "flash brew", "rinse pour"],
+      lay: "An almost-no-time steep — fill the gaiwan, then pour right back out, three to five seconds total. Used early in gongfu sessions when the leaf is still strong.",
+      technical:
+        "A flash pour is a deliberately under-extracted steep, typically 3–10 seconds total contact time. It serves two purposes: first to wake up dense leaf (compressed sheng pu'er or rolled oolong) without over-extracting, and second to manage the very first pours when concentrated leaf will release too much too fast. Inexperienced brewers tend to oversteep first cups, ruining tea that would have shown beautifully with a flash; learning to trust short times is the single biggest gongfu skill jump.",
+      related: ["steep", "gongfu", "extraction", "pu-er"],
+    },
+    {
+      slug: "leaf-to-water",
+      term: "Leaf-to-water ratio",
+      aliases: ["leaf ratio", "tea-to-water", "ratio", "leaf-to-water ratio"],
+      lay: "How much leaf you use per cup of water. The single biggest variable in tea — change it and the cup changes more than from temperature or time.",
+      technical:
+        "Expressed as grams of leaf per 100ml of water. Western brewing sits around 1g/100ml (a teaspoon in a mug); gongfu runs five to eight times higher — 5–8g/100ml — which is why it needs the much shorter steeps. Higher ratio means more concentration but also faster extraction, so the relationship between ratio and time is inverse: doubling the leaf roughly halves the time. Most people new to gongfu find the ratios shocking; they're correct, you just need to keep the steeps short.",
+      related: ["gongfu", "western", "steep", "gaiwan"],
+    },
+    {
+      slug: "tannins",
+      term: "Tannins",
+      aliases: ["tannin", "polyphenols", "catechins"],
+      lay: "The compounds that give tea its drying, slightly puckering sensation — the same family of chemicals that makes red wine feel \"grippy.\" Useful in moderation, harsh in excess.",
+      technical:
+        "Tea tannins are mostly catechins (EGCG, ECG, EC, EGC) that bind with proteins on the tongue and palate, producing the tactile \"astringent\" or \"drying\" sensation. They extract faster at high temperatures and longer steeps; flash pours and cooler water suppress them. Pu'er (sheng especially), young Wuyi yancha, and many blacks lean tannic by design; whites and Japanese greens are tannin-light. A balanced cup has enough tannin to feel structured but not so much that it overwhelms aromatics. Bitter ≠ astringent: bitter is taste, astringent is touch.",
+      related: ["astringent", "extraction", "flash-pour"],
+    },
+    {
+      slug: "aromatics",
+      term: "Aromatics",
+      aliases: ["aromatic", "volatiles", "aroma compounds"],
+      lay: "The smells in the cup — what hits your nose before the sip and lingers in the empty cup after. The most fragile part of any tea.",
+      technical:
+        "Aromatics are the volatile organic compounds — terpenes, aldehydes, esters, alcohols — that vaporize and reach the olfactory bulb. They're the loudest part of a tea's first impression and the most easily destroyed by water that's too hot, by overextraction, or by stale leaf. Gongfu brewing concentrates aromatics by keeping the leaf-to-water ratio high and the contact time short. Smelling the empty fragrance cup (聞香杯) after pouring out — a Taiwanese ritual — is a way to read what the tea is offering before tasting it.",
+      related: ["floral", "extraction", "gongfu"],
+    },
+    {
+      slug: "extraction",
+      term: "Extraction",
+      aliases: ["extract", "extracted", "over-extracted", "under-extracted"],
+      lay: "How much of what's in the leaf has come out into the water. Not enough — the cup tastes thin. Too much — bitter and harsh. Most of brewing is finding the sweet spot.",
+      technical:
+        "Extraction is the dissolution of soluble leaf compounds — caffeine, polyphenols, amino acids, polysaccharides, aromatic volatiles — into the brew water. Extraction rate depends on temperature, time, leaf-to-water ratio, leaf surface area (whole vs broken), and water chemistry (TDS, pH). Compounds extract at different rates: aromatics fastest, then theanine and amino acids, then caffeine, then catechins and tannins. Under-extraction reads as thin, watery, lacking depth; over-extraction reads as harsh, bitter, astringent. Gongfu's many short steeps approximate fractional distillation — pulling different compound classes in different cups.",
+      related: ["steep", "tannins", "leaf-to-water", "tds"],
+    },
+  ],
+};
 
 const BREWING_METHODS: GlossarySection = {
   key: "brewing-methods",
@@ -577,6 +641,7 @@ const MOUTHFEEL: GlossarySection = {
 
 export const GLOSSARY: GlossarySection[] = [
   TEA_TYPES,
+  BREWING_BASICS,
   BREWING_METHODS,
   BREWING_VESSELS,
   FLAVOR_TERMS,

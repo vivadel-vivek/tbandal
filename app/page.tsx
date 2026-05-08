@@ -91,6 +91,15 @@ export default async function Home() {
                   </Button>
                 </Link>
               </div>
+              <p className="text-[13px] text-warm-600 mt-3.5 leading-snug">
+                Or new to tea?{" "}
+                <Link
+                  href="/start"
+                  className="text-burgundy font-bold no-underline hover:underline"
+                >
+                  Brew your first cup with us →
+                </Link>
+              </p>
               <div className="flex gap-6 sm:gap-8 mt-8 sm:mt-10 pt-5 sm:pt-6 border-t border-warm-200 flex-wrap">
                 <Stat n={TEAS.length} label="Teas reviewed" />
                 <Stat n={POSTS.length} label="Tasting essays" />

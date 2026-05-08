@@ -6,12 +6,12 @@ const COLS: { title: string; items: Item[] }[] = [
   {
     title: "Explore",
     items: [
-      { label: "Discover",  href: "/discover" },
-      { label: "Teas",      href: "/discover/teas" },
-      { label: "Vendors",   href: "/discover/vendors" },
-      { label: "Teaware",   href: "/discover/teaware" },
-      { label: "Glossary",  href: "/discover/glossary" },
-      { label: "Journal",   href: "/journal" },
+      { label: "Start brewing", href: "/start" },
+      { label: "Teas",          href: "/discover/teas" },
+      { label: "Vendors",       href: "/discover/vendors" },
+      { label: "Teaware",       href: "/discover/teaware" },
+      { label: "Glossary",      href: "/discover/glossary" },
+      { label: "Journal",       href: "/journal" },
     ],
   },
   {

@@ -28,6 +28,7 @@ const DISCOVER_ITEMS = [
 // frequently-updated surface and the strongest hook for return visits.
 const MOBILE_NAV_ITEMS = [
   { href: "/",                   label: "Home",        desc: "Recently brewed & featured" },
+  { href: "/start",              label: "Start brewing", desc: "New here? A guided first cup" },
   { href: "/journal",            label: "Journal",     desc: "Essays, sessions & thoughts" },
   { href: "/discover/teas",      label: "Teas",        desc: "Browse the full library" },
   { href: "/discover/vendors",   label: "Vendors",     desc: "Atlas of shops we trust" },

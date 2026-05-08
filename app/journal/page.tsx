@@ -71,14 +71,18 @@ export default async function JournalIndex() {
                 <Eyebrow color="var(--sage-text, #556649)">
                   {p.cat} · {p.readTime} min
                 </Eyebrow>
-                <h3
+                {/* h2 (not h3): each card is the primary content unit on
+                    the journal index, and Lighthouse heading-order
+                    enforces no-skip from h1. The visual size is unchanged.
+                */}
+                <h2
                   className={[
                     "font-display text-burgundy font-medium leading-snug tracking-tight m-0 mt-2 mb-2.5",
                     i === 0 ? "text-[28px] sm:text-hero-md" : "text-xl sm:text-2xl",
                   ].join(" ")}
                 >
                   {p.title}
-                </h3>
+                </h2>
                 <p className="text-sm text-warm-700 leading-relaxed m-0 mb-3.5">
                   {p.excerpt}
                 </p>
