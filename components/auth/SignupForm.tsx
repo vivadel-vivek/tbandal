@@ -29,10 +29,18 @@ export function SignupForm() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  // Privacy + terms acceptance. Required to submit; the input itself
+  // is `required` for native validation and we also gate the action
+  // here in case JS handlers ever bypass form-level validation.
+  const [accepted, setAccepted] = useState(false);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!accepted) {
+      setError("Please accept the privacy policy and terms of use to continue.");
+      return;
+    }
     setPending(true);
     try {
       const supabase = createSupabaseBrowserClient();
@@ -115,6 +123,37 @@ export function SignupForm() {
         </span>
       </Field>
 
+      <label className="flex gap-2.5 items-start text-[12px] text-warm-700 leading-snug cursor-pointer mt-1">
+        <input
+          type="checkbox"
+          required
+          checked={accepted}
+          onChange={(e) => setAccepted(e.target.checked)}
+          className="mt-0.5 cursor-pointer accent-burgundy shrink-0"
+        />
+        <span>
+          I&apos;ve read and agree to the{" "}
+          <Link
+            href="/privacy"
+            target="_blank"
+            rel="noopener"
+            className="text-burgundy underline"
+          >
+            privacy policy
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/terms"
+            target="_blank"
+            rel="noopener"
+            className="text-burgundy underline"
+          >
+            terms of use
+          </Link>
+          .
+        </span>
+      </label>
+
       {error && (
         <div
           role="alert"
@@ -131,7 +170,7 @@ export function SignupForm() {
         >
           Already have an account? Sign in →
         </Link>
-        <Button variant="primary" disabled={pending}>
+        <Button variant="primary" disabled={pending || !accepted}>
           {pending ? "Creating account…" : "Sign up"}
         </Button>
       </div>

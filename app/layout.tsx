@@ -4,6 +4,7 @@ import { Cormorant_Garamond, Nunito_Sans } from "next/font/google";
 import { Shell } from "@/components/chrome/Shell";
 import { ServiceWorkerRegister } from "@/components/chrome/ServiceWorkerRegister";
 import { PageViewBeacon } from "@/components/chrome/PageViewBeacon";
+import { PrivacyBanner } from "@/components/chrome/PrivacyBanner";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -88,6 +89,7 @@ export default function RootLayout({
         <Shell>{children}</Shell>
         <ServiceWorkerRegister />
         <PageViewBeacon />
+        <PrivacyBanner />
       </body>
     </html>
   );
