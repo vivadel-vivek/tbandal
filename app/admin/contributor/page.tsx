@@ -8,6 +8,12 @@ import {
   getTopVendorClickouts,
   getTotalVendorClicks,
   getUserCounts,
+  getDeviceMix,
+  getTopJourneys,
+  getTopPagesByTimeOnPage,
+  getNewUsersDaily,
+  getNewUserCounts,
+  getSessionsLoggedDaily,
 } from "@/lib/analytics";
 import { LineChart } from "@/components/admin/analytics/LineChart";
 import { BarList } from "@/components/admin/analytics/BarList";
@@ -26,7 +32,12 @@ export default async function ContributorOverview() {
   // Staff RLS lets contributors + admins see drafts; counts include
   // unpublished rows. Six concurrent reads — counts + draft rows for
   // the dashboard panel.
-  const [teas, posts, vendors, teaware, draftRows, dailyViews, topPages, dailyClicks, topVendors, totalClicks30, users] = await Promise.all([
+  const [
+    teas, posts, vendors, teaware, draftRows,
+    dailyViews, topPages, dailyClicks, topVendors, totalClicks30, users,
+    deviceMix, topJourneys, topByTime,
+    newUsersSeries, newUserKpis, sessionsSeries,
+  ] = await Promise.all([
     sb.from("teas").select("*", { count: "exact", head: true }),
     sb.from("posts").select("*", { count: "exact", head: true }),
     sb.from("vendors").select("*", { count: "exact", head: true }),
@@ -54,9 +65,21 @@ export default async function ContributorOverview() {
     getTopVendorClickouts(30, 8),
     getTotalVendorClicks(30),
     getUserCounts(),
+    getDeviceMix(30),
+    getTopJourneys(30, 10),
+    getTopPagesByTimeOnPage(30, 8),
+    getNewUsersDaily(30),
+    getNewUserCounts(),
+    getSessionsLoggedDaily(30),
   ]);
   const drafts = draftRows.length;
   const totalViews30 = dailyViews.reduce((s, d) => s + d.count, 0);
+  const totalSessions30 = sessionsSeries.reduce((s, d) => s + d.count, 0);
+  const deviceTotal = Object.values(deviceMix).reduce((s, n) => s + n, 0);
+  const deviceMobile = (deviceMix.mobile ?? 0);
+  const deviceDesktop = (deviceMix.desktop ?? 0);
+  const mobilePct = deviceTotal > 0 ? (deviceMobile / deviceTotal) * 100 : 0;
+  const desktopPct = deviceTotal > 0 ? (deviceDesktop / deviceTotal) * 100 : 0;
 
   const tiles: { href: string; label: string; count: number; eyebrow: string }[] = [
     { href: "/admin/contributor/teas",    label: "Teas",    count: teas.count ?? 0,    eyebrow: "Catalog" },
@@ -130,11 +153,11 @@ export default async function ContributorOverview() {
           </span>
         </div>
 
-        {/* KPI strip */}
+        {/* KPI strip — top row: traffic + conversion */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <Stat label="Page views"      value={totalViews30} />
+          <Stat label="Page views"       value={totalViews30} />
+          <Stat label="Sessions logged"  value={totalSessions30} />
           <Stat label="Vendor clickouts" value={totalClicks30} accent />
-          <Stat label="Members"          value={users.total} />
           <Stat
             label="Click-through"
             value={
@@ -144,6 +167,14 @@ export default async function ContributorOverview() {
             }
             small
           />
+        </div>
+
+        {/* KPI strip — second row: membership pulse */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <Stat label="New today"      value={newUserKpis.day} small />
+          <Stat label="New this week"  value={newUserKpis.week} small />
+          <Stat label="New this month" value={newUserKpis.month} small />
+          <Stat label="Members total"  value={users.total} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -159,6 +190,23 @@ export default async function ContributorOverview() {
               data={dailyClicks}
               label="Vendor clickouts, last 30 days"
               color="var(--gold, #C4A35A)"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="card-surface p-5">
+            <LineChart
+              data={newUsersSeries}
+              label="New users, last 30 days"
+              color="var(--sage-text, #556649)"
+            />
+          </div>
+          <div className="card-surface p-5">
+            <LineChart
+              data={sessionsSeries}
+              label="Sessions logged, last 30 days"
+              color="var(--forest, #2D3A2E)"
             />
           </div>
         </div>
@@ -184,6 +232,101 @@ export default async function ContributorOverview() {
               emptyMessage="No vendor clickouts yet."
               barColor="var(--gold, #C4A35A)"
             />
+          </div>
+        </div>
+
+        {/* Engagement — mobile/desktop, journey, time on page */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Device mix */}
+          <div className="card-surface p-5">
+            <h3 className="font-display italic text-burgundy text-[20px] m-0 mb-3">
+              Mobile vs desktop
+            </h3>
+            {deviceTotal === 0 ? (
+              <p className="text-[12px] text-warm-600 italic">No data yet.</p>
+            ) : (
+              <div>
+                <DeviceBar
+                  label="Mobile"
+                  count={deviceMobile}
+                  pct={mobilePct}
+                  color="var(--burgundy, #722F37)"
+                />
+                <DeviceBar
+                  label="Desktop"
+                  count={deviceDesktop}
+                  pct={desktopPct}
+                  color="var(--gold, #C4A35A)"
+                />
+                {deviceMix.unknown ? (
+                  <DeviceBar
+                    label="Unknown"
+                    count={deviceMix.unknown}
+                    pct={(deviceMix.unknown / deviceTotal) * 100}
+                    color="var(--warm-400, #B5A99A)"
+                  />
+                ) : null}
+              </div>
+            )}
+          </div>
+
+          {/* Time on page (median) */}
+          <div className="card-surface p-5">
+            <h3 className="font-display italic text-burgundy text-[20px] m-0 mb-3">
+              Time on page
+            </h3>
+            {topByTime.length === 0 ? (
+              <p className="text-[12px] text-warm-600 italic">
+                Need a few visits with measured durations to populate.
+              </p>
+            ) : (
+              <ul className="list-none p-0 m-0 flex flex-col gap-1.5">
+                {topByTime.map((row) => (
+                  <li
+                    key={row.label}
+                    className="flex items-baseline justify-between gap-2 text-[12px]"
+                  >
+                    <span className="font-mono text-forest truncate" style={{ maxWidth: "65%" }}>
+                      {row.label}
+                    </span>
+                    <span className="font-mono tabular-nums text-warm-700 shrink-0">
+                      {formatDuration(row.medianSec)}
+                      <span className="text-warm-500"> · {row.views}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Journey list — top within-site path transitions */}
+          <div className="card-surface p-5">
+            <h3 className="font-display italic text-burgundy text-[20px] m-0 mb-3">
+              Top journeys
+            </h3>
+            {topJourneys.length === 0 ? (
+              <p className="text-[12px] text-warm-600 italic">
+                No internal navigations logged yet.
+              </p>
+            ) : (
+              <ul className="list-none p-0 m-0 flex flex-col gap-1.5">
+                {topJourneys.map((j) => (
+                  <li
+                    key={`${j.from}→${j.to}`}
+                    className="flex items-baseline justify-between gap-2 text-[12px]"
+                  >
+                    <span className="font-mono text-forest truncate" style={{ maxWidth: "75%" }}>
+                      {shortPath(j.from)}{" "}
+                      <span className="text-warm-500">→</span>{" "}
+                      {shortPath(j.to)}
+                    </span>
+                    <span className="font-mono tabular-nums text-warm-700 shrink-0">
+                      {j.count}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </section>
@@ -232,6 +375,58 @@ export default async function ContributorOverview() {
       )}
     </div>
   );
+}
+
+// Inline horizontal bar for the device-mix card. Reads cleanly next
+// to the chart cards without pulling in another component file.
+function DeviceBar({
+  label,
+  count,
+  pct,
+  color,
+}: {
+  label: string;
+  count: number;
+  pct: number;
+  color: string;
+}) {
+  return (
+    <div className="mb-2 last:mb-0">
+      <div className="flex items-baseline justify-between mb-1 text-[12px]">
+        <span className="font-bold text-forest">{label}</span>
+        <span className="font-mono tabular-nums text-warm-700">
+          {count.toLocaleString()}{" "}
+          <span className="text-warm-500">· {pct.toFixed(0)}%</span>
+        </span>
+      </div>
+      <div className="h-2 rounded-full bg-warm-100 overflow-hidden">
+        <div
+          className="h-full rounded-full"
+          style={{ width: `${pct}%`, background: color }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// "/discover/teas/longjing" → "discover/teas/longjing" (drop leading
+// slash) and truncate to 36 chars so journey rows stay one-line.
+function shortPath(p: string): string {
+  const s = p.replace(/^\//, "");
+  return s.length > 36 ? s.slice(0, 35) + "…" : s || "home";
+}
+
+// Format duration in seconds → "1m 23s" / "12s" / "1h 4m".
+function formatDuration(sec: number): string {
+  if (sec < 60) return `${Math.round(sec)}s`;
+  if (sec < 3600) {
+    const m = Math.floor(sec / 60);
+    const s = Math.round(sec - m * 60);
+    return s > 0 ? `${m}m ${s}s` : `${m}m`;
+  }
+  const h = Math.floor(sec / 3600);
+  const m = Math.round((sec - h * 3600) / 60);
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
 // Small KPI tile for the audience strip. `accent` flips the value

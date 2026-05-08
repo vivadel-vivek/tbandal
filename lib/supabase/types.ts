@@ -105,25 +105,31 @@ export type Database = {
       page_views: {
         Row: {
           country: string | null
+          duration_ms: number | null
           id: string
           path: string
           referrer_host: string | null
+          referrer_path: string | null
           ua_class: string | null
           viewed_at: string
         }
         Insert: {
           country?: string | null
+          duration_ms?: number | null
           id?: string
           path: string
           referrer_host?: string | null
+          referrer_path?: string | null
           ua_class?: string | null
           viewed_at?: string
         }
         Update: {
           country?: string | null
+          duration_ms?: number | null
           id?: string
           path?: string
           referrer_host?: string | null
+          referrer_path?: string | null
           ua_class?: string | null
           viewed_at?: string
         }

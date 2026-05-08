@@ -2,20 +2,21 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/types";
 
-// Cookieless page-view beacon endpoint. The PageViewBeacon client
-// component fires `navigator.sendBeacon('/api/track', { path })` on
-// every pathname change; this handler turns that into a row in
-// public.page_views.
+// Cookieless page-view beacon endpoint. Two-call protocol:
+//
+//   POST { id, path, referrer_path }     → insert a new page_views row
+//   POST { id, duration_ms }             → update that row with the
+//                                           time the visitor spent on
+//                                           the page
 //
 // Writes go through the service-role client so RLS doesn't block
 // anonymous visitors. We log no PII — just the path, a referrer
-// hostname (without the query string), a coarse UA class, and the
-// Vercel country header (network metadata).
+// hostname / within-site path, a coarse UA class, and the Vercel
+// country header.
 //
-// Filtering happens in two places: client-side (admin paths skip the
-// beacon) and here (we ignore obviously bot-y user agents). The route
-// is best-effort and never throws to the client; analytics failures
-// must never break a page load.
+// The route is best-effort: it always returns 204 to the client so a
+// failed insert/update never breaks a page transition or visitor
+// journey. Errors are swallowed; observability lives in the dashboards.
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -47,16 +48,42 @@ function svc() {
   });
 }
 
+type Payload = {
+  id?: string;
+  path?: string;
+  referrer_path?: string | null;
+  duration_ms?: number;
+};
+
 export async function POST(request: Request) {
-  let body: { path?: string } = {};
+  let body: Payload = {};
   try {
     body = await request.json();
   } catch {
     return new NextResponse(null, { status: 204 });
   }
-  const path = (body.path ?? "/").slice(0, 200);
 
-  // Skip non-page paths and admin surfaces — those are operator views.
+  if (!body.id || typeof body.id !== "string") {
+    return new NextResponse(null, { status: 204 });
+  }
+  // UUID-ish guard so a malicious sender can't churn arbitrary keys.
+  if (body.id.length > 64) return new NextResponse(null, { status: 204 });
+
+  const sb = svc();
+  if (!sb) return new NextResponse(null, { status: 204 });
+
+  // Duration update — second call. Patch the existing row by id.
+  if (typeof body.duration_ms === "number") {
+    const dur = Math.max(0, Math.min(60 * 60 * 1000, Math.floor(body.duration_ms)));
+    await sb
+      .from("page_views")
+      .update({ duration_ms: dur })
+      .eq("id", body.id);
+    return new NextResponse(null, { status: 204 });
+  }
+
+  // Initial view insert.
+  const path = (body.path ?? "/").slice(0, 200);
   if (
     path.startsWith("/admin") ||
     path.startsWith("/api") ||
@@ -72,19 +99,19 @@ export async function POST(request: Request) {
 
   const ua_class = uaClass(ua);
   if (ua_class === "bot") {
-    // Drop bot traffic at the front door — we never want it in the
-    // dashboard charts or in storage.
     return new NextResponse(null, { status: 204 });
   }
 
-  const sb = svc();
-  if (!sb) return new NextResponse(null, { status: 204 });
+  const referrerPath =
+    typeof body.referrer_path === "string"
+      ? body.referrer_path.slice(0, 200)
+      : null;
 
-  // Fire and forget. We don't await the network round-trip from the
-  // client's perspective — the response goes back as 204 either way.
   await sb.from("page_views").insert({
+    id: body.id,
     path,
     referrer_host: refererHost(ref),
+    referrer_path: referrerPath,
     ua_class,
     country: country || null,
   });
