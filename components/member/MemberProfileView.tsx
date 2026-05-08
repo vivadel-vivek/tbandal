@@ -21,10 +21,15 @@ import { RadarChart } from "@/components/tea/RadarChart";
 type Props = {
   teas: Tea[];
   contributors: Record<ContributorKey, Contributor>;
+  /** Server-fetched profile role (null for guests / unconfigured env).
+   *  Drives the Editor / Admin shortcut in the header action row. */
+  role: string | null;
 };
 
-export function MemberProfileView({ teas: TEAS, contributors: CONTRIBUTORS }: Props) {
+export function MemberProfileView({ teas: TEAS, contributors: CONTRIBUTORS, role }: Props) {
   const { member, setMember } = useMember();
+  const isStaff = role === "admin" || role === "contributor";
+  const isVendor = role === "vendor";
 
   const aligned = CONTRIBUTORS[member.aligned];
 
@@ -78,6 +83,16 @@ export function MemberProfileView({ teas: TEAS, contributors: CONTRIBUTORS }: Pr
             <Link href="/member/settings">
               <Button variant="secondary">Settings →</Button>
             </Link>
+            {isStaff && (
+              <Link href="/admin/contributor">
+                <Button variant="primary">Editor →</Button>
+              </Link>
+            )}
+            {isVendor && (
+              <Link href="/admin/vendor">
+                <Button variant="primary">Vendor portal →</Button>
+              </Link>
+            )}
           </div>
         </div>
 
