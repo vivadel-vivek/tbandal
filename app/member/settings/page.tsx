@@ -12,24 +12,42 @@ export const metadata: Metadata = {
 };
 
 export default async function MemberSettingsPage() {
-  // Load avatar_url server-side so the settings page can show the
-  // current photo without a roundtrip on hydration. Fall back to null
-  // for guests (the uploader hides itself in that case anyway).
+  // Server-load profile fields the settings view needs upfront:
+  // current avatar (for the picker preview) and policy acceptance
+  // dates/versions (for the consent audit panel). Falls back to nulls
+  // for guests / unconfigured envs so the page still renders.
   let avatarUrl: string | null = null;
+  let consent: {
+    privacyVersion: string | null;
+    privacyAcceptedAt: string | null;
+    termsVersion: string | null;
+    termsAcceptedAt: string | null;
+  } = {
+    privacyVersion: null,
+    privacyAcceptedAt: null,
+    termsVersion: null,
+    termsAcceptedAt: null,
+  };
   try {
     const sb = await createSupabaseServerClient();
     const { data: auth } = await sb.auth.getUser();
     if (auth.user) {
       const { data } = await sb
         .from("profiles")
-        .select("avatar_url")
+        .select("avatar_url, privacy_version, privacy_accepted_at, terms_version, terms_accepted_at")
         .eq("id", auth.user.id)
         .maybeSingle();
       avatarUrl = data?.avatar_url ?? null;
+      consent = {
+        privacyVersion:    data?.privacy_version ?? null,
+        privacyAcceptedAt: data?.privacy_accepted_at ?? null,
+        termsVersion:      data?.terms_version ?? null,
+        termsAcceptedAt:   data?.terms_accepted_at ?? null,
+      };
     }
   } catch {
     /* env not wired in dev — render without an avatar */
   }
   const teas = await getTeas();
-  return <MemberSettingsView teas={teas} avatarUrl={avatarUrl} />;
+  return <MemberSettingsView teas={teas} avatarUrl={avatarUrl} consent={consent} />;
 }

@@ -17,15 +17,24 @@ import {
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { useState } from "react";
 
+type Consent = {
+  privacyVersion: string | null;
+  privacyAcceptedAt: string | null;
+  termsVersion: string | null;
+  termsAcceptedAt: string | null;
+};
+
 type Props = {
   /** Catalog teas, passed from the server parent. Used to resolve the
    *  member's "tasted" slug list back to display names + URLs. */
   teas: Tea[];
   /** Current avatar URL from the profiles row (server-loaded). */
   avatarUrl: string | null;
+  /** Policy acceptance audit (server-loaded). */
+  consent: Consent;
 };
 
-export function MemberSettingsView({ teas: TEAS, avatarUrl }: Props) {
+export function MemberSettingsView({ teas: TEAS, avatarUrl, consent }: Props) {
   const { member, setMember, reblind } = useMember();
   const s = member.settings;
 
@@ -231,6 +240,27 @@ export function MemberSettingsView({ teas: TEAS, avatarUrl }: Props) {
           </SettingsCard>
         )}
 
+        {/* POLICY ACCEPTANCE — audit trail of what you've agreed to. */}
+        <SettingsCard title="Policy acceptance" eyebrow="Privacy & terms">
+          <ConsentRow
+            doc="Privacy policy"
+            href="/privacy"
+            version={consent.privacyVersion}
+            acceptedAt={consent.privacyAcceptedAt}
+          />
+          <ConsentRow
+            doc="Terms of use"
+            href="/terms"
+            version={consent.termsVersion}
+            acceptedAt={consent.termsAcceptedAt}
+          />
+          <p className="text-[11px] text-warm-600 leading-snug mt-3 m-0">
+            We record the version you accepted at signup. If we materially
+            change either document we&apos;ll email you and ask you to
+            re-accept the new version before your next sign-in.
+          </p>
+        </SettingsCard>
+
         {/* ACCOUNT */}
         <SettingsCard title="Account" eyebrow="Sign-out & data">
           <div className="flex gap-2.5 flex-wrap">
@@ -257,6 +287,47 @@ export function MemberSettingsView({ teas: TEAS, avatarUrl }: Props) {
         </div>
       </Container>
     </main>
+  );
+}
+
+// Single row in the policy-acceptance card — shows the document name
+// (linked), the version they accepted, and when. Falls back to a
+// "not recorded" line for accounts created before consent capture
+// landed (e.g. James + Vivek's seeded admin accounts).
+function ConsentRow({
+  doc,
+  href,
+  version,
+  acceptedAt,
+}: {
+  doc: string;
+  href: string;
+  version: string | null;
+  acceptedAt: string | null;
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-3 py-2 border-b border-warm-200 last:border-b-0 text-[13px]">
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener"
+        className="text-burgundy underline font-bold no-underline hover:underline"
+      >
+        {doc}
+      </a>
+      {version && acceptedAt ? (
+        <span className="text-warm-700 font-mono text-[12px] tabular-nums">
+          v{version} · accepted{" "}
+          {new Date(acceptedAt).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      ) : (
+        <span className="text-warm-500 italic text-[12px]">not recorded</span>
+      )}
+    </div>
   );
 }
 

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
+import { POLICY_VERSIONS } from "@/lib/policy";
 
 const inputCls =
   "w-full px-3 py-2.5 rounded-md border border-warm-300 bg-cream text-[14px] focus:outline-none focus:border-burgundy";
@@ -55,6 +56,13 @@ export function SignupForm() {
             typeof window !== "undefined"
               ? `${window.location.origin}/auth/callback`
               : undefined,
+          // Captured by the handle_new_user trigger and written to
+          // profiles + consent_log so we have an auditable record of
+          // which version each user accepted at signup time.
+          data: {
+            terms_version:   POLICY_VERSIONS.terms,
+            privacy_version: POLICY_VERSIONS.privacy,
+          },
         },
       });
       if (err) {

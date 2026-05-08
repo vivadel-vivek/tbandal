@@ -102,6 +102,30 @@ export type Database = {
         }
         Relationships: []
       }
+      consent_log: {
+        Row: {
+          accepted_at: string
+          document: string
+          id: number
+          user_id: string
+          version: string
+        }
+        Insert: {
+          accepted_at?: string
+          document: string
+          id?: number
+          user_id: string
+          version: string
+        }
+        Update: {
+          accepted_at?: string
+          document?: string
+          id?: number
+          user_id?: string
+          version?: string
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           country: string | null
@@ -177,8 +201,12 @@ export type Database = {
           flavor_mode: string
           id: string
           notifications: Json
+          privacy_accepted_at: string | null
+          privacy_version: string | null
           role: Database["public"]["Enums"]["user_role"]
           tasted_teas: string[]
+          terms_accepted_at: string | null
+          terms_version: string | null
           theme: string
           updated_at: string
         }
@@ -193,8 +221,12 @@ export type Database = {
           flavor_mode?: string
           id: string
           notifications?: Json
+          privacy_accepted_at?: string | null
+          privacy_version?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           tasted_teas?: string[]
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           theme?: string
           updated_at?: string
         }
@@ -209,8 +241,12 @@ export type Database = {
           flavor_mode?: string
           id?: string
           notifications?: Json
+          privacy_accepted_at?: string | null
+          privacy_version?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           tasted_teas?: string[]
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           theme?: string
           updated_at?: string
         }
