@@ -64,8 +64,53 @@ export function PostEditForm({ post }: { post: PostRow | null }) {
     });
   };
 
+  const previewHref = post ? `/journal/${slug || post.slug}?preview=1` : null;
+  const wasPublished = post?.published ?? false;
+
   return (
     <form onSubmit={onSubmit} className="space-y-4 max-w-[760px]">
+      {/* Top action bar — status pill, preview, draft toggle. */}
+      <div className="flex items-center justify-between gap-3 flex-wrap p-3 bg-cream rounded-lg border border-warm-200">
+        <div className="flex items-center gap-3 flex-wrap">
+          <span
+            className={[
+              "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-pill text-[10px] font-bold tracking-widest uppercase border",
+              published
+                ? "bg-sage-soft border-sage text-forest"
+                : "bg-warm-100 border-warm-300 text-warm-600",
+            ].join(" ")}
+          >
+            <span aria-hidden className={`w-1.5 h-1.5 rounded-full ${published ? "bg-forest" : "bg-warm-400"}`} />
+            {published ? "Published" : "Draft"}
+          </span>
+          {previewHref ? (
+            <a
+              href={previewHref}
+              target="_blank"
+              rel="noopener"
+              className="text-[12px] font-bold text-burgundy no-underline hover:underline"
+            >
+              Preview {published ? "live page" : "draft"} ↗
+            </a>
+          ) : (
+            <span className="text-[11px] text-warm-600 italic">
+              Preview available after the first save
+            </span>
+          )}
+        </div>
+        <label className="inline-flex items-center gap-2 text-[12px] font-bold text-warm-700">
+          <input
+            type="checkbox"
+            checked={published}
+            onChange={(e) => setPublished(e.target.checked)}
+          />
+          {wasPublished && !published
+            ? "Will unpublish on save"
+            : !wasPublished && published
+              ? "Will publish on save"
+              : "Published"}
+        </label>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-[1fr_220px] gap-4">
         <div>
           <label className={labelCls} htmlFor="title">Title</label>
@@ -127,10 +172,7 @@ export function PostEditForm({ post }: { post: PostRow | null }) {
         <textarea id="body" rows={20} value={body} onChange={(e) => setBody(e.target.value)} className={inputCls + " font-serif text-[15px] leading-relaxed"} />
       </div>
 
-      <label className="inline-flex items-center gap-2 text-[12px] font-bold text-warm-700">
-        <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} />
-        Published
-      </label>
+      {/* Published toggle moved into the top action bar. */}
 
       {error && (
         <div className="text-[12px] text-burgundy bg-burgundy/5 border border-burgundy/20 rounded-md px-3 py-2">
@@ -144,7 +186,15 @@ export function PostEditForm({ post }: { post: PostRow | null }) {
           disabled={pending}
           className="px-4 py-2 rounded-pill bg-burgundy text-cream text-[12px] font-bold tracking-widest uppercase disabled:opacity-60"
         >
-          {pending ? "Saving…" : post ? "Save changes" : "Create post"}
+          {pending
+            ? "Saving…"
+            : !post
+              ? (published ? "Publish" : "Save as draft")
+              : wasPublished && !published
+                ? "Save & unpublish"
+                : !wasPublished && published
+                  ? "Save & publish"
+                  : "Save changes"}
         </button>
         <button
           type="button"

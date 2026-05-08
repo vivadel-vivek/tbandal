@@ -7,12 +7,17 @@ import {
   getContributors,
   getVendorByName,
 } from "@/lib/content";
+import {
+  getPreviewTeaByVendorAndPath,
+  isCurrentUserStaff,
+} from "@/lib/content-preview";
 import { vendorSlugForTea } from "@/lib/tea-helpers";
 import { compositeProfile, profileOverlap } from "@/lib/flavor";
 import type { Tea } from "@/lib/types";
 import { TeaDetailView } from "@/components/tea/TeaDetailView";
 import { TeaHero } from "@/components/tea/TeaHero";
 import { ProductReviewJsonLd } from "@/components/seo/JsonLd";
+import { PreviewBanner } from "@/components/admin/PreviewBanner";
 import { Container } from "@/components/ui/Container";
 
 // Audit item #5: hero + tasting-paragraph (the LCP element) now
@@ -76,9 +81,16 @@ export default async function TeaDetailPage({
   searchParams,
 }: {
   params: Params;
-  searchParams: { blind?: string };
+  searchParams: { blind?: string; preview?: string };
 }) {
-  const tea = await getTeaByVendorAndPath(params.vendor, params.slug);
+  // Preview mode: ?preview=1 + staff session → fetch via SSR client
+  // (RLS staff_all policy returns drafts). Anyone non-staff hitting
+  // ?preview=1 just gets the published version.
+  const wantsPreview = searchParams.preview === "1";
+  const previewMode = wantsPreview && (await isCurrentUserStaff());
+  const tea = previewMode
+    ? await getPreviewTeaByVendorAndPath(params.vendor, params.slug)
+    : await getTeaByVendorAndPath(params.vendor, params.slug);
   if (!tea) notFound();
 
   const [allTeas, contributors, vendor] = await Promise.all([
@@ -90,8 +102,24 @@ export default async function TeaDetailPage({
   const blindMode = searchParams.blind === "1";
   const logHref = `/tea/${vendor?.slug ?? tea.vendor}/${tea.pathSlug}/log`;
   const vendorOutboundHref = vendor ? `/go/${vendor.slug}` : null;
+  // Determine published status for banner — SSR fetch returns the row
+  // including its `published` flag implicitly via teas_staff_all. We
+  // detect "Draft" by re-fetching the public version and comparing:
+  // if the public version exists, the row is published; otherwise
+  // it's a draft. Cheap because the call is React.cache()d.
+  const isPublishedDraft = previewMode
+    ? Boolean(await getTeaByVendorAndPath(params.vendor, params.slug))
+    : false;
+
   return (
     <>
+      {previewMode && (
+        <PreviewBanner
+          editHref={`/admin/contributor/teas/${tea.slug}`}
+          status={isPublishedDraft ? "Published" : "Draft"}
+          subject={tea.name}
+        />
+      )}
       <ProductReviewJsonLd tea={tea} />
       <main>
         <Container>

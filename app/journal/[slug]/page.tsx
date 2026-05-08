@@ -2,12 +2,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPosts, getPostBySlug, getTeas } from "@/lib/content";
+import {
+  getPreviewPostBySlug,
+  isCurrentUserStaff,
+} from "@/lib/content-preview";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { AvatarChip } from "@/components/ui/AvatarChip";
 import { TeaCard } from "@/components/tea/TeaCard";
 import { Glossarized } from "@/components/glossary/Glossarized";
 import { ArticleJsonLd } from "@/components/seo/JsonLd";
+import { PreviewBanner } from "@/components/admin/PreviewBanner";
 
 // ISR: pre-render every post slug, dynamicParams: true so new posts ISR
 // on first hit once Airtable lands.
@@ -45,13 +50,24 @@ export async function generateMetadata({
 
 export default async function JournalPost({
   params,
+  searchParams,
 }: {
   params: { slug: string };
+  searchParams: { preview?: string };
 }) {
+  const wantsPreview = searchParams.preview === "1";
+  const previewMode = wantsPreview && (await isCurrentUserStaff());
   const [post, allTeas] = await Promise.all([
-    getPostBySlug(params.slug), getTeas(),
+    previewMode ? getPreviewPostBySlug(params.slug) : getPostBySlug(params.slug),
+    getTeas(),
   ]);
   if (!post) notFound();
+
+  // Detect Draft vs Published in preview mode by checking the public
+  // anon-read.
+  const isPublishedDraft = previewMode
+    ? Boolean(await getPostBySlug(params.slug))
+    : false;
 
   const related = post.related
     .map((slug) => allTeas.find((t) => t.slug === slug))
@@ -59,6 +75,13 @@ export default async function JournalPost({
 
   return (
     <main>
+      {previewMode && (
+        <PreviewBanner
+          editHref={`/admin/contributor/posts/${post.slug}`}
+          status={isPublishedDraft ? "Published" : "Draft"}
+          subject={post.title}
+        />
+      )}
       <ArticleJsonLd post={post} />
       <article>
       <Container size="narrow">
