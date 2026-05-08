@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Cormorant_Garamond, Nunito_Sans } from "next/font/google";
 import { Shell } from "@/components/chrome/Shell";
 import { ServiceWorkerRegister } from "@/components/chrome/ServiceWorkerRegister";
+import { PageViewBeacon } from "@/components/chrome/PageViewBeacon";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -86,6 +87,7 @@ export default function RootLayout({
       <body data-theme="parchment" className="font-sans min-h-screen">
         <Shell>{children}</Shell>
         <ServiceWorkerRegister />
+        <PageViewBeacon />
       </body>
     </html>
   );

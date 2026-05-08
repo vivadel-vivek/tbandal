@@ -102,6 +102,63 @@ export type Database = {
         }
         Relationships: []
       }
+      page_views: {
+        Row: {
+          country: string | null
+          id: string
+          path: string
+          referrer_host: string | null
+          ua_class: string | null
+          viewed_at: string
+        }
+        Insert: {
+          country?: string | null
+          id?: string
+          path: string
+          referrer_host?: string | null
+          ua_class?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          country?: string | null
+          id?: string
+          path?: string
+          referrer_host?: string | null
+          ua_class?: string | null
+          viewed_at?: string
+        }
+        Relationships: []
+      }
+      vendor_clicks: {
+        Row: {
+          clicked_at: string
+          country: string | null
+          id: string
+          referrer_host: string | null
+          source_path: string | null
+          ua_class: string | null
+          vendor_slug: string
+        }
+        Insert: {
+          clicked_at?: string
+          country?: string | null
+          id?: string
+          referrer_host?: string | null
+          source_path?: string | null
+          ua_class?: string | null
+          vendor_slug: string
+        }
+        Update: {
+          clicked_at?: string
+          country?: string | null
+          id?: string
+          referrer_host?: string | null
+          source_path?: string | null
+          ua_class?: string | null
+          vendor_slug?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           aligned: string

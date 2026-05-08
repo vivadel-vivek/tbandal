@@ -1,5 +1,11 @@
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  getDailyPageViewsForPath,
+  getDailyVendorClicks,
+  getTotalVendorClicks,
+} from "@/lib/analytics";
+import { LineChart } from "@/components/admin/analytics/LineChart";
 
 export default async function VendorOverview() {
   const sb = await createSupabaseServerClient();
@@ -30,14 +36,31 @@ export default async function VendorOverview() {
     );
   }
 
-  // For each owned vendor, count attributed teas + teaware.
+  // For each owned vendor, count attributed teas + teaware AND pull
+  // 30-day analytics: page views on the public detail page, clickouts
+  // through /go/[slug], and the running total clickout count.
   const stats = await Promise.all(
     vendors.map(async (v) => {
-      const [teas, teaware] = await Promise.all([
+      const [teas, teaware, viewSeries, clickSeries, totalClicks] = await Promise.all([
         sb.from("teas").select("*", { count: "exact", head: true }).eq("vendor_slug", v.slug),
         sb.from("teaware").select("*", { count: "exact", head: true }).eq("vendor", v.name),
+        getDailyPageViewsForPath(`/discover/vendors/${v.slug}`, 30),
+        getDailyVendorClicks(30, v.slug),
+        getTotalVendorClicks(undefined, v.slug),
       ]);
-      return { slug: v.slug, teas: teas.count ?? 0, teaware: teaware.count ?? 0 };
+      const views30 = viewSeries.reduce((s, d) => s + d.count, 0);
+      const clicks30 = clickSeries.reduce((s, d) => s + d.count, 0);
+      return {
+        slug: v.slug,
+        teas: teas.count ?? 0,
+        teaware: teaware.count ?? 0,
+        viewSeries,
+        clickSeries,
+        views30,
+        clicks30,
+        totalClicks,
+        ctr: views30 > 0 ? (clicks30 / views30) * 100 : 0,
+      };
     }),
   );
 
@@ -80,23 +103,62 @@ export default async function VendorOverview() {
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 py-3 border-y border-warm-200">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 py-3 border-y border-warm-200">
               <div>
-                <div className="text-[10px] tracking-widest uppercase font-bold text-warm-600">Teas reviewed</div>
-                <div className="font-display text-burgundy text-[28px] tabular-nums">{s.teas}</div>
+                <div className="text-[10px] tracking-widest uppercase font-bold text-warm-600">Teas</div>
+                <div className="font-display text-burgundy text-[24px] tabular-nums">{s.teas}</div>
               </div>
               <div>
-                <div className="text-[10px] tracking-widest uppercase font-bold text-warm-600">Teaware listed</div>
-                <div className="font-display text-burgundy text-[28px] tabular-nums">{s.teaware}</div>
+                <div className="text-[10px] tracking-widest uppercase font-bold text-warm-600">Teaware</div>
+                <div className="font-display text-burgundy text-[24px] tabular-nums">{s.teaware}</div>
               </div>
-              <div className="text-right">
-                <Link
-                  href="/admin/vendor/profile"
-                  className="inline-flex items-center px-3 py-1.5 rounded-pill bg-burgundy text-cream text-[11px] font-bold tracking-widest uppercase no-underline"
-                >
-                  Edit profile →
-                </Link>
+              <div>
+                <div className="text-[10px] tracking-widest uppercase font-bold text-warm-600">Views, 30d</div>
+                <div className="font-display text-burgundy text-[24px] tabular-nums">{s.views30.toLocaleString()}</div>
               </div>
+              <div>
+                <div className="text-[10px] tracking-widest uppercase font-bold text-warm-600">Clickouts</div>
+                <div className="font-display text-gold-dark text-[24px] tabular-nums">{s.clicks30.toLocaleString()}</div>
+                <div className="text-[10px] text-warm-600 font-mono mt-0.5">
+                  {s.totalClicks.toLocaleString()} all-time
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] tracking-widest uppercase font-bold text-warm-600">Click-through</div>
+                <div className="font-display text-burgundy text-[24px] tabular-nums">
+                  {s.views30 > 0 ? `${s.ctr.toFixed(1)}%` : "—"}
+                </div>
+              </div>
+            </div>
+
+            {(s.views30 > 0 || s.clicks30 > 0) && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <LineChart
+                    data={s.viewSeries}
+                    label="Page views, last 30 days"
+                    color="var(--burgundy, #722F37)"
+                    height={120}
+                  />
+                </div>
+                <div>
+                  <LineChart
+                    data={s.clickSeries}
+                    label="Clickouts, last 30 days"
+                    color="var(--gold, #C4A35A)"
+                    height={120}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end mt-4">
+              <Link
+                href="/admin/vendor/profile"
+                className="inline-flex items-center px-3 py-1.5 rounded-pill bg-burgundy text-cream text-[11px] font-bold tracking-widest uppercase no-underline"
+              >
+                Edit profile →
+              </Link>
             </div>
 
             <div className="flex gap-3 mt-3 text-[12px]">

@@ -1,6 +1,16 @@
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { RebuildButton } from "@/components/admin/RebuildButton";
+import {
+  getDailyPageViews,
+  getDailyVendorClicks,
+  getTopPages,
+  getTopVendorClickouts,
+  getTotalVendorClicks,
+  getUserCounts,
+} from "@/lib/analytics";
+import { LineChart } from "@/components/admin/analytics/LineChart";
+import { BarList } from "@/components/admin/analytics/BarList";
 
 type DraftRow = {
   kind: "tea" | "post" | "vendor" | "teaware";
@@ -16,7 +26,7 @@ export default async function ContributorOverview() {
   // Staff RLS lets contributors + admins see drafts; counts include
   // unpublished rows. Six concurrent reads — counts + draft rows for
   // the dashboard panel.
-  const [teas, posts, vendors, teaware, draftRows] = await Promise.all([
+  const [teas, posts, vendors, teaware, draftRows, dailyViews, topPages, dailyClicks, topVendors, totalClicks30, users] = await Promise.all([
     sb.from("teas").select("*", { count: "exact", head: true }),
     sb.from("posts").select("*", { count: "exact", head: true }),
     sb.from("vendors").select("*", { count: "exact", head: true }),
@@ -38,8 +48,15 @@ export default async function ContributorOverview() {
       for (const r of w.data ?? []) rows.push({ kind: "teaware", slug: r.slug, title: r.name, href: `/admin/contributor/teaware/${r.slug}`, updatedAt: r.updated_at });
       return rows.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 8);
     }),
+    getDailyPageViews(30),
+    getTopPages(30, 8),
+    getDailyVendorClicks(30),
+    getTopVendorClickouts(30, 8),
+    getTotalVendorClicks(30),
+    getUserCounts(),
   ]);
   const drafts = draftRows.length;
+  const totalViews30 = dailyViews.reduce((s, d) => s + d.count, 0);
 
   const tiles: { href: string; label: string; count: number; eyebrow: string }[] = [
     { href: "/admin/contributor/teas",    label: "Teas",    count: teas.count ?? 0,    eyebrow: "Catalog" },
@@ -101,6 +118,76 @@ export default async function ContributorOverview() {
         ))}
       </section>
 
+      {/* ----- Analytics — last 30 days, cookieless self-host -----
+          Page views via PageViewBeacon, clickouts via /go/[vendor]. */}
+      <section className="space-y-6">
+        <div className="flex items-baseline justify-between flex-wrap gap-3">
+          <h2 className="font-display italic text-burgundy text-[26px] m-0">
+            Audience
+          </h2>
+          <span className="text-[10px] tracking-widest uppercase font-bold text-warm-600">
+            Last 30 days · cookieless
+          </span>
+        </div>
+
+        {/* KPI strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <Stat label="Page views"      value={totalViews30} />
+          <Stat label="Vendor clickouts" value={totalClicks30} accent />
+          <Stat label="Members"          value={users.total} />
+          <Stat
+            label="Click-through"
+            value={
+              totalViews30 > 0
+                ? `${((totalClicks30 / totalViews30) * 100).toFixed(1)}%`
+                : "—"
+            }
+            small
+          />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="card-surface p-5">
+            <LineChart
+              data={dailyViews}
+              label="Page views, last 30 days"
+              color="var(--burgundy, #722F37)"
+            />
+          </div>
+          <div className="card-surface p-5">
+            <LineChart
+              data={dailyClicks}
+              label="Vendor clickouts, last 30 days"
+              color="var(--gold, #C4A35A)"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="card-surface p-5">
+            <h3 className="font-display italic text-burgundy text-[20px] m-0 mb-3">
+              Top pages
+            </h3>
+            <BarList
+              data={topPages}
+              href={(p) => p}
+              emptyMessage="No page views logged yet — visit a few pages on the live site to populate."
+            />
+          </div>
+          <div className="card-surface p-5">
+            <h3 className="font-display italic text-burgundy text-[20px] m-0 mb-3">
+              Top vendor clickouts
+            </h3>
+            <BarList
+              data={topVendors}
+              href={(slug) => `/discover/vendors/${slug}`}
+              emptyMessage="No vendor clickouts yet."
+              barColor="var(--gold, #C4A35A)"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Drafts dashboard — 8 most-recently-updated unpublished rows
           across every catalog. The clean way back into in-flight work. */}
       {draftRows.length > 0 && (
@@ -143,6 +230,38 @@ export default async function ContributorOverview() {
           </ul>
         </section>
       )}
+    </div>
+  );
+}
+
+// Small KPI tile for the audience strip. `accent` flips the value
+// colour to gold; `small` shrinks the value font for percentages or
+// composite figures that don't need to dominate.
+function Stat({
+  label,
+  value,
+  accent = false,
+  small = false,
+}: {
+  label: string;
+  value: number | string;
+  accent?: boolean;
+  small?: boolean;
+}) {
+  return (
+    <div className="card-surface p-4">
+      <div className="text-[10px] tracking-widest uppercase font-bold text-warm-600">
+        {label}
+      </div>
+      <div
+        className={[
+          "font-display tabular-nums mt-1",
+          accent ? "text-gold-dark" : "text-burgundy",
+          small ? "text-[26px]" : "text-[34px]",
+        ].join(" ")}
+      >
+        {typeof value === "number" ? value.toLocaleString() : value}
+      </div>
     </div>
   );
 }
