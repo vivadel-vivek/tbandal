@@ -11,7 +11,16 @@ type TypeFilter = "All" | TeaTypeName;
 type SortKey = "rating" | "price" | "elev";
 type ViewMode = "standard" | "beginner";
 
-const TYPE_OPTIONS: TypeFilter[] = ["All", "Green", "White", "Oolong", "Black", "Pu'er"];
+const TYPE_OPTIONS: TypeFilter[] = [
+  "All",
+  "Green",
+  "White",
+  "Oolong",
+  "Black",
+  "Sheng Pu'er",
+  "Shou Pu'er",
+  "Dark",
+];
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: "rating", label: "Highest rated" },
   { key: "price", label: "Price" },
@@ -33,7 +42,7 @@ const BEGINNER_BUCKETS: BeginnerBucket[] = [
   { key: "light",   label: "Light & floral",   hint: "Bright, gentle, easy to like",              types: ["Green", "White", "Yellow"] },
   { key: "layered", label: "Layered & complex", hint: "Floral up front, depth underneath",        types: ["Oolong"] },
   { key: "bold",    label: "Bold & roasted",   hint: "Hearty, malty, breakfast-cup country",      types: ["Black"] },
-  { key: "earthy",  label: "Earthy & aged",    hint: "Forest floor, mineral sweetness, depth",    types: ["Pu'er"] },
+  { key: "earthy",  label: "Earthy & aged",    hint: "Forest floor, mineral sweetness, depth",    types: ["Sheng Pu'er", "Shou Pu'er", "Dark"] },
   { key: "herbal",  label: "Herbal",           hint: "Caffeine-free, soothing, anytime",          types: ["Herbal"] },
 ];
 

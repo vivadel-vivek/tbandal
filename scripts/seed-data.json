@@ -101,7 +101,7 @@
       "pathSlug": "menghai-shen-puer-spring-2023",
       "name": "Menghai Shen Pu'er",
       "chinese": "普洱生茶 · 勐海",
-      "type": "Pu'er",
+      "type": "Sheng Pu'er",
       "region": "Menghai, Yunnan",
       "country": "China",
       "year": "Spring 2023",
@@ -723,7 +723,9 @@
       "tagline": "The neutral 100ml gaiwan we keep coming back to — clean lines, comfortable rim.",
       "body": "If you only own one gaiwan, this is roughly the shape it should be. 100ml is the cooperative middle — small enough to gongfu a 5g session, big enough that you don't burn your hand on the rim. The white interior reads tea color honestly, which matters more than people admit when you're judging a young shen against an aged one.\n\nThe glaze on the inside is the part to inspect: a slightly cooler white reads liquor color more accurately than a creamy ivory. We've broken three cheaper gaiwans of the same nominal size before settling on this one, which has held up to two years of daily use.",
       "goodFor": [
-        "Pu'er",
+        "Sheng Pu'er",
+        "Shou Pu'er",
+        "Dark",
         "Oolong",
         "Black",
         "White"
@@ -762,7 +764,8 @@
       "tagline": "A single-tea-type pot that earns its keep on aged shen and ripe pu'er.",
       "body": "Yixing pots come with a rule: you season them to one tea type and you leave them there. The unglazed clay absorbs and slowly returns flavor, which is a good thing if you're disciplined and a bad thing if you brew a green in your shen pot.\n\nWe season this one exclusively for aged sheng and the occasional shou. The 120ml capacity is forgiving with a 6g session, and the clay does soften the early-steep edges in a way porcelain doesn't.",
       "goodFor": [
-        "Pu'er"
+        "Sheng Pu'er",
+        "Shou Pu'er"
       ],
       "rating": 5
     },
@@ -779,7 +782,9 @@
       "tagline": "Plain heat-resistant glass — the right vessel for actually seeing what came out of the gaiwan.",
       "body": "A fairness pitcher (gong dao bei) does two things: it equalizes the steep across cups, and — if it's glass — it shows you the liquor color. Color is the cheapest diagnostic in the kit. A young shen should pour pale gold; if it's coming out brown you've over-steeped. Glass tells you that.\n\nWe use a 200ml capacity to match a 100ml gaiwan with a little headroom for fast pours.",
       "goodFor": [
-        "Pu'er",
+        "Sheng Pu'er",
+        "Shou Pu'er",
+        "Dark",
         "Oolong",
         "Black",
         "White",
@@ -801,7 +806,9 @@
       "tagline": "Variable-temperature gooseneck — set to 55°C for gyokuro, 95°C for shen, no guessing.",
       "body": "Yes, you can heat water in a saucepan. You can also drive without a speedometer. The Stagg EKG holds a target temperature with one-degree resolution, which matters most for the cool-water teas — gyokuro at 55°C, sencha at 70°C, anything in the Japanese-green family that punishes a five-degree miss.\n\nThe gooseneck spout is fine but secondary to the temperature control. We've used cheaper kettles with the same accuracy that hold up just as well; this one earns its price tag on build quality and how often you reach for it.",
       "goodFor": [
-        "Pu'er",
+        "Sheng Pu'er",
+        "Shou Pu'er",
+        "Dark",
         "Oolong",
         "Black",
         "White",
@@ -824,7 +831,9 @@
       "tagline": "0.1g scale built for coffee that does the same job for tea — leaf weight you can trust.",
       "body": "A scale is the single piece of equipment most likely to actually change your tea. People consistently overestimate how much leaf they're using by a gram or two; with a 100ml gaiwan that's the difference between balanced and bitter.\n\nThe Pearl is overkill — a $25 jewelry scale will do the same arithmetic — but it has the decisive advantage of being nice to look at on the counter, which means you actually use it. The 0.1g resolution matters for sub-3g leaf weights (matcha, Japanese greens); for everything else 0.5g is fine.",
       "goodFor": [
-        "Pu'er",
+        "Sheng Pu'er",
+        "Shou Pu'er",
+        "Dark",
         "Oolong",
         "Black",
         "White",

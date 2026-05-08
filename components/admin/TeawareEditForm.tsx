@@ -13,7 +13,17 @@ const inputCls =
   "w-full px-3 py-2 rounded-md border border-warm-300 bg-cream text-[14px] font-sans focus:outline-none focus:border-burgundy";
 
 const CATEGORIES = ["Gaiwan", "Teapot", "Kyusu", "Pitcher", "Cup", "Kettle", "Scale", "Strainer", "Other"];
-const TEA_TYPES = ["Green", "White", "Yellow", "Oolong", "Black", "Pu'er", "Herbal"];
+const TEA_TYPES = [
+  "Green",
+  "White",
+  "Yellow",
+  "Oolong",
+  "Black",
+  "Sheng Pu'er",
+  "Shou Pu'er",
+  "Dark",
+  "Herbal",
+];
 
 export function TeawareEditForm({ item }: { item: TeawareRow | null }) {
   const router = useRouter();

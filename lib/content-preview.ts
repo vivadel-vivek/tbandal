@@ -42,6 +42,8 @@ function teaFromRow(r: TeaRowJoined): Tea {
     name:       r.name,
     chinese:    r.chinese ?? undefined,
     type:       r.type,
+    subtype:    r.subtype ?? null,
+    aged:       r.aged ?? false,
     region:     r.region,
     country:    r.country,
     year:       r.year,

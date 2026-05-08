@@ -90,6 +90,29 @@ export function RecommendationsView({
     return out;
   }, [member]);
 
+  // What types and aged-statuses has the user rated, weighted by score?
+  // Used to apply a hard-ish boundary on recommendations: a sheng-only
+  // drinker shouldn't see shou recommendations until they cross over,
+  // and a young-tea-only drinker shouldn't see aged whites at the top.
+  const { typeWeights, agedRatio } = useMemo(() => {
+    const tw: Record<string, number> = {};
+    let agedW = 0;
+    let totalW = 0;
+    for (const r of member.ratings) {
+      const t = TEAS.find((x) => x.slug === r.slug);
+      if (!t) continue;
+      const w = Math.max(0.1, r.rating / 10);
+      tw[t.type] = (tw[t.type] ?? 0) + w;
+      totalW += w;
+      if (t.aged) agedW += w;
+    }
+    return {
+      typeWeights: tw,
+      // Share of rated weight that's aged (0..1). Used as a soft prior.
+      agedRatio: totalW > 0 ? agedW / totalW : 0,
+    };
+  }, [member.ratings]);
+
   const ranked = useMemo(
     () =>
       TEAS.map((t) => {
@@ -101,9 +124,34 @@ export function RecommendationsView({
         // similarity, but quality breaks ties.
         const overlap = profileOverlap(compositeProfile(t), targetProfile);
         const quality = teaAvg(t) / 10;
-        return { t, score: 0.65 * overlap + 0.35 * quality };
+        let score = 0.65 * overlap + 0.35 * quality;
+
+        // Type boundary — only kicks in once we have signal. Teas of
+        // types the user has rated stay near full score; teas of
+        // unseen types take a 40% haircut. The "Try something
+        // different" mode reverses this list, so unseen-type teas
+        // naturally surface there.
+        const totalTypeW = Object.values(typeWeights).reduce(
+          (a, b) => a + b,
+          0,
+        );
+        if (totalTypeW > 0) {
+          const w = typeWeights[t.type] ?? 0;
+          const typeBoost = 0.6 + 0.4 * (w / totalTypeW);
+          score *= typeBoost;
+        }
+
+        // Aged boundary — only meaningful once the user has clearly
+        // committed to one side (>70% of rating weight). Penalty is
+        // gentle (15%) so it nudges rather than blocks.
+        if (member.ratings.length > 2) {
+          if (agedRatio > 0.7 && !t.aged) score *= 0.85;
+          if (agedRatio < 0.3 && t.aged) score *= 0.85;
+        }
+
+        return { t, score };
       }).sort((a, b) => b.score - a.score),
-    [targetProfile],
+    [targetProfile, typeWeights, agedRatio, member.ratings.length],
   );
 
   const recommended = ranked.slice(0, 3);

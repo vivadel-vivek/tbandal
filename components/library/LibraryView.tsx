@@ -529,7 +529,9 @@ const TEA_TYPES: TeaTypeName[] = [
   "Yellow",
   "Oolong",
   "Black",
-  "Pu'er",
+  "Sheng Pu'er",
+  "Shou Pu'er",
+  "Dark",
   "Herbal",
 ];
 

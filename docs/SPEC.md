@@ -310,6 +310,8 @@ the DB, edits flow through the contributor portal or Studio.
 
 Most recent first.
 
+- **Tea taxonomy refactor** — `tea_type` enum split: `Pu'er` becomes `Sheng Pu'er` + `Shou Pu'er`; new `Dark` value covers heicha (Anhua, Liu Bao, Fu Zhuan). Adds `subtype` (free text — Yancha, Longjing, Anhua, Bingdao) and `aged` boolean columns. TeaTypeTag, TeaBrowser, GuidedBrew, LibraryView, admin form, seed data all updated. Glossary gains 14 new entries (red-tea, dark-tea, longjing/dragonwell, tieguanyin/iron-goddess, yancha, dancong, anhua, liubao, fu-zhuan, silver-needle, aged-white, aged-sheng) for cross-referencing the East/West naming pairs. Recommendation engine now applies a soft type boundary (40% haircut on unseen types) and an aged-status nudge (15%).
+- **Auth flow fixes** — `/auth/reset` page handles all three Supabase recovery URL variants (PKCE code, OTP token_hash, implicit hash fragment). Site URL fix in supabase config (was localhost). Identity avatar in header derives initial from user's name, not palate alignment.
 - **Markdown everywhere in editorial copy** — `lib/markdown.tsx` server-renders `**bold** *italic* \`code\` [link](url) ## h2 ### h3 > quote - list` for journal post body, tea hero summary, tea review body, vendor body, teaware body. `<Glossarized>` accepts `ReactNode` so term tooltips wrap each rendered paragraph. Editors get a `MarkdownHint` line under each body/summary textarea — preview is the existing `?preview=1` link in the top bar.
 - **Hosted Supabase Site URL fix** — invite/reset emails now point to `two-buds-and-a-leaf.vercel.app`, not localhost (`supabase config push`)
 - **Tea-detail client/server split** — hero now SSR (audit item #5)
@@ -341,7 +343,6 @@ Most recent first.
 - Vendor body-copy depth (white2tea pressed cakes, Tea Drunk Wuyi yancha)
 - 5-star vendor monoculture — publish rubric or drop the stars
 - Aged-sheng storage/age annotation + brewing-ramp variation
-- Sheng vs shou separation in recommendation engine (drinker audit)
 - Publish a critical review (validate the "we don't suppress unflattering coverage" promise)
 - `/for-vendors` accept farmer/cooperative pitches without public URL; add backlog/turnaround
 

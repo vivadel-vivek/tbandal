@@ -41,15 +41,25 @@ type Recipe = {
 };
 
 type TeaCategory =
-  | "Green" | "White" | "Yellow" | "Oolong" | "Black" | "Pu'er" | "Herbal";
+  | "Green"
+  | "White"
+  | "Yellow"
+  | "Oolong"
+  | "Black"
+  | "Sheng Pu'er"
+  | "Shou Pu'er"
+  | "Dark"
+  | "Herbal";
 
 const CATEGORIES: { key: TeaCategory; label: string; hint: string }[] = [
-  { key: "Green",  label: "Green tea",  hint: "Sencha, Longjing, gunpowder, matcha" },
-  { key: "Black",  label: "Black tea",  hint: "Breakfast, Assam, Darjeeling, Yunnan red" },
-  { key: "Oolong", label: "Oolong",     hint: "Tieguanyin, Wuyi yancha, dancong, milk oolong" },
-  { key: "Pu'er",  label: "Pu'er",      hint: "Sheng (raw) or shou (ripe), aged or young" },
-  { key: "White",  label: "White tea",  hint: "Silver Needle, white peony, shou mei" },
-  { key: "Herbal", label: "Herbal",     hint: "Chamomile, rooibos, mint — not technically tea" },
+  { key: "Green",        label: "Green tea",      hint: "Sencha, Longjing, gunpowder, matcha" },
+  { key: "Black",        label: "Black tea",      hint: "Breakfast, Assam, Darjeeling, Yunnan red" },
+  { key: "Oolong",       label: "Oolong",         hint: "Tieguanyin, Wuyi yancha, dancong, milk oolong" },
+  { key: "Sheng Pu'er",  label: "Sheng pu'er",    hint: "Raw pu'er — bright, fruity, ages slowly" },
+  { key: "Shou Pu'er",   label: "Shou pu'er",     hint: "Ripe pu'er — earthy, dark, drinks young" },
+  { key: "Dark",         label: "Dark tea",       hint: "Heicha — Anhua, Fu, Liubao. Post-fermented, smooth, ages well" },
+  { key: "White",        label: "White tea",      hint: "Silver Needle, white peony, shou mei" },
+  { key: "Herbal",       label: "Herbal",         hint: "Chamomile, rooibos, mint — not technically tea" },
 ];
 
 const GEAR_OPTIONS: { key: Gear; label: string; hint: string }[] = [
@@ -80,8 +90,12 @@ function recommend(category: TeaCategory, gear: Gear, style: Style): Recipe {
         return { tempC: 92, leafPer100: 2.0, firstSec: 60, steeps: 4 };
       case "Black":
         return { tempC: 95, leafPer100: 1.5, firstSec: 180, steeps: 2 };
-      case "Pu'er":
-        return { tempC: 95, leafPer100: 2.0, firstSec: 30, steeps: 6 };
+      case "Sheng Pu'er":
+        return { tempC: 95, leafPer100: 2.0, firstSec: 20, steeps: 8 };
+      case "Shou Pu'er":
+        return { tempC: 100, leafPer100: 2.0, firstSec: 30, steeps: 6 };
+      case "Dark":
+        return { tempC: 100, leafPer100: 2.0, firstSec: 30, steeps: 5 };
       case "Herbal":
         return { tempC: 100, leafPer100: 1.5, firstSec: 300, steeps: 1 };
     }
@@ -150,6 +164,12 @@ function recommend(category: TeaCategory, gear: Gear, style: Style): Recipe {
   const notes = (() => {
     if (gear === "none") {
       return "Without dedicated gear: a sturdy mug with a removable strainer or a cheap basket infuser will brew most teas reasonably. We've ranked starter vessels in the teaware section if you want to upgrade — start with a 100ml gaiwan; it's the most flexible single piece you can own.";
+    }
+    if (category === "Shou Pu'er" || category === "Dark") {
+      return "Rinse first: pour boiling water over the leaves, swirl 5 seconds, discard. The first proper steep then opens cleanly without the storage notes. Pressed cakes need a second rinse if dense.";
+    }
+    if (category === "Sheng Pu'er") {
+      return "Young sheng is bright and astringent — short pours, lots of them. A 5–10 second rinse is optional but cleans dust. Aged sheng (10+ yrs) wants longer steeps and rewards patience across 12+ pours.";
     }
     if (isShortPour) {
       return "Short pours, repeated. The first cup is often closed; the second and third are where the tea opens. Keep a kettle nearby — re-steeps want hot water on standby.";

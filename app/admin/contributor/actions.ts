@@ -219,6 +219,8 @@ export async function saveTea(input: {
   gradient: string;
   swatch: string;
   subtitle: string | null;
+  subtype: string | null;
+  aged: boolean;
   summary: string;
   brewing: unknown;
   mouthfeel: unknown;

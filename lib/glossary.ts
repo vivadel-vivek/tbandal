@@ -112,7 +112,7 @@ const TEA_TYPES: GlossarySection = {
       slug: "sheng-puer",
       term: "Sheng pu'er",
       original: "生普 / shēng pǔ'ěr",
-      aliases: ["sheng", "shen", "raw pu'er", "生茶", "生普洱"],
+      aliases: ["sheng", "shen", "raw pu'er", "Sheng Pu'er", "生茶", "生普洱"],
       lay: "Raw pu'er — pressed but not cooked, left to age slowly. Young sheng can be sharp and floral; aged sheng turns deep, woody, and sweet.",
       technical:
         "Sheng is the older and more traditional of the two pu'er types. After picking, the leaves are kill-greened (lighter than for green tea), rolled, sun-dried into maocha, and steam-pressed into cakes. Aging happens slowly — initial bitterness and astringency mellow over five to fifteen years as polyphenols polymerize and microbes work on the cake. Storage humidity matters enormously: dry-stored Kunming sheng ages cleanly and slowly, while traditional Hong Kong/Guangdong wet storage accelerates the process at the cost of cleaner flavor. Quality young sheng shows huigan and qi even before aging begins.",
@@ -122,7 +122,7 @@ const TEA_TYPES: GlossarySection = {
       slug: "shou-puer",
       term: "Shou pu'er",
       original: "熟普 / shóu pǔ'ěr",
-      aliases: ["shou", "shu", "ripe pu'er", "cooked pu'er", "熟茶"],
+      aliases: ["shou", "shu", "ripe pu'er", "cooked pu'er", "Shou Pu'er", "熟茶"],
       lay: "Ripe pu'er — fermented in a pile over weeks to mimic decades of aging. Earthy, smooth, dark, and ready to drink immediately.",
       technical:
         "Shou is a modern style, developed at the Kunming Tea Factory in 1973 to meet Hong Kong demand for aged-tasting pu'er without the wait. The defining process is wo dui (渥堆, wet-piling): maocha is heaped, sprayed with water, and turned over 45–60 days while controlled microbial fermentation (notably Aspergillus species) transforms the leaf. The result is dark, soft, low-astringency tea with characteristic earth, wet-wood, and dark-cocoa notes. Good shou loses any 'pile' funk within a year or two of production. Shou does age, but the gains are subtler than with sheng.",
@@ -132,11 +132,149 @@ const TEA_TYPES: GlossarySection = {
       slug: "hei-cha",
       term: "Hei cha",
       original: "黑茶 / hēichá",
-      aliases: ["heicha", "dark tea", "post-fermented tea"],
+      aliases: ["heicha", "dark tea", "post-fermented tea", "Dark"],
       lay: "The umbrella category of Chinese fermented teas. Pu'er is the famous one, but Anhua, Liu Bao, and Fu Zhuan all live here too.",
       technical:
-        "Hei cha (literally 'black tea') is the post-fermented category — teas that undergo deliberate microbial fermentation, distinct from the enzymatic oxidation of red/black teas. Pu'er is the best-known member, but the family extends to Hunan's Anhua hei cha (often pressed into bricks), Guangxi's Liu Bao (basket-aged, betel-nut and woody notes), and Fu Zhuan, which intentionally cultivates 'golden flowers' (Eurotium cristatum) within the brick. Many were historically border teas, traded by horseback to Tibet and Mongolia. The umami-savory, mellow profile across the category reflects shared microbial chemistry rather than shared geography.",
-      related: ["pu-er", "sheng-puer", "shou-puer", "earthy", "oxidation"],
+        "Hei cha (literally 'black tea') is the post-fermented category — teas that undergo deliberate microbial fermentation, distinct from the enzymatic oxidation of red/black teas. Pu'er is the best-known member, but the family extends to Hunan's Anhua hei cha (often pressed into bricks), Guangxi's Liu Bao (basket-aged, betel-nut and woody notes), and Fu Zhuan, which intentionally cultivates 'golden flowers' (Eurotium cristatum) within the brick. Many were historically border teas, traded by horseback to Tibet and Mongolia. The umami-savory, mellow profile across the category reflects shared microbial chemistry rather than shared geography. We label this category **Dark** in our type system to avoid confusion with red/black tea.",
+      related: ["pu-er", "sheng-puer", "shou-puer", "anhua", "liubao", "fu-zhuan", "earthy", "oxidation"],
+    },
+    {
+      slug: "red-tea",
+      term: "Red tea",
+      original: "红茶 / hóngchá",
+      aliases: ["red", "hongcha", "hong cha"],
+      lay: "What Chinese vendors call 红茶 (hóngchá) is what Westerners call black tea. Same thing — fully oxidized whole-leaf — different name.",
+      technical:
+        "The translation gap is the most common source of tea-name confusion. 红茶 ('red tea') is the Chinese name for what Western shelves label 'black' — Dianhong, Keemun, Lapsang Souchong, and so on. Meanwhile, 黑茶 ('black tea' literally) refers to a different category entirely: post-fermented heicha. We use the Western convention (Black = oxidized hong cha) throughout the site, but specialty Chinese vendors will often label hong cha as 'red'. They mean the same thing.",
+      related: ["black", "hei-cha"],
+    },
+    {
+      slug: "dark-tea",
+      term: "Dark tea",
+      original: "黑茶 / hēichá",
+      aliases: ["dark", "Dark"],
+      lay: "Our label for the post-fermented heicha category — Anhua, Liu Bao, Fu Zhuan, and the like. See: Hei cha.",
+      technical:
+        "We use 'Dark' in our type system as the English label for hei cha (黑茶, post-fermented teas). Some Chinese vendors translate hei cha literally as 'black tea' in English, which collides with the Western label for fully oxidized red/black tea. Choosing 'Dark' avoids the ambiguity. Pu'er is technically a member of the hei cha family but treated as its own category here (split into Sheng and Shou) because of how culturally distinct it is.",
+      related: ["hei-cha", "shou-puer", "anhua", "liubao", "fu-zhuan"],
+    },
+    {
+      slug: "anhua",
+      term: "Anhua hei cha",
+      original: "安化黑茶",
+      aliases: ["anhua", "anhua dark"],
+      lay: "Hunan's heicha tradition — long-aged dark tea, often pressed into bricks. Smooth, woody, and historically a border-trade staple.",
+      technical:
+        "Anhua hei cha comes from Anhua County in Hunan, with a documented production history going back to the Ming dynasty. The leaves are large, coarse, and post-fermented through wet-piling and long ageing — distinct from pu'er's process despite the family resemblance. Common pressed forms include Tianjian, Hua Juan (花卷, 'flower roll' — a giant cylindrical brick), and the brick teas with embedded Fuzhuan-style golden flowers. The flavor is earthy and mellow with a distinctive woody-sweet finish; well-aged Anhua develops betel-nut and dried-medicinal notes.",
+      related: ["hei-cha", "dark-tea", "fu-zhuan", "liubao"],
+    },
+    {
+      slug: "liubao",
+      term: "Liu Bao",
+      original: "六堡茶 / liùbǎo chá",
+      aliases: ["liu bao", "liubao", "六堡"],
+      lay: "Guangxi heicha aged in bamboo baskets — betel-nut, mushroom, and aged-wood notes. Pu'er's quieter cousin.",
+      technical:
+        "Liu Bao is named for the village in Cangwu County, Guangxi, where it originates. The defining processing step is post-fermentation followed by long basket-ageing in bamboo, which imparts a distinctive 'betel-nut' (槟榔香) aroma considered the marker of quality Liu Bao. The leaves are typically loose-aged rather than pressed, though brick and ball forms exist. Historically a Cantonese-export tea, it travelled to Southeast Asia in large volumes and aged well in the warm humid climate. The cup is darker and earthier than aged sheng but cleaner and less funky than wet-stored pu'er.",
+      related: ["hei-cha", "dark-tea", "anhua", "earthy"],
+    },
+    {
+      slug: "fu-zhuan",
+      term: "Fu Zhuan",
+      original: "茯砖茶",
+      aliases: ["fu zhuan", "fuzhuan", "golden flowers", "jin hua"],
+      lay: "A pressed brick heicha that intentionally grows a yellow fungus inside (jin hua, 'golden flowers') — the spores are part of what makes the cup taste right.",
+      technical:
+        "Fu Zhuan is the definitive 'golden flowers' tea — the brick is inoculated with Eurotium cristatum, a yellow fungal species cultivated during a controlled flowering stage of production. The spores look like tiny mustard-yellow specks throughout the brick when broken. The fungus consumes catechins and produces compounds that smooth the cup and create the characteristic mellow, slightly sweet, mushroom-broth profile. Hunan and Shaanxi are the two main production regions. Authentic Fu Zhuan is a fermented heicha by definition, distinct from any tea where mold has appeared accidentally.",
+      related: ["hei-cha", "dark-tea", "anhua"],
+    },
+    {
+      slug: "longjing",
+      term: "Longjing",
+      original: "龙井",
+      aliases: ["longjing", "long jing", "lung ching", "dragonwell", "dragon well"],
+      lay: "China's most famous green tea — flat, lance-shaped leaves with chestnut-and-grass character. Dragonwell is the English name.",
+      technical:
+        "Longjing is a pan-fired green tea from the West Lake area of Hangzhou, Zhejiang. The processing is unique: leaves are pressed flat in a hot wok using a sequence of named hand motions ('grasp', 'shake', 'press'), giving the finished tea its characteristic spear shape and toasted-bean-and-grass profile. Authentic Xi Hu Longjing (西湖龙井) is a Protected Geographical Indication; production outside that zone is sold as Zhejiang Longjing or just 'Dragonwell'. Pre-Qingming pickings are the most prized. Some specialty vendors keep both English and Chinese names visible — 'Longjing (Dragonwell)' — because both are widely used.",
+      related: ["green", "pre-qingming", "dragonwell", "vegetal"],
+    },
+    {
+      slug: "dragonwell",
+      term: "Dragonwell",
+      aliases: ["dragon well", "dragonwell"],
+      lay: "The English name for Longjing. Same tea — see: Longjing.",
+      technical:
+        "'Dragonwell' is the conventional English translation of Longjing (龙井, lóngjǐng — 'dragon well'). Specialty vendors often keep the romanized Chinese name; mainstream Western tea shops sometimes use 'Dragonwell' or 'Dragon Well'. There is no difference in product — only the label.",
+      related: ["longjing", "green"],
+    },
+    {
+      slug: "tieguanyin",
+      term: "Tieguanyin",
+      original: "铁观音",
+      aliases: ["tieguanyin", "tie guan yin", "iron goddess", "iron buddha", "tgy"],
+      lay: "Anxi's signature oolong — orchid-and-cream when green-style, deep-roasted-and-fruity when traditional. 'Iron Goddess' is the English name.",
+      technical:
+        "Tieguanyin (铁观音, 'iron goddess of mercy' or 'iron buddha' depending on translation) is the most famous oolong from Anxi County, Fujian. Two stylistic camps coexist: modern green-style (清香, qīngxiāng) is lightly oxidized and tightly rolled into pellets, emphasizing bright orchid and milk-cream notes — this is what most Western drinkers know. Traditional or 'old style' (浓香, nóngxiāng or 韵香, yùnxiāng) is more heavily oxidized and charcoal-roasted, with deeper fruit, dried-flower, and mineral character. The cultivar (also called Tieguanyin) is named-after; some 'Tieguanyin' is actually made from neighbour cultivars like Maoxie or Benshan.",
+      related: ["oolong", "iron-goddess", "floral", "roasted"],
+    },
+    {
+      slug: "iron-goddess",
+      term: "Iron Goddess",
+      aliases: ["iron buddha", "iron goddess of mercy"],
+      lay: "The English name for Tieguanyin. Same tea — see: Tieguanyin.",
+      technical:
+        "'Iron Goddess' (or 'Iron Buddha', or 'Iron Goddess of Mercy') is the English translation of 铁观音. The character 观音 refers to Guanyin, the Chinese Buddhist bodhisattva of compassion. Vendors selling to specialty audiences typically use 'Tieguanyin'; mainstream and gift-market tea shops often choose the English form. Same tea, different label.",
+      related: ["tieguanyin", "oolong"],
+    },
+    {
+      slug: "yancha",
+      term: "Yancha",
+      original: "岩茶 / yánchá",
+      aliases: ["yancha", "rock tea", "wuyi rock", "wuyi yancha"],
+      lay: "Wuyi 'rock' oolongs — heavily roasted, deeply mineral, grown in cliff soil. Da Hong Pao is the famous one.",
+      technical:
+        "Yancha ('rock tea') comes from the Wuyi mountains of northern Fujian, where bushes grow on weathered cliff terraces. The defining flavor element is yan yun (岩韵, 'rock rhyme') — a mineral, almost metallic depth attributed to the iron-rich soil. Production is twisted-strip oolong, more heavily oxidized than Anxi-style, and finished with multiple charcoal roastings over weeks (sometimes years). Famous cultivars include Da Hong Pao (大红袍), Rou Gui (cinnamon-fragrance bushes), Shui Xian, and Tie Luo Han. Top yancha is among the most expensive oolong in the world; the original Da Hong Pao mother bushes are protected and no longer harvested.",
+      related: ["oolong", "roasted", "mineral", "terroir"],
+    },
+    {
+      slug: "dancong",
+      term: "Dancong",
+      original: "单丛 / dānzōng",
+      aliases: ["dan cong", "phoenix dancong", "feng huang"],
+      lay: "Phoenix Mountain oolongs from Guangdong — single-bush teas famous for mimicking flower and fruit aromas. Honey orchid, almond, pomelo blossom.",
+      technical:
+        "Dancong (literally 'single bush') refers to Phoenix oolongs from Feng Huang Mountain in Chaozhou, Guangdong. The name reflects the historical practice of harvesting from individually selected ancient bushes whose unusual aromatic profiles were preserved through cuttings rather than blended out. Cultivar names describe the dominant aroma: Mi Lan Xiang (honey-orchid fragrance), Ya Shi Xiang ('duck shit fragrance' — a self-effacing name for a celebrated tea), Xing Ren Xiang (almond), Yu Lan Xiang (magnolia), and many more. Processing is twisted-strip, lightly to moderately oxidized, and skillfully roasted; the aromatic complexity rewards gongfu-style brewing.",
+      related: ["oolong", "floral", "fruity", "gongfu"],
+    },
+    {
+      slug: "silver-needle",
+      term: "Silver Needle",
+      original: "白毫银针 / báiháo yínzhēn",
+      aliases: ["silver needle", "bai hao yinzhen", "baihao yinzhen", "yinzhen"],
+      lay: "The most prized white tea — only the unopened buds, downy-silver in colour. Honey, hay, and a faint cucumber freshness.",
+      technical:
+        "Bai Hao Yinzhen (白毫银针, 'white-down silver needle') is the canonical white tea, made exclusively from unopened spring buds picked over a short window in early April. The Fuding and Zhenghe districts of Fujian are the historical homes; the Da Bai Hao and Da Hao cultivars are the source. Processing is minimal: a long natural wither (sometimes outdoors) followed by a low-temperature dry. The unbroken buds and silvery white pekoe are the visual signature. Flavor is delicate, hay-and-honey, with a clean cooling finish. Aged Silver Needle (老白毫银针) develops dried-fruit and medicinal notes over five-plus years and is increasingly collected.",
+      related: ["white", "aged-white", "honey"],
+    },
+    {
+      slug: "aged-white",
+      term: "Aged white tea",
+      original: "老白茶 / lǎo báichá",
+      aliases: ["aged white", "lao bai cha", "old white tea"],
+      lay: "White tea that's been intentionally stored for years — the leaves darken, the cup gets richer, deeper, and develops dried-fruit and medicinal notes.",
+      technical:
+        "Aged white tea has emerged as a separate category over the past two decades, driven largely by Fuding producers marketing five-, ten-, and fifteen-year-old pressed cakes. Unlike pu'er the ageing chemistry is less microbial and more slow-oxidative; the flavor shift is real and dramatic. Young white tea is hay, honey, fresh apricot; aged white moves toward dried jujube, cinnamon, deep medicinal sweetness, and a thick mouthfeel. The cup colour deepens from pale gold to amber-ruby. Quality aged white commands prices that exceed many premium pu'er, and editorial caution around fake ageing is warranted (a real five-year cake can be hard to distinguish from a re-pressed one). On our site, aged white is treated as a separate cluster from young white in recommendations.",
+      related: ["white", "silver-needle", "sheng-puer"],
+    },
+    {
+      slug: "aged-sheng",
+      term: "Aged sheng pu'er",
+      original: "老生普 / lǎo shēng pǔ'ěr",
+      aliases: ["aged sheng", "old sheng", "old shen"],
+      lay: "Sheng pu'er left to age 10+ years — bitterness fades, the cup turns dark, woody, and sweet. The classic pu'er ageing trajectory.",
+      technical:
+        "Aged sheng is the original pu'er category, predating shou by centuries. The natural ageing arc moves through several phases: bright and astringent for the first three to five years, an awkward 'middle period' where the tea can taste muted, and then — given correct storage — a transformation into deep camphor, dried fruit, leather, and mineral sweetness from roughly ten years onward. Storage conditions are everything. Dry Kunming storage produces clean, slow ageing; traditional Hong Kong wet storage accelerates the process at the cost of cleaner flavour; Malaysian and Taiwanese mid-humidity conditions sit between. Authentic aged sheng with documented provenance is one of the most expensive teas in the world; the market for fake aged cakes is correspondingly large.",
+      related: ["sheng-puer", "pu-er", "huigan", "qi", "terroir"],
     },
     {
       slug: "herbal-tisane",

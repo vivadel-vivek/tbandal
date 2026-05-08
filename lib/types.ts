@@ -91,8 +91,20 @@ export type TeaFlavorBundle = {
   members: FlavorProfile;
 };
 
+// Core tea types. Sheng vs shou pu'er are split because they're
+// effectively different teas (raw is fruity/astringent, ripe is
+// earthy/fermented). Dark covers heicha (anhua, fu, liubao, tianjian,
+// liu'an) which Westerners sometimes mislabel as "black".
 export type TeaTypeName =
-  | "Green" | "White" | "Yellow" | "Oolong" | "Black" | "Pu'er" | "Herbal";
+  | "Green"
+  | "White"
+  | "Yellow"
+  | "Oolong"
+  | "Black"
+  | "Sheng Pu'er"
+  | "Shou Pu'er"
+  | "Dark"
+  | "Herbal";
 
 export type Tea = {
   /** Legacy short slug — kept so old /tea/[slug] links still resolve via 301 */
@@ -108,6 +120,16 @@ export type Tea = {
   /** Original-script name, e.g. 茶王 普洱 */
   chinese?: string;
   type: TeaTypeName;
+  /** Within-type variation — "Yancha", "Longjing", "Anhua", "Bingdao".
+   *  Free text, vendor-faithful (use whatever name the vendor uses).
+   *  Glossary holds the cross-references (Longjing ↔ Dragonwell etc). */
+  subtype?: string | null;
+  /** True for teas significantly aged from production date — what
+   *  counts as "aged" depends on type (5+ yrs for white, 10+ for
+   *  sheng, 15+ for liubao). Editor sets it manually. The
+   *  recommendation engine treats aged ↔ young as a soft boundary
+   *  within the same core type. */
+  aged?: boolean;
   region: string;
   country: string;
   year: string;

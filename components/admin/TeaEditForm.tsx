@@ -13,7 +13,17 @@ const labelCls = "block text-[10px] tracking-widest uppercase font-bold text-war
 const inputCls =
   "w-full px-3 py-2 rounded-md border border-warm-300 bg-cream text-[14px] font-sans focus:outline-none focus:border-burgundy";
 
-const TEA_TYPES = ["Green", "White", "Yellow", "Oolong", "Black", "Pu'er", "Herbal"] as const;
+const TEA_TYPES = [
+  "Green",
+  "White",
+  "Yellow",
+  "Oolong",
+  "Black",
+  "Sheng Pu'er",
+  "Shou Pu'er",
+  "Dark",
+  "Herbal",
+] as const;
 
 const DEFAULT_BREWING = { style: "Gongfu", ratio: "5g/100ml", temp: "95°C", first: "5s" };
 const DEFAULT_MOUTHFEEL = { astringent: 3, bodyFull: 5 };
@@ -83,7 +93,9 @@ export function TeaEditForm({
   const [vendorSlug,  setVendorSlug]  = useState(tea?.vendor_slug ?? vendors[0]?.slug ?? "");
   const [name,        setName]        = useState(tea?.name ?? "");
   const [chinese,     setChinese]     = useState(tea?.chinese ?? "");
-  const [type,        setType]        = useState<string>(tea?.type ?? "Pu'er");
+  const [type,        setType]        = useState<string>(tea?.type ?? "Sheng Pu'er");
+  const [subtype,     setSubtype]     = useState(tea?.subtype ?? "");
+  const [aged,        setAged]        = useState<boolean>(tea?.aged ?? false);
   const [region,      setRegion]      = useState(tea?.region ?? "");
   const [country,     setCountry]     = useState(tea?.country ?? "");
   const [year,        setYear]        = useState(tea?.year ?? "");
@@ -157,6 +169,8 @@ export function TeaEditForm({
         region, country, year, harvest, elev, age, price, rarity,
         gradient, swatch,
         subtitle: subtitle.trim() || null,
+        subtype:  subtype.trim() || null,
+        aged,
         summary,
         brewing:    parsedBrewing,
         mouthfeel:  parsedMouthfeel,
@@ -264,6 +278,43 @@ export function TeaEditForm({
         <div>
           <label className={labelCls} htmlFor="rarity">Rarity (1–5)</label>
           <input id="rarity" type="number" min={1} max={5} value={rarity} onChange={(e) => setRarity(Number(e.target.value))} className={inputCls} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-4">
+        <div>
+          <label className={labelCls} htmlFor="subtype">
+            Subtype <span className="font-normal lowercase tracking-normal text-warm-500">— optional, vendor-faithful</span>
+          </label>
+          <input
+            id="subtype"
+            value={subtype}
+            onChange={(e) => setSubtype(e.target.value)}
+            placeholder="Yancha · Longjing · Anhua · Bingdao · Da Hong Pao"
+            className={inputCls + " font-mono text-[13px]"}
+          />
+          <p className="text-[11px] text-warm-600 leading-snug mt-1.5">
+            Use whatever the vendor uses. The glossary holds the cross-references
+            (Longjing ↔ Dragonwell, Tieguanyin ↔ Iron Goddess).
+          </p>
+        </div>
+        <div>
+          <label className={labelCls} htmlFor="aged">Aged</label>
+          <label className="flex items-center gap-2 px-3 py-2 rounded-md border border-warm-300 bg-cream cursor-pointer">
+            <input
+              id="aged"
+              type="checkbox"
+              checked={aged}
+              onChange={(e) => setAged(e.target.checked)}
+              className="cursor-pointer"
+            />
+            <span className="text-[13px] text-warm-700">
+              {aged ? "Aged tea" : "Young / fresh"}
+            </span>
+          </label>
+          <p className="text-[11px] text-warm-600 leading-snug mt-1.5">
+            5+ yrs white · 10+ yrs sheng · 15+ yrs liubao
+          </p>
         </div>
       </div>
 

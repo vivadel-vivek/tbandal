@@ -251,6 +251,7 @@ export type Database = {
       teas: {
         Row: {
           age: string
+          aged: boolean
           brewing: Json
           chinese: string | null
           country: string
@@ -272,6 +273,7 @@ export type Database = {
           sessions_count: number
           slug: string
           subtitle: string | null
+          subtype: string | null
           summary: string
           swatch: string
           type: Database["public"]["Enums"]["tea_type"]
@@ -281,6 +283,7 @@ export type Database = {
         }
         Insert: {
           age: string
+          aged?: boolean
           brewing: Json
           chinese?: string | null
           country: string
@@ -302,6 +305,7 @@ export type Database = {
           sessions_count?: number
           slug: string
           subtitle?: string | null
+          subtype?: string | null
           summary: string
           swatch: string
           type: Database["public"]["Enums"]["tea_type"]
@@ -311,6 +315,7 @@ export type Database = {
         }
         Update: {
           age?: string
+          aged?: boolean
           brewing?: Json
           chinese?: string | null
           country?: string
@@ -332,6 +337,7 @@ export type Database = {
           sessions_count?: number
           slug?: string
           subtitle?: string | null
+          subtype?: string | null
           summary?: string
           swatch?: string
           type?: Database["public"]["Enums"]["tea_type"]
@@ -635,7 +641,9 @@ export type Database = {
         | "Yellow"
         | "Oolong"
         | "Black"
-        | "Pu'er"
+        | "Sheng Pu'er"
+        | "Shou Pu'er"
+        | "Dark"
         | "Herbal"
       teaware_category:
         | "Gaiwan"
@@ -1329,7 +1337,9 @@ export const Constants = {
         "Yellow",
         "Oolong",
         "Black",
-        "Pu'er",
+        "Sheng Pu'er",
+        "Shou Pu'er",
+        "Dark",
         "Herbal",
       ],
       teaware_category: [

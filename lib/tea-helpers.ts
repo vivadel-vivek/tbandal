@@ -44,13 +44,15 @@ export function teaUrl(tea: Tea): string {
 // =====================================================================
 
 const TYPE_LABELS: Record<string, string> = {
-  "Green":  "green tea",
-  "White":  "white tea",
-  "Yellow": "yellow tea",
-  "Oolong": "oolong",
-  "Black":  "black tea",
-  "Pu'er":  "pu'er",
-  "Herbal": "herbal infusion",
+  "Green":         "green tea",
+  "White":         "white tea",
+  "Yellow":        "yellow tea",
+  "Oolong":        "oolong",
+  "Black":         "black tea",
+  "Sheng Pu'er":   "raw pu'er",
+  "Shou Pu'er":    "ripe pu'er",
+  "Dark":          "dark tea",
+  "Herbal":        "herbal infusion",
 };
 
 // Friendlier rendering of the 12 advanced flavor axes. "Vegetal" reads
@@ -87,9 +89,16 @@ export function teaSubtitle(tea: Tea): string {
   const ageQualifier = ageMatch ? `${ageMatch[1]}-year` : "";
 
   const typeLabel = TYPE_LABELS[tea.type] ?? tea.type.toLowerCase();
-  const prefix = ageQualifier
+  // "aged" flag wins over the bare year count — an aged white reads
+  // very differently from a 5-year-young white. Editor sets it.
+  const agedPrefix = tea.aged ? "aged " : "";
+  const headTail = ageQualifier && !tea.aged
     ? `${ageQualifier} ${typeLabel}`
-    : typeLabel;
+    : `${agedPrefix}${typeLabel}`;
+  // Subtype goes in front as a leading designator: "Bingdao · raw pu'er"
+  const prefix = tea.subtype && tea.subtype.trim().length > 0
+    ? `${tea.subtype.trim()} · ${headTail}`
+    : headTail;
 
   // Capitalize first letter and join the top notes naturally.
   const head = prefix.charAt(0).toUpperCase() + prefix.slice(1);
