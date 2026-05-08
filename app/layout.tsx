@@ -8,20 +8,27 @@ import { PrivacyBanner } from "@/components/chrome/PrivacyBanner";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
+// Display weights trimmed to 400 + 500 (regular + italic) — the
+// editorial type system uses italic display for hero/h1 and a single
+// non-italic weight elsewhere; 600/700 were unused on real surfaces
+// but were paying ~150 KB in font payload on every first paint
+// (Lighthouse: H1 LCP delay traced to font swap-in cost).
 const display = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500"],
   style: ["normal", "italic"],
   display: "swap",
   variable: "--font-display",
+  preload: true,
 });
 
 const sans = Nunito_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["400", "700"],
+  style: ["normal"],
   display: "swap",
   variable: "--font-sans",
+  preload: true,
 });
 
 export const metadata: Metadata = {

@@ -15,9 +15,13 @@ type Props = {
   density?: CardDensity;
   /** Hide rating chip + stars (member blind / forced-hide). */
   hideReviews?: boolean;
+  /** Eager-load this card's hero image. Use on the first 1–2 cards
+   *  in a grid so the LCP-eligible image isn't lazy-loaded by
+   *  default (Lighthouse: lcp-lazy-loaded). */
+  priority?: boolean;
 };
 
-export function TeaCard({ tea, density = "cozy", hideReviews = false }: Props) {
+export function TeaCard({ tea, density = "cozy", hideReviews = false, priority = false }: Props) {
   const compact = density === "compact";
   const avg = teaAvg(tea);
 
@@ -33,6 +37,7 @@ export function TeaCard({ tea, density = "cozy", hideReviews = false }: Props) {
           gradient={tea.gradient}
           aspectRatio={compact ? "16/8" : "16/10"}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          priority={priority}
         />
         <div className="absolute top-3 left-3">
           <TeaTypeTag type={tea.type} small={compact} />

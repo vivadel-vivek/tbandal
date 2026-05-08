@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { ClientProviders } from "./ClientProviders";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
-import { SessionLogLauncher } from "@/components/session/SessionLogLauncher";
+import { LazySessionLogLauncher } from "@/components/session/LazySessionLogLauncher";
 import { StagingRoleSwitcher } from "@/components/staging/RoleSwitcher";
 import { getTeas } from "@/lib/content";
 
@@ -34,7 +34,7 @@ export async function Shell({ children }: { children: ReactNode }) {
       </div>
       {/* Floating "Log a session" launcher — pathname-aware contextual
           prefill, gated to members. */}
-      <SessionLogLauncher teas={teas} />
+      <LazySessionLogLauncher teas={teas} />
       {stagingSwitcher && <StagingRoleSwitcher />}
     </ClientProviders>
   );

@@ -232,12 +232,16 @@ export function TeaBrowser({ teas, vendors }: Props) {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-          {filtered.map((t) => (
+          {filtered.map((t, i) => (
             <TeaCard
               key={t.slug}
               tea={t}
               density="cozy"
               hideReviews={hide(t.slug)}
+              // First two cards are above-the-fold on every viewport
+              // and one of them is the LCP element on /discover/teas
+              // — eager-load to avoid lcp-lazy-loaded.
+              priority={i < 2}
             />
           ))}
         </div>
