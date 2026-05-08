@@ -218,6 +218,7 @@ export async function saveTea(input: {
   rarity: number;
   gradient: string;
   swatch: string;
+  subtitle: string | null;
   summary: string;
   brewing: unknown;
   mouthfeel: unknown;
@@ -258,6 +259,28 @@ export async function saveTea(input: {
   revalidatePath("/discover/teas");
   revalidatePath("/admin/contributor/teas");
   return { ok: true, slug: input.slug };
+}
+
+/** Update a user's role. Admin-only — contributors can edit catalog
+ *  rows but they shouldn't be able to promote themselves to admin. */
+export async function setUserRole(input: {
+  userId: string;
+  role: "admin" | "contributor" | "vendor" | "member" | "user";
+}): Promise<{ ok: boolean; message?: string }> {
+  const { requireRole } = await import("@/lib/auth/require-role");
+  const { userId: callerId } = await requireRole(["admin"]);
+  if (callerId === input.userId) {
+    return { ok: false, message: "You can't change your own role. Ask another admin." };
+  }
+  const { createSupabaseServerClient } = await import("@/lib/supabase/server");
+  const sb = await createSupabaseServerClient();
+  const { error } = await sb
+    .from("profiles")
+    .update({ role: input.role })
+    .eq("id", input.userId);
+  if (error) return { ok: false, message: error.message };
+  revalidatePath("/admin/contributor/users");
+  return { ok: true };
 }
 
 /** Toggle the `published` flag on any catalog row. */

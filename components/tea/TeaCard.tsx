@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import type { CardDensity, Tea } from "@/lib/types";
-import { teaAvg, teaUrl } from "@/lib/tea-helpers";
+import { teaAvg, teaUrl, teaSubtitle } from "@/lib/tea-helpers";
 import { TeaTypeTag } from "@/components/ui/TeaTypeTag";
 import { StarRow } from "@/components/ui/StarRow";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -53,6 +53,15 @@ export function TeaCard({ tea, density = "cozy", hideReviews = false }: Props) {
         >
           {tea.name}
         </h3>
+        {/* Plain-English subtitle — newcomer-friendly tag like
+            "3-year pu'er, mineral & honeyed". Editor-overridable via
+            tea.subtitle; falls back to teaSubtitle() derivation. */}
+        <p className={[
+          "text-warm-700 italic m-0",
+          compact ? "text-[12px] mt-0.5 leading-snug" : "text-[13px] mt-1 leading-snug",
+        ].join(" ")}>
+          {teaSubtitle(tea)}
+        </p>
         {!compact && (
           <p className="text-xs text-warm-600 m-0 mt-1">
             {tea.year} · {tea.elev}m · {tea.vendor}

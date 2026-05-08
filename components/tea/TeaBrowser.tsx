@@ -9,12 +9,32 @@ import { TeaCard } from "@/components/tea/TeaCard";
 
 type TypeFilter = "All" | TeaTypeName;
 type SortKey = "rating" | "price" | "elev";
+type ViewMode = "standard" | "beginner";
 
 const TYPE_OPTIONS: TypeFilter[] = ["All", "Green", "White", "Oolong", "Black", "Pu'er"];
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: "rating", label: "Highest rated" },
   { key: "price", label: "Price" },
   { key: "elev", label: "Elevation" },
+];
+
+// Beginner-mode buckets — friendlier groupings than tea-type names.
+// Each bucket maps to one or more TeaTypeName values; "All" matches
+// every tea (standard mode equivalent).
+type BeginnerBucket = {
+  key: string;
+  label: string;
+  hint: string;
+  types: readonly TeaTypeName[] | "all";
+};
+
+const BEGINNER_BUCKETS: BeginnerBucket[] = [
+  { key: "all",     label: "All teas",         hint: "Show me everything",                        types: "all" },
+  { key: "light",   label: "Light & floral",   hint: "Bright, gentle, easy to like",              types: ["Green", "White", "Yellow"] },
+  { key: "layered", label: "Layered & complex", hint: "Floral up front, depth underneath",        types: ["Oolong"] },
+  { key: "bold",    label: "Bold & roasted",   hint: "Hearty, malty, breakfast-cup country",      types: ["Black"] },
+  { key: "earthy",  label: "Earthy & aged",    hint: "Forest floor, mineral sweetness, depth",    types: ["Pu'er"] },
+  { key: "herbal",  label: "Herbal",           hint: "Caffeine-free, soothing, anytime",          types: ["Herbal"] },
 ];
 
 type Props = {
@@ -29,7 +49,9 @@ type Props = {
  * fetches both at build time and ISR-revalidates on tag change.
  */
 export function TeaBrowser({ teas, vendors }: Props) {
+  const [view, setView] = useState<ViewMode>("standard");
   const [type, setType] = useState<TypeFilter>("All");
+  const [bucket, setBucket] = useState<string>("all");
   const [region, setRegion] = useState<string>("All");
   const [sort, setSort] = useState<SortKey>("rating");
   const { isBlindFor } = useMember();
@@ -40,9 +62,21 @@ export function TeaBrowser({ teas, vendors }: Props) {
     ...Array.from(new Set(teas.map((t) => t.country))),
   ];
 
+  // Type filter behaves differently per view: standard uses TYPE_OPTIONS;
+  // beginner uses the friendlier bucket grouping that maps each bucket
+  // to one or more tea-type values.
+  const matchesTypeFilter = (t: Tea): boolean => {
+    if (view === "standard") {
+      return type === "All" || t.type === type;
+    }
+    const b = BEGINNER_BUCKETS.find((x) => x.key === bucket);
+    if (!b || b.types === "all") return true;
+    return (b.types as readonly TeaTypeName[]).includes(t.type);
+  };
+
   let filtered = teas.filter(
     (t) =>
-      (type === "All" || t.type === type) &&
+      matchesTypeFilter(t) &&
       (region === "All" || t.country === region),
   );
   if (sort === "rating") {
@@ -56,12 +90,71 @@ export function TeaBrowser({ teas, vendors }: Props) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-[240px_1fr] gap-5 sm:gap-8 items-start">
       <aside className="card-surface p-5 sm:sticky sm:top-24">
-        <FilterGroup
-          label="Type"
-          options={TYPE_OPTIONS}
-          value={type}
-          onChange={(v) => setType(v as TypeFilter)}
-        />
+        {/* View toggle: switches between tea-type filter (standard)
+            and friendlier bucket grouping (beginner). Sticky toggle
+            so the choice doesn't get lost on scroll. */}
+        <div className="mb-5">
+          <Eyebrow color="var(--warm-600, #6B6560)">View</Eyebrow>
+          <div className="flex gap-1 p-1 bg-cream rounded-pill mt-2 border border-warm-200">
+            {(["standard", "beginner"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setView(v)}
+                className={[
+                  "flex-1 px-2.5 py-1 rounded-pill text-[11px] font-bold tracking-wide transition-colors cursor-pointer border-0",
+                  view === v
+                    ? "bg-burgundy text-cream"
+                    : "bg-transparent text-warm-700",
+                ].join(" ")}
+              >
+                {v === "standard" ? "Standard" : "New to tea"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {view === "standard" ? (
+          <FilterGroup
+            label="Type"
+            options={TYPE_OPTIONS}
+            value={type}
+            onChange={(v) => setType(v as TypeFilter)}
+          />
+        ) : (
+          // Beginner buckets render as wider buttons with a hint line —
+          // "Light & floral" + "Bright, gentle, easy to like" reads
+          // better than a bare "Green" radio.
+          <div className="mb-4">
+            <Eyebrow color="var(--warm-600, #6B6560)">What kind of cup?</Eyebrow>
+            <div className="flex flex-col gap-2 mt-2.5">
+              {BEGINNER_BUCKETS.map((b) => {
+                const active = bucket === b.key;
+                return (
+                  <button
+                    key={b.key}
+                    type="button"
+                    onClick={() => setBucket(b.key)}
+                    className={[
+                      "w-full text-left px-3 py-2.5 rounded-md transition-colors cursor-pointer border",
+                      active
+                        ? "bg-burgundy-muted border-burgundy text-burgundy"
+                        : "bg-transparent border-warm-200 hover:bg-cream text-forest",
+                    ].join(" ")}
+                  >
+                    <div className="text-[13px] font-bold leading-tight">
+                      {b.label}
+                    </div>
+                    <div className="text-[11px] text-warm-600 leading-snug mt-0.5">
+                      {b.hint}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <FilterGroup
           label="Origin"
           options={regions}

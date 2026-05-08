@@ -55,6 +55,7 @@ export function TeaEditForm({
     tea?.gradient ?? "linear-gradient(135deg,#8B7355 0%,#5C4033 100%)"
   );
   const [swatch,      setSwatch]      = useState(tea?.swatch ?? "#5C4033");
+  const [subtitle,    setSubtitle]    = useState(tea?.subtitle ?? "");
   const [summary,     setSummary]     = useState(tea?.summary ?? "");
   const [finish,      setFinish]      = useState((tea?.finish ?? []).join(", "));
   const [sessionsCount, setSessionsCount] = useState<number>(tea?.sessions_count ?? 0);
@@ -94,7 +95,9 @@ export function TeaEditForm({
         chinese:     chinese || null,
         type,
         region, country, year, harvest, elev, age, price, rarity,
-        gradient, swatch, summary,
+        gradient, swatch,
+        subtitle: subtitle.trim() || null,
+        summary,
         brewing:    parsedBrewing,
         mouthfeel:  parsedMouthfeel,
         finish:     finish.split(",").map((s) => s.trim()).filter(Boolean),
@@ -185,6 +188,24 @@ export function TeaEditForm({
           <label className={labelCls} htmlFor="price">Price (USD/g)</label>
           <input id="price" type="number" step="0.01" min={0} value={price} onChange={(e) => setPrice(Number(e.target.value))} className={inputCls} />
         </div>
+      </div>
+
+      <div>
+        <label className={labelCls} htmlFor="subtitle">
+          Card subtitle (optional)
+        </label>
+        <input
+          id="subtitle"
+          value={subtitle}
+          onChange={(e) => setSubtitle(e.target.value)}
+          placeholder="Auto-derived from type + age + flavor when blank"
+          className={inputCls}
+        />
+        <p className="text-[11px] text-warm-600 leading-snug mt-1">
+          One-line plain-English tag shown under the tea name on cards.
+          Keep it newcomer-friendly. Leave blank to auto-derive from
+          type, age, and dominant flavor axes.
+        </p>
       </div>
 
       <div>

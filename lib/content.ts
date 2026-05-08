@@ -116,6 +116,7 @@ function teaFromRow(r: TeaRowJoined): Tea {
     rarity:     r.rarity,
     gradient:   r.gradient,
     swatch:     r.swatch,
+    subtitle:   r.subtitle ?? null,
     summary:    r.summary,
     brewing:    r.brewing as Tea["brewing"],
     mouthfeel:  r.mouthfeel as Tea["mouthfeel"],

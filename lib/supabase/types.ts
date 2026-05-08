@@ -271,6 +271,7 @@ export type Database = {
           reviews: Json
           sessions_count: number
           slug: string
+          subtitle: string | null
           summary: string
           swatch: string
           type: Database["public"]["Enums"]["tea_type"]
@@ -300,6 +301,7 @@ export type Database = {
           reviews: Json
           sessions_count?: number
           slug: string
+          subtitle?: string | null
           summary: string
           swatch: string
           type: Database["public"]["Enums"]["tea_type"]
@@ -329,6 +331,7 @@ export type Database = {
           reviews?: Json
           sessions_count?: number
           slug?: string
+          subtitle?: string | null
           summary?: string
           swatch?: string
           type?: Database["public"]["Enums"]["tea_type"]
@@ -1354,7 +1357,7 @@ export const Constants = {
 
 
 // =====================================================================
-// Convenience aliases — keep importers stable across gen types runs.
+// Convenience aliases - keep importers stable across gen-types runs.
 // =====================================================================
 export type UserRole = Database["public"]["Enums"]["user_role"];
 export type UserTeaStatus = Database["public"]["Enums"]["user_tea_status"];

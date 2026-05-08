@@ -129,6 +129,10 @@ export type Tea = {
   gradient: string;
   /** Single accent color for the tea */
   swatch: string;
+  /** Optional newcomer-friendly one-liner shown under the tea name on
+   *  card grids. When null, lib/tea-helpers.ts: teaSubtitle derives
+   *  a sensible default from type + age + the top flavor axes. */
+  subtitle?: string | null;
   /** 1–2 paragraph editorial summary */
   summary: string;
   brewing: BrewingParams;

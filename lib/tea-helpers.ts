@@ -35,6 +35,67 @@ export function teaUrl(tea: Tea): string {
   return `/tea/${vendorSlugForTea(tea)}/${tea.pathSlug}`;
 }
 
+// =====================================================================
+// Subtitle — newcomer-friendly one-liner under the tea name on cards.
+// Editor can override with `tea.subtitle`; otherwise derived from
+// type + age + the top two flavor axes. Lay-user audit feedback:
+// "Menghai Shen Pu'er Spring 2023" reads as a wall of unknowns
+// without a plain-English tag underneath it.
+// =====================================================================
+
+const TYPE_LABELS: Record<string, string> = {
+  "Green":  "green tea",
+  "White":  "white tea",
+  "Yellow": "yellow tea",
+  "Oolong": "oolong",
+  "Black":  "black tea",
+  "Pu'er":  "pu'er",
+  "Herbal": "herbal infusion",
+};
+
+// Friendlier rendering of the 12 advanced flavor axes. "Vegetal" reads
+// as "grassy" to a newcomer, "marine" as "savory", etc.
+const FLAVOR_NICE: Record<string, string> = {
+  floral:  "floral",
+  fruity:  "fruity",
+  sweet:   "sweet",
+  honey:   "honeyed",
+  nutty:   "nutty",
+  roasted: "roasted",
+  woody:   "woody",
+  earthy:  "earthy",
+  mineral: "mineral",
+  marine:  "savory",
+  vegetal: "grassy",
+  spicy:   "spiced",
+};
+
+export function teaSubtitle(tea: Tea): string {
+  if (tea.subtitle && tea.subtitle.trim().length > 0) return tea.subtitle;
+
+  // Top 2 flavor axes from members consensus (most representative
+  // signal — a single contributor can be idiosyncratic).
+  const profile = tea.flavor.members;
+  const top = (Object.entries(profile) as [string, number][])
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([k]) => FLAVOR_NICE[k] ?? k);
+
+  // Age qualifier — only mention non-fresh ages, and only if it's a
+  // recognizable phrase (skip "fresh", "6 months").
+  const ageMatch = tea.age?.match(/(\d+)\s*years?/i);
+  const ageQualifier = ageMatch ? `${ageMatch[1]}-year` : "";
+
+  const typeLabel = TYPE_LABELS[tea.type] ?? tea.type.toLowerCase();
+  const prefix = ageQualifier
+    ? `${ageQualifier} ${typeLabel}`
+    : typeLabel;
+
+  // Capitalize first letter and join the top notes naturally.
+  const head = prefix.charAt(0).toUpperCase() + prefix.slice(1);
+  return `${head}, ${top.join(" & ")}`;
+}
+
 // Display ordering — pure design constants, not editorial data.
 export const CONTINENT_ORDER = [
   "Asia",

@@ -51,6 +51,9 @@ export default async function ContributorLayout({
             <Link href="/admin/contributor/teaware" className="text-warm-700 hover:text-burgundy">
               Teaware
             </Link>
+            <Link href="/admin/contributor/users" className="text-warm-700 hover:text-burgundy">
+              Users
+            </Link>
           </nav>
         </div>
         <div className="py-6">{children}</div>
