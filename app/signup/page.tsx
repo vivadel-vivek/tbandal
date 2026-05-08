@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { SignupForm } from "@/components/auth/SignupForm";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { safeNext } from "@/lib/auth/safe-next";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,7 @@ export default async function SignupPage({
     } = await supabase.auth.getUser();
     if (user) {
       const sp = await searchParams;
-      redirect(sp.next ?? "/member");
+      redirect(safeNext(sp.next));
     }
   } catch (err) {
     if (!(err instanceof Error) || !err.message.includes("Missing Supabase env")) {

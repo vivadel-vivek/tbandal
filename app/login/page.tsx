@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { safeNext } from "@/lib/auth/safe-next";
 
 // Always per-request: the session cookie decides whether to redirect
 // or render the form, and the friendly env-missing fallback should
@@ -35,7 +36,7 @@ export default async function LoginPage({
       data: { user },
     } = await supabase.auth.getUser();
     const sp = await searchParams;
-    if (user) redirect(sp.next ?? "/member");
+    if (user) redirect(safeNext(sp.next));
   } catch (err) {
     // Expected when env vars aren't set; rethrow on anything else.
     if (!(err instanceof Error) || !err.message.includes("Missing Supabase env")) {

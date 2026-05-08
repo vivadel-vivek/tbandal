@@ -28,7 +28,6 @@ export function VendorProfileForm({ vendor }: { vendor: VendorRow }) {
   const [swatch,      setSwatch]      = useState(vendor.swatch);
   const [founded,     setFounded]     = useState<number>(vendor.founded);
   const [specialties, setSpecialties] = useState((vendor.specialties ?? []).join(", "));
-  const [url,         setUrl]         = useState(vendor.url);
   const [imageUrl,    setImageUrl]    = useState<string | null>(vendor.image_url ?? null);
 
   const onSubmit = (e: React.FormEvent) => {
@@ -38,7 +37,6 @@ export function VendorProfileForm({ vendor }: { vendor: VendorRow }) {
       const result = await saveVendorProfile({
         slug: vendor.slug, city, country, continent, tagline, body, swatch, founded,
         specialties: specialties.split(",").map((s) => s.trim()).filter(Boolean),
-        url,
         image_url: imageUrl,
       });
       if (!result.ok) {
@@ -122,15 +120,29 @@ export function VendorProfileForm({ vendor }: { vendor: VendorRow }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className={labelCls} htmlFor="url">Outbound URL</label>
-          <input id="url" type="url" required value={url} onChange={(e) => setUrl(e.target.value)} className={inputCls + " font-mono text-[12px]"} />
+      <div>
+        <div className={labelCls}>Outbound URL</div>
+        <div className="flex items-center gap-3 px-3 py-2 rounded-md border border-warm-200 bg-cream">
+          <span className="font-mono text-[12px] text-warm-700 truncate flex-1">
+            {vendor.url}
+          </span>
+          <span className="text-[10px] tracking-widest uppercase font-bold text-warm-500 shrink-0">
+            Admin only
+          </span>
         </div>
-        <div>
-          <label className={labelCls} htmlFor="swatch">Swatch (hex)</label>
-          <input id="swatch" required value={swatch} onChange={(e) => setSwatch(e.target.value)} className={inputCls + " font-mono"} />
-        </div>
+        <p className="text-[11px] text-warm-600 leading-snug mt-1.5">
+          To change where /go/{vendor.slug} sends affiliate traffic, email{" "}
+          <a href="mailto:hello@twobudsandaleaf.com" className="text-burgundy underline">
+            hello@twobudsandaleaf.com
+          </a>{" "}
+          and an admin will update it. This guards the redirect against
+          phishing replacements.
+        </p>
+      </div>
+
+      <div>
+        <label className={labelCls} htmlFor="swatch">Swatch (hex)</label>
+        <input id="swatch" required value={swatch} onChange={(e) => setSwatch(e.target.value)} className={inputCls + " font-mono max-w-[180px]"} />
       </div>
 
       {status && (

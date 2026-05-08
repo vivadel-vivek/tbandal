@@ -25,7 +25,11 @@ export async function saveVendorProfile(input: {
   swatch: string;
   founded: number;
   specialties: string[];
-  url: string;
+  // url intentionally omitted — vendor owners can't change their
+  // outbound destination because /go/[vendor] would redirect every
+  // affiliate click to whatever they set. A DB trigger enforces this
+  // (vendors_prevent_url_owner_change). Admins update url through
+  // the contributor portal at /admin/contributor/vendors/[slug].
   image_url: string | null;
 }): Promise<SaveResult> {
   const { userId, role } = await requireVendorOrAdmin();

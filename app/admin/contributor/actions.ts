@@ -144,6 +144,11 @@ export async function saveVendor(input: {
   if (!/^[a-z0-9][a-z0-9-]*$/.test(input.slug)) {
     return { ok: false, message: "Slug must be lowercase letters/digits/hyphens." };
   }
+  // Vendor outbound URL is the destination of /go/[vendor] — must be
+  // https. The DB also has a check constraint as a backstop.
+  if (!/^https:\/\//i.test(input.url)) {
+    return { ok: false, message: "Vendor URL must start with https://." };
+  }
 
   const { originalSlug, ...rest } = input;
   const row: VendorInsert = rest;

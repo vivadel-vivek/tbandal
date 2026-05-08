@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
+import { safeNext } from "@/lib/auth/safe-next";
 
 const inputCls =
   "w-full px-3 py-2.5 rounded-md border border-warm-300 bg-cream text-[14px] focus:outline-none focus:border-burgundy";
@@ -29,7 +30,7 @@ type Status = "checking" | "ready" | "saving" | "done" | "invalid";
 export function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/admin";
+  const next = safeNext(searchParams.get("next"), "/admin");
 
   const [status, setStatus] = useState<Status>("checking");
   const [password, setPassword] = useState("");

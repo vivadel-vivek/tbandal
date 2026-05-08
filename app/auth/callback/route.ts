@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { safeNext } from "@/lib/auth/safe-next";
 
 // OAuth + email-confirmation callback. Supabase redirects here with a
 // `code` query param after a successful auth flow; we exchange it for
@@ -24,7 +25,10 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const type = searchParams.get("type");
   const tokenHash = searchParams.get("token_hash");
-  const next = searchParams.get("next") ?? "/member";
+  // safeNext rejects external URLs and protocol-relative paths so a
+  // phishing link like /auth/callback?next=https://evil.com can't
+  // bounce a signed-in visitor off-site.
+  const next = safeNext(searchParams.get("next"));
 
   // Recovery / invite — funnel through the password-set page. Pass
   // through any token params so /auth/reset can finalize the session
