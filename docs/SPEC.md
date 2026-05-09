@@ -5,7 +5,20 @@ shipping anything that changes the surface area; future agents and
 audits read this to understand the system without re-deriving it
 from the codebase.
 
-Last updated: 2026-05-07.
+Last updated: 2026-05-08.
+
+> **Build freeze: 2026-05-08 → 2026-06-08.** The site is intentionally
+> on a one-month build pause to focus on writing reviews instead of
+> shipping features. Per persona-audit convergence ("nice site, little
+> content"), the editorial product is healthy and the chrome is done.
+> The next signal that's worth listening to is from a real reader
+> landing on a real new review — not from another agent.
+>
+> Companion docs:
+>
+> - [`SITEMAP.md`](SITEMAP.md) — every route × access tier.
+> - [`how-to/`](how-to/) — per-role handbooks (readers, members,
+>   vendors, contributors, admins).
 
 ---
 
