@@ -120,6 +120,111 @@ Two options:
   drifts in within 60s of an edit anyway. Rebuild is for
   "I want this NOW".
 
+## CLI publishing API
+
+Two endpoints accept content via `POST` with a bearer-token API key:
+
+- `POST /api/v1/teas` — upsert a tea row by slug.
+- `POST /api/v1/posts` — upsert a journal post by slug.
+
+### Getting a key
+
+`/member/settings` → "API keys" card (only visible to admin and
+contributor accounts). Name the key (e.g. "MacBook", "CI"),
+click Create. The raw key is shown **once** in the format
+`tbl_<32-byte-base64url>`. Copy it into a password manager or
+shell env immediately — there's no way to recover it later.
+
+### Example: push a tea
+
+```bash
+curl -X POST https://two-buds-and-a-leaf.vercel.app/api/v1/teas \
+  -H "Authorization: Bearer $TBL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "slug": "mengku-2018-shen",
+    "path_slug": "mengku-2018-shen-puer",
+    "vendor_slug": "yunnan-sourcing",
+    "name": "Mengku 2018 Sheng",
+    "type": "Sheng Pu'\''er",
+    "subtype": "Mengku",
+    "aged": false,
+    "region": "Mengku, Yunnan",
+    "country": "China",
+    "year": "Spring 2018",
+    "harvest": "Spring",
+    "elev": 1800,
+    "age": "7 years",
+    "price": 0.55,
+    "rarity": 3,
+    "gradient": "linear-gradient(135deg,#9c8458,#3f2d1a)",
+    "swatch": "#3f2d1a",
+    "summary": "Body text. Markdown supported.",
+    "brewing": {"style":"Gongfu","ratio":"5g/100ml","temp":"95°C","first":"10s"},
+    "mouthfeel": {"astringent": 3, "bodyFull": 6},
+    "flavor": {
+      "vivek":   {"floral":2,"fruity":5,"sweet":4,"honey":3,"nutty":1,"roasted":0,"woody":4,"earthy":3,"mineral":5,"marine":0,"vegetal":2,"spicy":1},
+      "james":   {"floral":1,"fruity":4,"sweet":3,"honey":2,"nutty":1,"roasted":0,"woody":5,"earthy":4,"mineral":6,"marine":0,"vegetal":1,"spicy":2},
+      "members": {"floral":0,"fruity":0,"sweet":0,"honey":0,"nutty":0,"roasted":0,"woody":0,"earthy":0,"mineral":0,"marine":0,"vegetal":0,"spicy":0}
+    },
+    "reviews": {
+      "vivek":   {"rating":8.4,"body":"Body text. Markdown.","date":"2026-05-11","scale":"advanced"},
+      "james":   {"rating":8.1,"body":"Body text.","date":"2026-05-11","scale":"advanced"},
+      "members": {"rating":0,"count":0,"body":"","date":""}
+    },
+    "finish": ["honey", "mineral", "long"],
+    "published": true
+  }'
+```
+
+The endpoint upserts by `slug` — if the row exists, the call
+updates it in place; otherwise creates fresh. On success:
+`200 {"ok":true,"slug":"…"}`. On bad data: `422` with the
+Postgres error string in `message`.
+
+### Example: push a journal post
+
+```bash
+curl -X POST https://two-buds-and-a-leaf.vercel.app/api/v1/posts \
+  -H "Authorization: Bearer $TBL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "slug": "third-steep",
+    "cat": "Brewing",
+    "title": "On the third steep",
+    "excerpt": "Where the tea finally settles in.",
+    "author": "Vivek",
+    "date": "May 11, 2026",
+    "read_time": 7,
+    "grad": "linear-gradient(135deg,#722F37 0%,#A68B3D 100%)",
+    "related": ["gaba-shen", "tieguanyin"],
+    "body": "Long-form Markdown body…",
+    "published": true
+  }'
+```
+
+### Revoking a key
+
+Same settings panel. The Revoke button sets `revoked_at` on the
+row (no delete — kept for audit). Any subsequent API call with
+that key gets `401`. Revoked keys appear in a collapsed
+"Revoked" section in the panel.
+
+### Security notes
+
+- Keys are 256 bits of entropy and hashed (sha256) at rest. The
+  database stores `hashed_key` + the first 8 chars of the body
+  (`prefix`) only.
+- The auth check runs as service-role to look up the key by
+  hash. It then verifies the owner's `profiles.role` is admin
+  or contributor — non-staff keys get 401 even if otherwise
+  valid.
+- Each successful call bumps `last_used_at` on the key row, so
+  the settings panel can tell you which keys are actually in
+  use (and which to clean up).
+- No rate limiting yet — see the operational gaps section
+  below.
+
 ## Database operations
 
 Migrations live in `supabase/migrations/`. To apply a new

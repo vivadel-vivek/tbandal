@@ -15,6 +15,7 @@ import {
   settingsInput,
 } from "./settingsPrimitives";
 import { ImageUpload } from "@/components/admin/ImageUpload";
+import { ApiKeysPanel } from "@/components/member/ApiKeysPanel";
 import { useState } from "react";
 
 type Consent = {
@@ -22,6 +23,15 @@ type Consent = {
   privacyAcceptedAt: string | null;
   termsVersion: string | null;
   termsAcceptedAt: string | null;
+};
+
+type ApiKeyRow = {
+  id: string;
+  name: string;
+  prefix: string;
+  created_at: string;
+  last_used_at: string | null;
+  revoked_at: string | null;
 };
 
 type Props = {
@@ -32,9 +42,22 @@ type Props = {
   avatarUrl: string | null;
   /** Policy acceptance audit (server-loaded). */
   consent: Consent;
+  /** Role string from profiles (admin/contributor/vendor/member/user)
+   *  or null for guests. Gates the API-keys panel. */
+  role: string | null;
+  /** API keys belonging to the current user, server-loaded. Only
+   *  populated for staff (admin/contributor). */
+  apiKeys: ApiKeyRow[];
 };
 
-export function MemberSettingsView({ teas: TEAS, avatarUrl, consent }: Props) {
+export function MemberSettingsView({
+  teas: TEAS,
+  avatarUrl,
+  consent,
+  role,
+  apiKeys,
+}: Props) {
+  const isStaff = role === "admin" || role === "contributor";
   const { member, setMember, reblind } = useMember();
   const s = member.settings;
 
@@ -240,6 +263,32 @@ export function MemberSettingsView({ teas: TEAS, avatarUrl, consent }: Props) {
           </SettingsCard>
         )}
 
+        {/* API KEYS — staff-only panel for CLI publishing. */}
+        {isStaff && (
+          <SettingsCard
+            title="API keys"
+            eyebrow="CLI publishing"
+          >
+            <p className="text-[12px] text-warm-700 leading-snug m-0 mb-3">
+              Keys authenticate <code className="font-mono">POST</code>{" "}
+              requests to <code className="font-mono">/api/v1/teas</code>{" "}
+              and <code className="font-mono">/api/v1/posts</code>. Send
+              the raw key as{" "}
+              <code className="font-mono">Authorization: Bearer …</code>.
+              Examples and request shapes are in{" "}
+              <a
+                href="/docs/how-to/admins.md"
+                className="text-burgundy underline"
+              >
+                docs/how-to/admins.md
+              </a>{" "}
+              (or in the repo if you&apos;re viewing this on the live
+              site).
+            </p>
+            <ApiKeysPanel initial={apiKeys} />
+          </SettingsCard>
+        )}
+
         {/* POLICY ACCEPTANCE — audit trail of what you've agreed to. */}
         <SettingsCard title="Policy acceptance" eyebrow="Privacy & terms">
           <ConsentRow
@@ -263,7 +312,19 @@ export function MemberSettingsView({ teas: TEAS, avatarUrl, consent }: Props) {
 
         {/* ACCOUNT */}
         <SettingsCard title="Account" eyebrow="Sign-out & data">
+          <p className="text-[12px] text-warm-700 leading-snug m-0 mb-3">
+            Export a JSON dump of everything we hold for you — profile,
+            library, sessions, ratings, consent log, API key metadata.
+            GDPR Art. 20 portability; useful for a personal backup too.
+          </p>
           <div className="flex gap-2.5 flex-wrap">
+            <a
+              href="/api/me/export"
+              download
+              className="inline-flex items-center px-4 py-2 rounded-pill bg-burgundy text-cream text-[12px] font-bold tracking-widest uppercase no-underline cursor-pointer hover:bg-burgundy-dark"
+            >
+              Export my data
+            </a>
             <Button
               variant="secondary"
               onClick={() => alert("Sign-out is wired up in Phase 6 (auth).")}

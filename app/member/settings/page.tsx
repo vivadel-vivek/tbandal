@@ -13,10 +13,13 @@ export const metadata: Metadata = {
 
 export default async function MemberSettingsPage() {
   // Server-load profile fields the settings view needs upfront:
-  // current avatar (for the picker preview) and policy acceptance
-  // dates/versions (for the consent audit panel). Falls back to nulls
-  // for guests / unconfigured envs so the page still renders.
+  // current avatar (for the picker preview), policy acceptance dates
+  // (for the consent audit panel), role (gates the API-keys panel),
+  // and api_keys rows (for the listing). Falls back to nulls for
+  // guests / unconfigured envs so the page still renders.
   let avatarUrl: string | null = null;
+  let role: string | null = null;
+  let apiKeys: ApiKeyRow[] = [];
   let consent: {
     privacyVersion: string | null;
     privacyAcceptedAt: string | null;
@@ -34,20 +37,46 @@ export default async function MemberSettingsPage() {
     if (auth.user) {
       const { data } = await sb
         .from("profiles")
-        .select("avatar_url, privacy_version, privacy_accepted_at, terms_version, terms_accepted_at")
+        .select("avatar_url, role, privacy_version, privacy_accepted_at, terms_version, terms_accepted_at")
         .eq("id", auth.user.id)
         .maybeSingle();
       avatarUrl = data?.avatar_url ?? null;
+      role = data?.role ?? null;
       consent = {
         privacyVersion:    data?.privacy_version ?? null,
         privacyAcceptedAt: data?.privacy_accepted_at ?? null,
         termsVersion:      data?.terms_version ?? null,
         termsAcceptedAt:   data?.terms_accepted_at ?? null,
       };
+      if (role === "admin" || role === "contributor") {
+        const { data: keys } = await sb
+          .from("api_keys")
+          .select("id, name, prefix, created_at, last_used_at, revoked_at")
+          .eq("user_id", auth.user.id)
+          .order("created_at", { ascending: false });
+        apiKeys = keys ?? [];
+      }
     }
   } catch {
     /* env not wired in dev — render without an avatar */
   }
   const teas = await getTeas();
-  return <MemberSettingsView teas={teas} avatarUrl={avatarUrl} consent={consent} />;
+  return (
+    <MemberSettingsView
+      teas={teas}
+      avatarUrl={avatarUrl}
+      consent={consent}
+      role={role}
+      apiKeys={apiKeys}
+    />
+  );
 }
+
+type ApiKeyRow = {
+  id: string;
+  name: string;
+  prefix: string;
+  created_at: string;
+  last_used_at: string | null;
+  revoked_at: string | null;
+};

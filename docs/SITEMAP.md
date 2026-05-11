@@ -115,6 +115,9 @@ Anything a signed-in user can see, including vendors / contributors / admins (th
 | `/go/[vendor]` | Public | Affiliate redirect — 302s to `vendors.url` with UTM tagging. Logs a `vendor_clicks` row. |
 | `/go/teaware/[slug]` | Public | Affiliate redirect for off-catalog teaware (kettles, scales). |
 | `/api/track` | Public | POST endpoint for the cookieless `PageViewBeacon`. Two-call protocol: `{id, path, referrer_path}` to insert, `{id, duration_ms}` to patch. |
+| `/api/v1/teas` | API key (staff) | POST — upsert a tea row by slug. Bearer-token auth via `api_keys` table. See `docs/how-to/admins.md` for curl examples. |
+| `/api/v1/posts` | API key (staff) | POST — upsert a journal post by slug. Same auth shape. |
+| `/api/me/export` | Member | GET — download a JSON dump of the caller's profile, library, sessions, ratings, consent log, and API key metadata. GDPR Art. 20 portability. |
 | `/api/staging/switch` | Staging only | Role switcher for the staging environment (env-gated, no-op in prod). |
 | `/sitemap.xml` | Public | Generated from published rows. |
 | `/robots.txt` | Public | Disallows admin paths. |

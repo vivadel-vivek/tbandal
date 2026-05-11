@@ -109,7 +109,12 @@ Six cards:
 - **Tasted teas** — the un-blind list when you're in Blind mode.
 - **Policy acceptance** — read-only audit of which versions of
   `/privacy` and `/terms` you accepted, with dates.
-- **Account** — sign out, delete account.
+- **Account** — sign out, delete account, **export your data** as
+  a single JSON file (profile + library + sessions + ratings +
+  consent log + API key metadata). Endpoint at
+  `/api/me/export` requires your session, RLS gates the reads to
+  rows you own. GDPR Art. 20 compliant; useful as a personal
+  backup too.
 
 Avatar upload uses the same image pipeline as the rest of the
 site — JPEG, PNG, or WebP up to 5 MB. Uploaded immediately to
